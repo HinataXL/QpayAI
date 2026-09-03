@@ -14,15 +14,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$env_path = __DIR__ . '/.env';
-if (!file_exists($env_path)) {
-    echo json_encode(["error" => "El archivo .env no existe."]);
-    exit;
-}
+$gemini_api_key = getenv('GEMINI_API_KEY');
+$gemini_model = getenv('GEMINI_MODEL') ?: 'gemini-flash-latest';
 
-$env = parse_ini_file($env_path);
-$gemini_api_key = $env['GEMINI_API_KEY'] ?? '';
-$gemini_model = $env['GEMINI_MODEL'] ?? 'gemini-flash-latest';
+// Si no están en el entorno (ej. en Render), intentar leer del .env local
+if (!$gemini_api_key) {
+    $env_path = __DIR__ . '/.env';
+    if (file_exists($env_path)) {
+        $env = parse_ini_file($env_path);
+        $gemini_api_key = $env['GEMINI_API_KEY'] ?? '';
+        $gemini_model = $env['GEMINI_MODEL'] ?? 'gemini-flash-latest';
+    } else {
+        echo json_encode(["error" => "No se encontró GEMINI_API_KEY en el entorno ni en un archivo .env."]);
+        exit;
+    }
+}
 
 $input_json = file_get_contents('php://input');
 $input_data = json_decode($input_json, true);
