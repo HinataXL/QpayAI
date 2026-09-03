@@ -1,0 +1,96 @@
+# DOCUMENTACIÓN OFICIAL QPAYPRO (EXTRAÍDA DE PDF)
+
+## API Autenticación
+Todos los recursos presentados son autenticados con claves de un comercio de prueba, para utilizar su comercio debe registrarse en QPayPro.
+Las claves que necesitan ser reemplazadas en modo producción por las credenciales que se les brindará al registrarse como comercio, son las siguientes:
+- x_login
+- x_private_key
+- x_api_secret
+
+## Entorno de ejecución
+Para pruebas:
+Pagos: https://api-sandboxpayments.qpaypro.com
+Billing: https://devbilling.qpaypro.com
+
+Para producción:
+Pagos: https://api-payments.qpaypro.com
+Billing: https://billing.qpaypro.com
+
+## App checkout page
+APP Checkout de QPayPro nos ayuda a cobrar desde cualquier plataforma. QPayPro APP Checkout necesita generar un token con toda la información requerida para almacenarla y construir la página de pago.
+1. Solicitud de Token de transacción
+2. Generación de Token de transacción
+3. Generar URL de pago
+4. URL Retorno y confirmación
+
+### POST crear token para una tienda alojada
+https://sandboxpayments.qpaypro.com/checkout/register_transaction_store
+
+Parámetros requeridos:
+- x_login: Este dato lo provee QPayPro (sandbox: visanetgt_qpay)
+- x_api_key: Llave privada (sandbox: 88888888888)
+- x_amount: Total de la transacción (Precio + Impuesto + Envío)
+- x_currency_code: Tipo de moneda (USD, GTQ)
+- x_first_name, x_last_name, x_phone, x_ship_to_address, x_ship_to_city
+- x_description, x_url_success, x_url_error, x_url_cancel
+- products: Arreglo bidimensional [["Donativo","100","","1","1","1"]]
+- x_type: AUTH_ONLY
+- x_method: CC
+- x_visacuotas: si o no
+
+Ejemplo JSON:
+{
+  "x_login": "visanetgt_qpay",
+  "x_api_key": "88888888888",
+  "x_amount": "24.00",
+  "x_currency_code": "GTQ",
+  "x_first_name": "Usuario",
+  "x_last_name": "Prueba",
+  "x_phone": "24963214",
+  "x_ship_to_address": "Ship address",
+  "x_ship_to_city": "Ship City",
+  "x_ship_to_country": "Guatemala",
+  "products": "[[\"Producto\",\"100\",\"\",\"1\",\"1\",\"1\"]]",
+  "x_freight": "3.00",
+  "taxes": "1.00",
+  "x_email": "usuarioprueba@gmail.com",
+  "x_type": "AUTH_ONLY",
+  "x_method": "CC",
+  "x_visacuotas": "si"
+}
+
+## Procesar pago
+POST https://api-sandboxpayments.qpaypro.com/checkout/api_v1
+Parámetros obligatorios: x_login, x_private_key, x_api_secret, x_amount, x_currency_code.
+
+## Tokenization
+QPayToken permite almacenar tarjetas de crédito mediante tokens.
+- Registrar cliente: POST /checkout/tokenization/create_user_client_token_validations
+- Modificar cliente: PUT /checkout/tokenization/user_client_token/update
+- Registrar token: POST /checkout/tokenization/associate_card_token_user_validations
+  (Requiere cc_number, x_exp_month, x_exp_year, x_card_type [001 VISA, 002 MASTERCARD], cc_cvv2)
+
+### Procesar pago por token
+POST /checkout/tokenization/process_payment_token_client_validations
+Requiere: x_login, x_private_key, x_api_secret, x_token_user, x_currency, x_amount.
+
+## Pagos 3DS BAC
+Añade una capa de seguridad 3-D Secure.
+Si la respuesta incluye `responseObject3ds.step2CreateIframe`, debe ejecutarse Device Data Collection.
+
+## QpayFel API – Facturación Electrónica (FEL)
+Para emitir, consultar o anular facturas. Requiere `public_key`.
+- Consultar NIT: POST /checkout/qpayfel/consultar/nit (`public_key`, `documento`)
+- Emitir factura: POST /checkout/qpayfel/facturar
+  Requiere: `public_key`, `Transaccion`, `nit_cui`, `email`, `Detalles` (arreglo con `descripcion`, `cantidad`, `precio`).
+- Anular factura: POST /checkout/qpayfel/anular/factura (Requiere `uuid`, `MotivoAnulacion`)
+
+## API de Suscripciones (Cobros Automáticos)
+- Crear suscripcion: POST /billing/subscriptions/create
+  Requiere: x_login, x_private_key, x_api_secret, customer_id, product_id, token_id, ciclos, plan_description, facturar, CUI-NIT.
+- Editar suscripcion: PUT /billing/subscriptions/{id} (status 0: Cancelada, 1: Activa, 2: Pausada)
+
+Errores comunes:
+- 503 "Base de datos deshabilitada"
+- "Credenciales inválidas"
+- "Debe enviar CUI-NIT cuando facturar=1"

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qpaypro AI Integrator - Chat</title>
+    <style>
+        :root {
+            --primary-color: #002D72;
+            --accent-color: #00D1FF;
+            --bg-color: #f4f6f9;
+            --text-color: #333;
+            --container-bg: #ffffff;
+            --user-msg-bg: #002D72;
+            --ia-msg-bg: #e6f7ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-top: 5px solid var(--accent-color);
+        }
+
+        .chat-header {
+            padding: 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        .chat-header h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .chat-header h1 span {
+            color: var(--accent-color);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            line-height: 1.5;
+            font-size: 15px;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background-color: var(--user-msg-bg);
+            color: #fff;
+            border-bottom-right-radius: 0;
+        }
+
+        .message.ia {
+            align-self: flex-start;
+            background-color: var(--ia-msg-bg);
+            color: #004d66;
+            border-bottom-left-radius: 0;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .message pre {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .message code {
+            font-family: monospace;
+        }
+
+        .message .diagnostic {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .chat-input {
+            padding: 20px;
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input textarea {
+            flex: 1;
+            height: 60px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: none;
+            font-family: inherit;
+            font-size: 14px;
+            background-color: #f8fafc;
+        }
+
+        .chat-input textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .chat-input button {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            padding: 0 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .chat-input button:hover {
+            background-color: #00b8e6;
+        }
+
+        .chat-input button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .typing-indicator {
+            align-self: flex-start;
+            color: #888;
+            font-size: 14px;
+            font-style: italic;
+            display: none;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Qpaypro <span>AI Support 🚀</span></h1>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message ia">
+                ¡Hola! Soy el Agente de IA de Qpaypro. Pega aquí el JSON que falló o hazme cualquier pregunta sobre tu
+                integración y te daré un diagnóstico rápido.
+            </div>
+        </div>
+        <div class="typing-indicator" id="typingIndicator">
+            El agente está escribiendo...
+        </div>
+        <div class="chat-input">
+            <textarea id="msgInput" placeholder="Pega tu JSON o escribe tu mensaje aquí..."
+                onkeydown="handleEnter(event)"></textarea>
+            <button id="sendBtn" onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        let chatHistory = [];
+
+        function addMessageToUI(role, content) {
+            const msgsDiv = document.getElementById('chatMessages');
+            const msgEl = document.createElement('div');
+            msgEl.className = 'message ' + (role === 'user' ? 'user' : 'ia');
+
+            if (role === 'user') {
+                // Escapar HTML básico para el usuario
+                msgEl.innerText = content;
+            } else {
+                // Content es el objeto JSON devuelto por RAG: {diagnostico: "...", codigo_corregido: "..."}
+                if (typeof content === 'string') {
+                    // Si hubo un error y devolvemos un string plano
+                    msgEl.innerHTML = `<strong>Error:</strong> ${content}`;
+                } else {
+                    let html = `<div class="diagnostic">${content.diagnostico}</div>`;
+                    if (content.codigo_corregido && content.codigo_corregido.trim() !== '') {
+                        let codeClean = content.codigo_corregido;
+                        // Si la IA devolvió backticks de Markdown en su JSON
+                        if (typeof codeClean === 'string') {
+                            codeClean = codeClean.replace(/^```json\n?/i, '').replace(/\n?```$/i, '');
+                        } else if (typeof codeClean === 'object') {
+                            codeClean = JSON.stringify(codeClean, null, 4);
+                        }
+                        html += `<pre><code>${codeClean}</code></pre>`;
+                    }
+                    msgEl.innerHTML = html;
+                }
+            }
+
+            msgsDiv.appendChild(msgEl);
+
+            // Mover el indicador de escritura al final
+            const typing = document.getElementById('typingIndicator');
+            msgsDiv.appendChild(typing);
+            msgsDiv.scrollTop = msgsDiv.scrollHeight;
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const inputEl = document.getElementById('msgInput');
+            const btn = document.getElementById('sendBtn');
+            const typing = document.getElementById('typingIndicator');
+            const text = inputEl.value.trim();
+
+            if (!text) return;
+
+            addMessageToUI('user', text);
+            inputEl.value = '';
+
+            chatHistory.push({
+                role: 'user',
+                parts: [{ text: text }]
+            });
+
+            btn.disabled = true;
+            inputEl.disabled = true;
+            typing.style.display = 'block';
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+
+            try {
+                const response = await fetch('resolver.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ history: chatHistory })
+                });
+
+                let data;
+                const rawText = await response.text();
+                try {
+                    data = JSON.parse(rawText);
+                } catch (e) {
+                    throw new Error("Respuesta no válida del servidor: " + rawText);
+                }
+
+                if (data.error) {
+                    addMessageToUI('ia', data.error);
+                    chatHistory.pop();
+                } else if (data.success) {
+                    // Añadimos a la UI el objeto estructurado
+                    addMessageToUI('ia', data.reply);
+
+                    // Como chatHistory espera texto plano para la API de Gemini, serializamos la respuesta
+                    // para que Gemini sepa lo que contestó en turnos pasados.
+                    const iaTextResponse = `Diagnóstico: ${data.reply.diagnostico}\n\nCódigo:\n\`\`\`json\n${data.reply.codigo_corregido}\n\`\`\``;
+                    chatHistory.push({
+                        role: 'model',
+                        parts: [{ text: iaTextResponse }]
+                    });
+                }
+
+            } catch (error) {
+                addMessageToUI('ia', error.message);
+                chatHistory.pop();
+            } finally {
+                btn.disabled = false;
+                inputEl.disabled = false;
+                typing.style.display = 'none';
+                inputEl.focus();
+            }
+        }
+    </script>
+</body>
+
+</html>
