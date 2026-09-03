@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    image: php:8.2-apache
+    container_name: qpayai_web
+    # Puedes comentar o eliminar los puertos si NO quieres acceso directo por IP. 
+    # Cloudflare Tunnel se conectará internamente al puerto 80 del contenedor.
+    ports:
+      - "8001:80"
+    volumes:
+      - ./:/var/www/html
+    restart: unless-stopped
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared_tunnel
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
