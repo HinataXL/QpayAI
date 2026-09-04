@@ -14,20 +14,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$gemini_api_key = getenv('GEMINI_API_KEY');
-$gemini_model = getenv('GEMINI_MODEL') ?: 'gemini-flash-latest';
+$env_path = __DIR__ . '/.env';
+$env = file_exists($env_path) ? parse_ini_file($env_path) : [];
 
-// Si no están en el entorno (ej. en Render), intentar leer del .env local
+$gemini_api_key = getenv('GEMINI_API_KEY') ?: ($env['GEMINI_API_KEY'] ?? '');
+$gemini_model = getenv('GEMINI_MODEL') ?: ($env['GEMINI_MODEL'] ?? 'gemini-1.5-flash');
+$zoho_org_id = getenv('ZOHO_DESK_ORG_ID') ?: ($env['ZOHO_DESK_ORG_ID'] ?? '');
+$zoho_department_id = getenv('ZOHO_DESK_DEPARTMENT_ID') ?: ($env['ZOHO_DESK_DEPARTMENT_ID'] ?? '');
+$zoho_client_id = getenv('ZOHO_CLIENT_ID') ?: ($env['ZOHO_CLIENT_ID'] ?? '');
+$zoho_client_secret = getenv('ZOHO_CLIENT_SECRET') ?: ($env['ZOHO_CLIENT_SECRET'] ?? '');
+$zoho_refresh_token = getenv('ZOHO_REFRESH_TOKEN') ?: ($env['ZOHO_REFRESH_TOKEN'] ?? '');
+
 if (!$gemini_api_key) {
-    $env_path = __DIR__ . '/.env';
-    if (file_exists($env_path)) {
-        $env = parse_ini_file($env_path);
-        $gemini_api_key = $env['GEMINI_API_KEY'] ?? '';
-        $gemini_model = $env['GEMINI_MODEL'] ?? 'gemini-flash-latest';
-    } else {
-        echo json_encode(["error" => "No se encontró GEMINI_API_KEY en el entorno ni en un archivo .env."]);
-        exit;
-    }
+    echo json_encode(["error" => "No se encontró GEMINI_API_KEY en el entorno ni en un archivo .env."]);
+    exit;
 }
 
 $input_json = file_get_contents('php://input');
@@ -65,16 +65,21 @@ DOCUMENTACIÓN DE REFERENCIA:
 $contexto_recuperado
 
 REGLAS ESTRICTAS:
-1. Analiza el JSON o mensaje proporcionado por el usuario y compáralo con la documentación de referencia.
-2. Identifica el error específico (ej. falta un campo obligatorio, formato de arreglo incorrecto). No inventes parámetros fuera de la documentación.
-3. Devuelve ESTRICTAMENTE un JSON válido con esta estructura exacta, sin texto adicional:
+1. Analiza el mensaje proporcionado por el usuario y compáralo con la documentación de referencia.
+2. Si la consulta ESTÁ en la documentación, explícala en 'diagnostico' y corrige el código en 'codigo_corregido'.
+3. Si la consulta NO tiene respuesta en la documentación (o es de un tema ajeno), ESTÁS OBLIGADO a responder en el 'diagnostico' exactamente esto: \"No encuentro la respuesta a tu consulta en mi documentación. Por favor, indícame tu correo electrónico y el nombre de tu comercio para que un humano te atienda mediante un ticket de soporte.\"
+4. Si el usuario te proporciona su correo electrónico y nombre de comercio, establece \"escalar_a_humano\": true, extrae los datos en \"correo_cliente\" y \"nombre_comercio\", y responde en 'diagnostico': \"Gracias, estoy creando tu ticket de soporte...\"
+5. Devuelve ESTRICTAMENTE un JSON válido con esta estructura exacta, sin texto adicional:
 {
-  \"diagnostico\": \"Explicación técnica en 1 frase de por qué falló basándose en la documentación. Si el usuario te saluda, salúdalo de vuelta aquí y deja codigo_corregido vacío.\",
-  \"codigo_corregido\": \"El bloque completo de código reparado (preferiblemente JSON puro listo para copiar). Si no hay código que corregir, devuélvelo vacío.\"
+  \"diagnostico\": \"Tu respuesta para el usuario, siguiendo las reglas anteriores.\",
+  \"codigo_corregido\": \"El bloque completo de código reparado. Si no hay código, devuélvelo vacío.\",
+  \"escalar_a_humano\": true o false,
+  \"correo_cliente\": \"El correo proporcionado por el usuario, o vacío.\",
+  \"nombre_comercio\": \"El nombre del comercio proporcionado por el usuario, o vacío.\"
 }";
 
 // 4. Llamada a la API de Gemini (cURL)
-$gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/{$gemini_model}:generateContent?key=" . $gemini_api_key;
+$gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/{$gemini_model}:generateContent";
 
 $data = [
     "systemInstruction" => [
@@ -94,6 +99,7 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "x-goog-api-key: " . $gemini_api_key,
     "Content-Type: application/json"
 ]);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -121,11 +127,89 @@ if (empty($ia_reply)) {
     exit;
 }
 
-// 5. Salida al Frontend
+// 5. Lógica de "Human in the loop" y Salida al Frontend
 try {
     $parsed_json = json_decode($ia_reply, true);
     if (!$parsed_json || !isset($parsed_json['diagnostico'])) {
         throw new Exception("El formato devuelto por la IA no fue el esperado JSON estricto.");
+    }
+    
+    $escalar = isset($parsed_json['escalar_a_humano']) && $parsed_json['escalar_a_humano'] === true;
+
+    if ($escalar && $zoho_refresh_token && $zoho_client_id && $zoho_client_secret && $zoho_org_id && $zoho_department_id) {
+        // 1. Obtener Access Token mediante Refresh Token
+        $auth_url = "https://accounts.zoho.com/oauth/v2/token";
+        $auth_data = [
+            "refresh_token" => $zoho_refresh_token,
+            "client_id" => $zoho_client_id,
+            "client_secret" => $zoho_client_secret,
+            "grant_type" => "refresh_token"
+        ];
+        
+        $ch_auth = curl_init($auth_url);
+        curl_setopt($ch_auth, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch_auth, CURLOPT_POST, true);
+        curl_setopt($ch_auth, CURLOPT_POSTFIELDS, http_build_query($auth_data));
+        curl_setopt($ch_auth, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch_auth, CURLOPT_TIMEOUT, 30);
+        
+        $auth_response = curl_exec($ch_auth);
+        curl_close($ch_auth);
+        
+        $auth_result = json_decode($auth_response, true);
+        $access_token = $auth_result['access_token'] ?? null;
+        
+        if ($access_token) {
+            // 2. Crear ticket en Zoho Desk
+            $zoho_url = "https://desk.zoho.com/api/v1/tickets";
+            
+            // Convertimos el historial en HTML para la descripción del ticket
+            $historial_texto = "<h3>Historial del chat:</h3><hr/>";
+            foreach ($history as $msg) {
+                $role = $msg['role'] === 'user' ? 'Usuario' : 'Agente IA';
+                $texto = htmlspecialchars($msg['parts'][0]['text'] ?? '');
+                $texto = nl2br($texto); // Convertir saltos de línea a <br>
+                
+                $color = $msg['role'] === 'user' ? '#0056b3' : '#17a2b8';
+                $historial_texto .= "<p><strong style='color:$color;'>[$role]:</strong><br/> $texto</p>";
+            }
+            
+            $correo_cliente = !empty($parsed_json['correo_cliente']) ? $parsed_json['correo_cliente'] : "chat-ia@qpaypro.com";
+            $nombre_comercio = !empty($parsed_json['nombre_comercio']) ? $parsed_json['nombre_comercio'] : "No especificado";
+
+            $ticket_data = [
+                "subject" => "Escalamiento desde chatIA Comercio " . $nombre_comercio,
+                "departmentId" => $zoho_department_id,
+                "contact" => [
+                    "lastName" => $nombre_comercio,
+                    "email" => $correo_cliente
+                ],
+                "description" => $historial_texto
+            ];
+
+            $zc = curl_init($zoho_url);
+            curl_setopt($zc, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($zc, CURLOPT_POST, true);
+            curl_setopt($zc, CURLOPT_POSTFIELDS, json_encode($ticket_data));
+            curl_setopt($zc, CURLOPT_HTTPHEADER, [
+                "Authorization: Zoho-oauthtoken " . $access_token,
+                "orgId: " . $zoho_org_id,
+                "Content-Type: application/json"
+            ]);
+            curl_setopt($zc, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($zc, CURLOPT_TIMEOUT, 30);
+            
+            $zoho_response = curl_exec($zc);
+            curl_close($zc);
+            
+            $zoho_result = json_decode($zoho_response, true);
+            $ticket_id = $zoho_result['ticketNumber'] ?? 'N/A';
+            
+            // Adjuntamos el aviso del ticket a la respuesta para el usuario
+            $parsed_json['diagnostico'] .= "\n\n🎫 He levantado el ticket de soporte #" . $ticket_id . " para que un agente revise tu caso. Se pondrán en contacto contigo a la brevedad.";
+        } else {
+            $parsed_json['diagnostico'] .= "\n\n⚠️ Intenté levantar un ticket de soporte, pero hubo un error de autenticación con Zoho.";
+        }
     }
     
     // Retornamos el JSON directamente para que el chat lo renderice

@@ -106,8 +106,8 @@
         }
 
         .message .diagnostic {
-            font-weight: bold;
             margin-bottom: 8px;
+            white-space: pre-wrap;
         }
 
         .chat-input {
@@ -218,6 +218,7 @@
                             codeClean = JSON.stringify(codeClean, null, 4);
                         }
                         html += `<pre><code>${codeClean}</code></pre>`;
+                        html += `<div style="margin-top: 12px; font-weight: bold; color: #b7791f; font-size: 14px;">⚠️ Cuando pases a producción recuerda que en el x_login debes colocar tu public_key ⚠️</div>`;
                     }
                     msgEl.innerHTML = html;
                 }
