@@ -1,42 +1,41 @@
-# DOCUMENTACIÓN OFICIAL QPAYPRO (EXTRAÍDA DE PDF)
+# DOCUMENTACIÓN OFICIAL QPAYPRO API (base de conocimiento del agente)
 
-## API Autenticación
-Todos los recursos presentados son autenticados con claves de un comercio de prueba, para utilizar su comercio debe registrarse en QPayPro.
-Las claves que necesitan ser reemplazadas en modo producción por las credenciales que se les brindará al registrarse como comercio, son las siguientes:
-- x_login
-- x_private_key
-- x_api_secret
+## 1. AUTENTICACIÓN
+Todos los recursos se autentican con claves de un comercio. Las claves que deben reemplazarse en producción
+por las credenciales entregadas al registrarse como comercio son:
+- x_login          -> identifica al comercio. Sandbox: visanetgt_qpay. En producción es la PUBLIC_KEY del comercio.
+- x_private_key    -> llave privada del comercio. Sandbox: 88888888888
+- x_api_secret     -> llave identificadora de la transacción API. Sandbox: 99999999999
+En el checkout alojado la llave privada viaja como x_api_key (sandbox: 88888888888).
+En QpayFel la autenticación se hace con el campo public_key.
+Las credenciales viajan SIEMPRE en el body de la petición, nunca en cabeceras.
 
-## Entorno de ejecución
-Para pruebas:
-Pagos: https://api-sandboxpayments.qpaypro.com
-Billing: https://devbilling.qpaypro.com
+## 2. ENTORNOS
+Pruebas (sandbox):
+- Pagos:          https://api-sandboxpayments.qpaypro.com
+- Página de pago: https://sandboxpayments.qpaypro.com
+- Billing:        https://devbilling.qpaypro.com
+Producción:
+- Pagos:          https://api-payments.qpaypro.com
+- Página de pago: https://payments.qpaypro.com
+- Billing:        https://billing.qpaypro.com
+- Billing (suscripciones/cobros automáticos): https://api.qpaypro.com
 
-Para producción:
-Pagos: https://api-payments.qpaypro.com
-Billing: https://billing.qpaypro.com
+## 3. APP CHECKOUT PAGE (página de pago alojada)
+Proceso general:
+1. Tu sistema envía la información del cliente y carrito para generar un token de transacción (no datos de tarjeta).
+2. QPayPro almacena la información y genera el token.
+3. Tu sistema construye la URL de pago con ese token.
+4. QPayPro retorna la confirmación a la URL de éxito configurada en el comercio.
 
-## App checkout page
-APP Checkout de QPayPro nos ayuda a cobrar desde cualquier plataforma. QPayPro APP Checkout necesita generar un token con toda la información requerida para almacenarla y construir la página de pago.
-1. Solicitud de Token de transacción
-2. Generación de Token de transacción
-3. Generar URL de pago
-4. URL Retorno y confirmación
-
-### POST crear token para una tienda alojada
+### POST crear token para tienda alojada
 https://sandboxpayments.qpaypro.com/checkout/register_transaction_store
-
-Parámetros requeridos:
-- x_login: Este dato lo provee QPayPro (sandbox: visanetgt_qpay)
-- x_api_key: Llave privada (sandbox: 88888888888)
-- x_amount: Total de la transacción (Precio + Impuesto + Envío)
-- x_currency_code: Tipo de moneda (USD, GTQ)
-- x_first_name, x_last_name, x_phone, x_ship_to_address, x_ship_to_city
-- x_description, x_url_success, x_url_error, x_url_cancel
-- products: Arreglo bidimensional [["Donativo","100","","1","1","1"]]
-- x_type: AUTH_ONLY
-- x_method: CC
-- x_visacuotas: si o no
+Requeridos: x_login, x_api_key, x_amount, x_currency_code (GTQ o USD), x_first_name, x_last_name, x_phone.
+Opcionales: x_ship_to_address, x_ship_to_city, x_ship_to_country, x_ship_to_state, x_ship_to_zip, x_ship_to_phone,
+x_description, x_url_success, x_url_error, x_url_cancel, http_origin, x_company, x_address, x_city, x_country,
+x_state, x_zip, products, x_freight, taxes, x_email, x_type (AUTH_ONLY), x_method (CC), x_invoice_num,
+custom_fields, x_visacuotas, x_relay_url, origen, store_type, x_discount.
+x_amount debe incluir el total global: Precio + Impuesto + Envío + Gastos adicionales.
 
 Ejemplo JSON:
 {
@@ -50,47 +49,316 @@ Ejemplo JSON:
   "x_ship_to_address": "Ship address",
   "x_ship_to_city": "Ship City",
   "x_ship_to_country": "Guatemala",
-  "products": "[[\"Producto\",\"100\",\"\",\"1\",\"1\",\"1\"]]",
+  "x_ship_to_state": "0",
+  "x_ship_to_zip": "1010",
+  "x_ship_to_phone": "11223344",
+  "x_description": "Order number: 123",
+  "x_url_cancel": "URL_de_procedencia",
+  "http_origin": "tuempresa.com",
+  "x_company": "C/F",
+  "x_address": "Address",
+  "x_city": "City",
+  "x_country": "Guatemala",
+  "x_state": "0",
+  "x_zip": "1201",
+  "products": "[[\"Donativo - Cruz Roja Guatemalteca\",\"100\",\"\",\"1\",\"1\",\"1\"]]",
   "x_freight": "3.00",
   "taxes": "1.00",
   "x_email": "usuarioprueba@gmail.com",
   "x_type": "AUTH_ONLY",
   "x_method": "CC",
-  "x_visacuotas": "si"
+  "x_invoice_num": "123",
+  "custom_fields": "{\"idSistema\":\"1009\",\"idCliente\":\"2025\",\"numerodeorden\":\"2585\"}",
+  "x_visacuotas": "si",
+  "x_relay_url": "RUTA_A_DONDE_DEBE_VOLVER_AL_FINALIZAR_PAGO",
+  "origen": "PLUGIN",
+  "store_type": "hostedpage",
+  "x_discount": "0"
 }
 
-## Procesar pago
-POST https://api-sandboxpayments.qpaypro.com/checkout/api_v1
-Parámetros obligatorios: x_login, x_private_key, x_api_secret, x_amount, x_currency_code.
+URL de pago con el token obtenido:
+- Sandbox:    https://sandboxpayments.qpaypro.com/checkout/store?token=TOKEN
+- Producción: https://payments.qpaypro.com/checkout/store?token=TOKEN
 
-## Tokenization
-QPayToken permite almacenar tarjetas de crédito mediante tokens.
-- Registrar cliente: POST /checkout/tokenization/create_user_client_token_validations
-- Modificar cliente: PUT /checkout/tokenization/user_client_token/update
-- Registrar token: POST /checkout/tokenization/associate_card_token_user_validations
-  (Requiere cc_number, x_exp_month, x_exp_year, x_card_type [001 VISA, 002 MASTERCARD], cc_cvv2)
+### POST crear token para tienda alojada en WooCommerce
+https://api-sandboxpayments.qpaypro.com/checkout/register_transaction_store
+Mismos campos, pero "store_type": "woocommerce". Admite además x_cuota, x_recargo_cuotas, x_tipo_recargo,
+x_monto_recargo.
+URL de pago:
+- Sandbox:    https://sandboxpayments.qpaypro.com/checkout/woocommerce?token=TOKEN
+- Producción: https://payments.qpaypro.com/checkout/woocommerce?token=TOKEN
 
-### Procesar pago por token
-POST /checkout/tokenization/process_payment_token_client_validations
-Requiere: x_login, x_private_key, x_api_secret, x_token_user, x_currency, x_amount.
+## 4. PAGOS
 
-## Pagos 3DS BAC
-Añade una capa de seguridad 3-D Secure.
-Si la respuesta incluye `responseObject3ds.step2CreateIframe`, debe ejecutarse Device Data Collection.
+### POST procesar pago
+https://api-sandboxpayments.qpaypro.com/checkout/api_v1
+Headers: Content-Type: application/json
+Requeridos: x_login, x_private_key, x_api_secret, x_amount, x_currency_code.
+Opcionales relevantes: x_description (resumen o control interno), x_freight (valor del envío; vacío = 0.00),
+x_product_id, x_audit_number, x_fp_sequence, x_fp_timestamp, x_invoice_num, x_line_item, x_email,
+cc_number, cc_exp, cc_cvv2, cc_name, cc_type, x_first_name, x_last_name, x_company, x_address, x_city,
+x_state, x_country, x_zip, x_relay_response, x_relay_url, x_type (AUTH_ONLY), x_method (CC), http_origin,
+visaencuotas, finger, device_fingerprint_id.
 
-## QpayFel API – Facturación Electrónica (FEL)
-Para emitir, consultar o anular facturas. Requiere `public_key`.
-- Consultar NIT: POST /checkout/qpayfel/consultar/nit (`public_key`, `documento`)
-- Emitir factura: POST /checkout/qpayfel/facturar
-  Requiere: `public_key`, `Transaccion`, `nit_cui`, `email`, `Detalles` (arreglo con `descripcion`, `cantidad`, `precio`).
-- Anular factura: POST /checkout/qpayfel/anular/factura (Requiere `uuid`, `MotivoAnulacion`)
+Ejemplo JSON:
+{
+  "x_login": "visanetgt_qpay",
+  "x_private_key": "88888888888",
+  "x_api_secret": "99999999999",
+  "x_product_id": 6,
+  "x_audit_number": 123456,
+  "x_fp_sequence": 1988679099,
+  "x_fp_timestamp": 1668977030,
+  "x_invoice_num": 123456,
+  "x_currency_code": "GTQ",
+  "x_amount": 1.00,
+  "x_line_item": "T-shirt Live Dreams<|>w01<|><|>1<|>1000.00<|>N",
+  "x_freight": 0.00,
+  "x_email": "test@gmail.com",
+  "cc_number": "4111111111111111",
+  "cc_exp": "11/27",
+  "cc_cvv2": "312",
+  "cc_name": "john doe",
+  "cc_type": "visa",
+  "x_first_name": "john",
+  "x_last_name": "doe",
+  "x_company": "Company",
+  "x_address": "711-2880 Nulla",
+  "x_city": "Guatemala",
+  "x_state": "Guatemala",
+  "x_country": "Guatemala",
+  "x_zip": "01056",
+  "x_relay_response": "none",
+  "x_relay_url": "none",
+  "x_type": "AUTH_ONLY",
+  "x_method": "CC",
+  "http_origin": "http://local.test.com",
+  "visaencuotas": 0,
+  "finger": ""
+}
 
-## API de Suscripciones (Cobros Automáticos)
-- Crear suscripcion: POST /billing/subscriptions/create
-  Requiere: x_login, x_private_key, x_api_secret, customer_id, product_id, token_id, ciclos, plan_description, facturar, CUI-NIT.
-- Editar suscripcion: PUT /billing/subscriptions/{id} (status 0: Cancelada, 1: Activa, 2: Pausada)
+### Valores que deben generarse en el front-end
+1) finger: agregar en el footer el script
+   <script async src="https://fpcdn.io/v3/cUXvdB6hHu/iife.min.js" onload="initFingerprintJS()"></script>
+   function initFingerprintJS() {
+       FingerprintJS.load({}).then(fp => fp.get()).then(data => { finger = data.visitorId; });
+   }
+2) device_fingerprint_id: agregar en el head el script
+   <script src="https://h.online-metrix.net/fp/tags.js?org_id=ORG_ID&session_id=SESSION_ID"></script>
+   Sandbox:    org_id = 1snn5n9w,  session_id = visanetgt_qpay + random_value
+   Producción: org_id = k8vif92e,  session_id = public_key_del_comercio + random_value
+   device_fingerprint_id = random_value (el mismo valor aleatorio único usado en session_id).
 
-Errores comunes:
-- 503 "Base de datos deshabilitada"
-- "Credenciales inválidas"
-- "Debe enviar CUI-NIT cuando facturar=1"
+### Código HTTP 422 (responseCode 1003)
+Significa que la transacción tiene definida la pasarela de pago BAC y requiere autenticación 3D-Secure.
+Debe seguirse la documentación de pagos 3DS BAC.
+{
+  "result": 0,
+  "title": "Error",
+  "responseCode": "1003",
+  "responseText": "La transacción tiene definida la pasarela de pago BAC ... requiere 3D-Secure",
+  "redirect": null,
+  "forceRedirect": false
+}
+
+### POST detalle de un pago
+https://api-sandboxpayments.qpaypro.com/checkout/get_transaction_detail
+Requeridos: x_login, x_private_key, x_api_secret. Opcionales: idTrans (id de la transacción en QPayPro),
+x_fp_sequence, x_audit_number (identificadores propios de seguimiento). Puede enviarse idTrans o los otros dos.
+{
+  "x_login": "visanetgt_qpay",
+  "x_private_key": "88888888888",
+  "x_api_secret": "99999999999",
+  "idTrans": "418740",
+  "x_audit_number": "",
+  "x_fp_sequence": " "
+}
+
+### POST cancelar (anular) un pago
+https://api-sandboxpayments.qpaypro.com/checkout/void_transaction
+Mismos campos que el detalle de pago, con el idTrans de la transacción a anular.
+
+## 5. PAGOS 3DS BAC
+Mismo endpoint que procesar pago (/checkout/api_v1). Agrega el objeto payment_response_url cuando el comercio
+recibe pagos con AMEX y tarjetas BAC:
+"payment_response_url": { "success_url": "https://midominio.com/success", "error_url": "https://midominio.com/error" }
+Ambas URL son de tipo GET.
+Al detectar doble autenticación el servicio devuelve HTTP 303. Se debe leer responseObjectBac y redirigir:
+window.location.href = response.responseObject.responseObjectBac.redirect;
+
+## 6. FLUJO 3DS2 (CyberSource)
+Pasos:
+1. Iniciar pago: POST /checkout/api_v1 con el payload completo. Si result: 1 el flujo termina aquí.
+2. Si la respuesta incluye responseObject3ds.step2CreateIframe (referenceId, deviceDataCollectionUrl,
+   accessToken) hay que ejecutar el Device Data Collection SOLO en frontend: form POST al
+   deviceDataCollectionUrl dentro de un iframe oculto.
+3. Continuar autenticación: POST /checkout/api_v1 con el payload original más
+   "cybs3ds": { "reference_id": "{{referenceId}}", "continue_auth": true }
+4. Si la respuesta incluye step4CreateIframeChallenge (stepUpUrl, accessToken) hay que mostrar el challenge en un
+   iframe/modal en frontend: form POST a stepUpUrl con JWT=accessToken.
+5. Continuar después del challenge: POST /checkout/api_v1 con el payload original más
+   "cybs3ds": { "transaction_id": "{{transactionId}}", "continue_payment_after_challenge": true }
+6. Confirmación final: result: 1 o status: AUTHORIZED significa pago exitoso.
+   { "result": 1, "title": "Éxito", "responseCode": 100, "responseText": "Transacción exitosa",
+     "responseAuthorization": "831000", "idTransaction": 422492 }
+
+Variables de entorno del frontend:
+window.APP_ENV = 'sandbox';
+window.CYBS_3DS_CENTINEL_CARDINALCOMMERCE_TEST = 'https://centinelapistag.cardinalcommerce.com';
+window.CYBS_3DS_CENTINEL_CARDINALCOMMERCE = 'https://centinelapi.cardinalcommerce.com';
+window.APP_PAYMENTS = 'https://sandboxpayments.qpaypro.com/checkout/';
+BACKEND_URL = 'https://api-sandboxpayments.qpaypro.com/checkout/api_v1';
+
+## 7. TOKENIZATION (QPayToken)
+Permite almacenar tarjetas de forma segura mediante tokens para agilizar el checkout.
+Primero se registra el cliente, luego se asocia la tarjeta (token) y después se cobra con el token.
+
+### POST registrar cliente
+https://api-sandboxpayments.qpaypro.com/checkout/tokenization/create_user_client_token_validations
+Requeridos: x_login, x_private_key, x_api_secret, x_first_name, x_last_name, x_address, x_city, x_state,
+x_zip, x_country, x_email.
+
+### PUT modificar cliente (solo si no tiene token asociado)
+https://api-sandboxpayments.qpaypro.com/checkout/tokenization/user_client_token/update
+Header Accept: application/json. Requeridos: credenciales + x_user_client_id. Resto de campos opcionales.
+
+### POST listar clientes
+https://api-sandboxpayments.qpaypro.com/checkout/tokenization/user_client_token/list
+Header Accept: application/json. Solo credenciales.
+
+### POST buscar clientes
+https://api-sandboxpayments.qpaypro.com/checkout/tokenization/user_client_token/find
+Filtros: user_client_id, first_name, last_name, street, city, state, zip, country, email.
+
+### POST registrar token (asociar tarjeta)
+https://api-sandboxpayments.qpaypro.com/checkout/tokenization/associate_card_token_user_validations
+Requeridos: x_login, x_private_key, x_api_secret, user_client_id, cc_number, x_exp_month, x_exp_year,
+x_card_type (001 = VISA, 002 = MASTERCARD), cc_cvv2.
+
+### POST eliminar token
+https://api-sandboxpayments.qpaypro.com/checkout/tokenization/delete_token_validations
+Requeridos: credenciales + x_token_user.
+
+### POST procesar pago por token
+https://api-sandboxpayments.qpaypro.com/checkout/tokenization/process_payment_token_client_validations
+Requeridos: credenciales + x_token_user. Opcionales: x_currency (GTQ o USD), x_amount (decimal, ej. 1.10).
+{
+  "x_login": "visanetgt_qpay",
+  "x_private_key": "88888888888",
+  "x_api_secret": "99999999999",
+  "x_token_user": "6692458385676837804011",
+  "x_currency": "USD",
+  "x_amount": "1.02"
+}
+
+## 8. QPAYFEL (Facturación electrónica FEL - SAT Guatemala)
+Requiere que el comercio tenga activada la funcionalidad QpayFel. Se autentica con public_key.
+
+### POST consultar CUI
+https://api-payments.qpaypro.com/checkout/qpayfel/consultar/cui
+{ "public_key": "visanetgt_qpay", "documento": "1234567890123" }   (CUI/DPI de 13 caracteres)
+
+### POST consultar NIT
+https://api-payments.qpaypro.com/checkout/qpayfel/consultar/nit
+{ "public_key": "visanetgt_qpay", "documento": "CF" }
+
+### POST emitir factura
+https://api-payments.qpaypro.com/checkout/qpayfel/facturar
+Requeridos: public_key, Transaccion (id de transacción existente y no facturada), email (validado RFC + DNS),
+Detalles (arreglo con descripcion, cantidad y precio; totales por línea > 0 y el total debe coincidir con la
+transacción). Opcionales: nit_cui (CUI 13 dígitos, NIT sin guion o "CF"), direccion (default "Ciudad"),
+departamento (default "Guatemala"), municipio (default "Guatemala").
+{
+  "public_key": "visanetgt_qpay_testings",
+  "Transaccion": "2555957",
+  "nit_cui": "CF",
+  "email": "cliente@dominio.com",
+  "direccion": "Ciudad de Guatemala",
+  "departamento": "Guatemala",
+  "municipio": "Santa Catarina Pinula",
+  "Detalles": [
+    { "descripcion": "Producto A", "cantidad": 1, "precio": 50.00 },
+    { "descripcion": "Producto B", "cantidad": 1, "precio": 50.00 }
+  ]
+}
+
+### POST anular factura
+https://api-payments.qpaypro.com/checkout/qpayfel/anular/factura
+Requeridos: public_key, uuid (identificador de la factura), MotivoAnulacion (obligatorio, se registra en SAT).
+
+### GET consultar factura
+https://api-payments.qpaypro.com/checkout/qpayfel/consultar/factura
+Requeridos: public_key, uuid. Retorna estado, monto, nombre y transacción asociada.
+
+## 9. COBROS AUTOMÁTICOS / SUSCRIPCIONES (billing)
+Base: https://api.qpaypro.com
+Autenticación en el body con x_login, x_private_key, x_api_secret.
+Credenciales de prueba: x_login 5gNwBPoqmft16860, x_private_key O1gn8SgILKV16860, x_api_secret DCCyMKKSpqG16860.
+Las credenciales del comercio se consultan en la plataforma en la ruta /integrations.
+
+### Clientes
+- POST   /billing/user-clients/create  -> first_name, last_name, street1, city, state, zip, country (opcional,
+         default "Guatemala"), email, telefono, nit, identification_user.
+- PUT    /billing/user-clients/{id}    -> solo los campos a modificar.
+- DELETE /billing/user-clients/{id}
+- POST   /billing/user-clients         -> listar
+- POST   /billing/user-clients/{id}    -> ver por id
+
+### Productos
+- POST   /billing/products/create -> name, description, currency (GTQ|USD), precio, recurrencia, short_description, sku.
+- PUT    /billing/products/{id}
+- DELETE /billing/products/{id}
+- POST   /billing/products        -> listar
+- POST   /billing/products/{id}   -> ver
+
+### Tokenización de tarjetas (billing)
+- POST /billing/associate_credit_card -> user_client_id, cc_number, x_exp_month, x_exp_year,
+        x_card_type (001 VISA, 002 MASTERCARD), cc_cvv2, origin (ej. API_SUSCRIPCIONES). Devuelve el token_id.
+- POST /billing/process_token_payment -> token, currency, amount, origin. Cobro inmediato.
+- POST /billing/list_credit_card      -> x_client_id. Un cliente puede tener varias tarjetas, cada una con su token_id.
+- POST /billing/delete_credit_card    -> x_client_id, cc_id.
+
+### Suscripciones
+- POST /billing/subscriptions/create -> customer_id, product_id, token_id, currency, ciclos (requerido),
+        plan_description, facturar (0 No / 1 Sí), CUI-NIT (obligatorio si facturar=1).
+- POST /billing/subscriptions/{id}          -> detalle
+- PUT  /billing/subscriptions/{id}          -> actualizar precio, next_billing_date, recurrencia, status, token, email
+- POST /billing/subscriptions                -> listar todas
+- POST /billing/subscriptions/{id}/invoices  -> comprobantes
+
+Estados de suscripción: 0 = Cancelada, 1 = Activa (default), 2 = Pausada.
+Estados de factura/comprobante: 1 = Pagada, 2 = Pendiente, 3 = Vencida.
+Campos del comprobante: invoice_number, invoice_date, total_invoice, currency, status, description, transaction_id.
+
+Recurrencias soportadas: diario/diaria, semanal, quincenal/quincena, mensual/mes.
+Cálculo de end_date con ciclos:
+- Diario:     start_date + ciclos días
+- Semanal:    start_date + (ciclos x 7) días
+- Quincenal:  start_date + (ciclos x 15) días
+- Mensual:    start_date + (ciclos x 30) días
+Si no se especifica end_date ni ciclos la suscripción es indefinida. Cada suscripción maneja una sola recurrencia.
+
+Cobro automático: al llegar next_billing_date se intenta el pago con el token_id. Si es exitoso se crea un
+comprobante, sube billing_count y se actualiza next_billing_date. Si falla sube fail_count_billing; al tercer
+intento fallido la suscripción se pausa. billing_activation_date es la fecha en que arranca la facturación
+automática (default: fecha actual). plan_total es el monto que se cobra en cada ciclo.
+
+Facturación con INFILE: el sistema prepara los datos al crear la suscripción con facturar=1, pero la factura
+electrónica se emite durante el cobro recurrente. Requiere INFILE habilitado por soporte.
+
+## 10. ERRORES COMUNES
+- HTTP 503 "Base de datos deshabilitada": servicio no disponible, contactar a soporte.
+- "Credenciales inválidas": revisar x_login, x_private_key y x_api_secret (sin espacios ni caracteres extra).
+- "Cliente no encontrado para este business": el customer_id no existe o no pertenece al comercio.
+- "Producto no encontrado para este business": el product_id no existe o no pertenece al comercio.
+- "Token no pertenece al cliente o no existe": el token_id no existe, no está asociado a ese customer_id
+  o no pertenece al comercio.
+- "Recurrencia no soportada para calcular end_date": usar diario, diaria, semanal, quincenal, quincena, mensual o mes.
+- "Debe enviar CUI-NIT cuando facturar=1": falta el campo CUI-NIT (o cui_nit).
+- "El comercio no tiene INFILE habilitado para facturar": solicitar habilitación a soporte.
+- "Error al conectar con pasarela": problema de conectividad con el servicio de pagos.
+- HTTP 422 responseCode 1003: la pasarela BAC exige 3D-Secure; seguir el flujo de pagos 3DS BAC.
+- HTTP 303: el banco pide doble autenticación; redirigir a responseObject.responseObjectBac.redirect.
+
+## 11. SOPORTE
+Correo de soporte técnico: soporte@qpaypro.com
