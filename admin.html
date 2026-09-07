@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="color-scheme" content="light dark">
+    <title>QPayPro · Admin de la base de conocimiento</title>
+    <style>
+        :root {
+            --brand: #002D72;
+            --brand-600: #003c96;
+            --accent: #00D1FF;
+
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-2: #f6f8fc;
+            --surface-3: #eaeff7;
+            --border: #dde4ef;
+            --border-strong: #c6d2e4;
+            --text: #16202e;
+            --text-muted: #5c6b80;
+
+            --code-bg: #0f172a;
+            --code-text: #e2e8f0;
+
+            --ok: #067647;
+            --ok-bg: #ecfdf3;
+            --ok-border: #a6f4c5;
+            --warn: #b54708;
+            --warn-bg: #fffaeb;
+            --warn-border: #fedf89;
+            --danger: #b42318;
+            --danger-bg: #fef3f2;
+            --danger-border: #fecdca;
+            --info: #175cd3;
+            --info-bg: #eff8ff;
+            --info-border: #b2ddff;
+
+            --shadow-sm: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .1);
+            --shadow-lg: 0 20px 50px rgba(6, 20, 48, .18);
+            --ring: 0 0 0 3px rgba(0, 209, 255, .35);
+
+            --font: 'Segoe UI', system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+            --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+            --header-h: 62px;
+            --aside-w: 300px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0a1120;
+            --surface: #101a2b;
+            --surface-2: #0d1626;
+            --surface-3: #18233a;
+            --border: #223049;
+            --border-strong: #2e3f5e;
+            --text: #e6edf7;
+            --text-muted: #93a3ba;
+
+            --code-bg: #060b16;
+            --code-text: #d7e3f4;
+
+            --ok: #5fd39b;
+            --ok-bg: #0d2a1e;
+            --ok-border: #1d5c40;
+            --warn: #f5c26b;
+            --warn-bg: #241a08;
+            --warn-border: #6b4c14;
+            --danger: #ff9a90;
+            --danger-bg: #2a1412;
+            --danger-border: #5c2420;
+            --info: #7fb5ff;
+            --info-bg: #0d1f38;
+            --info-border: #24446f;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+            --shadow-lg: 0 20px 50px rgba(0, 0, 0, .6);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font);
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        :focus-visible {
+            outline: none;
+            box-shadow: var(--ring);
+            border-radius: 6px;
+        }
+
+        button,
+        input,
+        textarea {
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+        }
+
+        /* ---------------- Botones ---------------- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            border-radius: 9px;
+            border: 1px solid var(--border-strong);
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: background .15s, border-color .15s, opacity .15s;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: var(--surface-3);
+        }
+
+        .btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+            flex: none;
+        }
+
+        .btn.primary {
+            background: var(--brand);
+            border-color: var(--brand);
+            color: #fff;
+        }
+
+        .btn.primary:hover:not(:disabled) {
+            background: var(--brand-600);
+        }
+
+        .btn.ghost {
+            border-color: transparent;
+            background: transparent;
+        }
+
+        .btn.ghost:hover:not(:disabled) {
+            background: var(--surface-3);
+        }
+
+        .btn.danger {
+            border-color: var(--danger-border);
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .btn.sm {
+            padding: 5px 10px;
+            font-size: 13px;
+            border-radius: 7px;
+        }
+
+        /* ---------------- Login ---------------- */
+        .gate {
+            height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background:
+                radial-gradient(900px 500px at 15% -10%, rgba(0, 209, 255, .18), transparent 60%),
+                radial-gradient(800px 500px at 110% 110%, rgba(0, 45, 114, .22), transparent 55%),
+                var(--bg);
+        }
+
+        .gate-card {
+            width: 100%;
+            max-width: 400px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            padding: 30px 28px;
+        }
+
+        .gate-card .mark {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--brand), var(--accent));
+            color: #fff;
+            margin-bottom: 16px;
+        }
+
+        .gate-card h1 {
+            margin: 0 0 4px;
+            font-size: 20px;
+        }
+
+        .gate-card p.sub {
+            margin: 0 0 22px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        label.field {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 9px;
+            border: 1px solid var(--border-strong);
+            background: var(--surface-2);
+        }
+
+        .pw-wrap {
+            position: relative;
+        }
+
+        .pw-wrap .btn.reveal {
+            position: absolute;
+            right: 4px;
+            top: 4px;
+            padding: 6px 9px;
+            border: 0;
+            background: transparent;
+        }
+
+        /* ---------------- Layout app ---------------- */
+        .app {
+            display: none;
+            height: 100vh;
+            grid-template-rows: var(--header-h) 1fr;
+        }
+
+        .app[data-ready="1"] {
+            display: grid;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 16px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .topbar .brand .dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--brand), var(--accent));
+            color: #fff;
+        }
+
+        .topbar .grow {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-muted);
+        }
+
+        .chip[hidden] {
+            display: none;
+        }
+
+        .chip.ok {
+            background: var(--ok-bg);
+            border-color: var(--ok-border);
+            color: var(--ok);
+        }
+
+        .chip.warn {
+            background: var(--warn-bg);
+            border-color: var(--warn-border);
+            color: var(--warn);
+        }
+
+        .chip.info {
+            background: var(--info-bg);
+            border-color: var(--info-border);
+            color: var(--info);
+        }
+
+        .main {
+            display: grid;
+            grid-template-columns: var(--aside-w) 1fr;
+            min-height: 0;
+        }
+
+        /* ---------------- Panel lateral ---------------- */
+        .aside {
+            border-right: 1px solid var(--border);
+            background: var(--surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .tabs {
+            display: flex;
+            padding: 8px 8px 0;
+            gap: 4px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 8px 6px;
+            border: 0;
+            background: transparent;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .tab[aria-selected="true"] {
+            color: var(--brand);
+            border-bottom-color: var(--accent);
+        }
+
+        html[data-theme="dark"] .tab[aria-selected="true"] {
+            color: var(--accent);
+        }
+
+        .pane {
+            display: none;
+            overflow: auto;
+            padding: 10px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .pane[data-active="1"] {
+            display: block;
+        }
+
+        .outline-item {
+            display: block;
+            width: 100%;
+            text-align: left;
+            border: 0;
+            background: transparent;
+            padding: 5px 8px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 13.5px;
+            color: var(--text);
+            border-left: 2px solid transparent;
+        }
+
+        .outline-item:hover {
+            background: var(--surface-3);
+        }
+
+        .outline-item[data-level="1"] {
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .outline-item[data-level="2"] {
+            padding-left: 14px;
+        }
+
+        .outline-item[data-level="3"] {
+            padding-left: 26px;
+            color: var(--text-muted);
+            font-size: 12.5px;
+        }
+
+        .version {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 9px 11px;
+            margin-bottom: 8px;
+            background: var(--surface-2);
+        }
+
+        .version .when {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .version .note {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin: 2px 0 8px;
+            word-break: break-word;
+        }
+
+        .version .row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .empty {
+            color: var(--text-muted);
+            font-size: 13px;
+            padding: 14px 8px;
+            text-align: center;
+        }
+
+        /* ---------------- Editor ---------------- */
+        .editor-wrap {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            min-height: 0;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface-2);
+            flex-wrap: wrap;
+        }
+
+        .search {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--border-strong);
+            background: var(--surface);
+            border-radius: 9px;
+            padding: 3px 6px 3px 10px;
+        }
+
+        .search input {
+            border: 0;
+            background: transparent;
+            outline: none;
+            width: 190px;
+            padding: 4px 0;
+        }
+
+        .search .count {
+            font-size: 12px;
+            color: var(--text-muted);
+            min-width: 44px;
+            text-align: right;
+        }
+
+        .editor {
+            flex: 1;
+            display: flex;
+            min-height: 0;
+            background: var(--surface);
+        }
+
+        .gutter {
+            width: 56px;
+            flex: none;
+            padding: 14px 8px 14px 0;
+            text-align: right;
+            font-family: var(--mono);
+            font-size: 13px;
+            line-height: 21px;
+            color: var(--text-muted);
+            background: var(--surface-2);
+            border-right: 1px solid var(--border);
+            overflow: hidden;
+            user-select: none;
+            white-space: pre;
+        }
+
+        #docText {
+            flex: 1;
+            border: 0;
+            outline: none;
+            resize: none;
+            padding: 14px 18px;
+            font-family: var(--mono);
+            font-size: 13px;
+            line-height: 21px;
+            background: var(--surface);
+            color: var(--text);
+            tab-size: 2;
+            white-space: pre;
+            overflow-wrap: normal;
+            overflow-x: auto;
+        }
+
+        .statusbar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 7px 14px;
+            border-top: 1px solid var(--border);
+            background: var(--surface-2);
+            font-size: 12.5px;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .statusbar b {
+            color: var(--text);
+        }
+
+        /* ---------------- Modales ---------------- */
+        .backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 16, 32, .55);
+            display: none;
+            z-index: 60;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .backdrop[data-open="1"] {
+            display: grid;
+            place-items: center;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 560px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--shadow-lg);
+            padding: 22px;
+        }
+
+        .modal.wide {
+            max-width: 980px;
+        }
+
+        .modal h2 {
+            margin: 0 0 6px;
+            font-size: 17px;
+        }
+
+        .modal p.sub {
+            margin: 0 0 16px;
+            color: var(--text-muted);
+            font-size: 13.5px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 18px;
+        }
+
+        /* ---------------- Diff ---------------- */
+        .diff {
+            max-height: 60vh;
+            overflow: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface-2);
+            font-family: var(--mono);
+            font-size: 12.5px;
+            line-height: 19px;
+        }
+
+        .diff .l {
+            display: flex;
+            white-space: pre-wrap;
+            word-break: break-word;
+            padding: 0 8px;
+        }
+
+        .diff .l .n {
+            width: 34px;
+            flex: none;
+            color: var(--text-muted);
+            text-align: right;
+            padding-right: 10px;
+            user-select: none;
+        }
+
+        .diff .add {
+            background: var(--ok-bg);
+            color: var(--ok);
+        }
+
+        .diff .del {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .diff .skip {
+            color: var(--text-muted);
+            background: var(--surface-3);
+            font-style: italic;
+        }
+
+        /* ---------------- Prueba IA ---------------- */
+        .test-out {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--info-border);
+            background: var(--info-bg);
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 40vh;
+            overflow: auto;
+        }
+
+        /* ---------------- Avisos ---------------- */
+        .alert {
+            padding: 9px 12px;
+            border-radius: 9px;
+            font-size: 13.5px;
+            margin-bottom: 14px;
+            border: 1px solid;
+        }
+
+        .alert.err {
+            background: var(--danger-bg);
+            border-color: var(--danger-border);
+            color: var(--danger);
+        }
+
+        .alert.ok {
+            background: var(--ok-bg);
+            border-color: var(--ok-border);
+            color: var(--ok);
+        }
+
+        .alert.warn {
+            background: var(--warn-bg);
+            border-color: var(--warn-border);
+            color: var(--warn);
+        }
+
+        .alert[hidden] {
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--brand);
+            color: #fff;
+            padding: 11px 20px;
+            border-radius: 999px;
+            box-shadow: var(--shadow-lg);
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .2s, transform .2s;
+            z-index: 90;
+        }
+
+        .toast[data-show="1"] {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast[data-kind="err"] {
+            background: #b42318;
+        }
+
+        .toast[data-kind="ok"] {
+            background: #067647;
+        }
+
+        @media (max-width: 900px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+
+            .aside {
+                display: none;
+            }
+
+            .topbar .hide-sm {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ======================= Pantalla de acceso ======================= -->
+    <div class="gate" id="gate">
+        <form class="gate-card" id="loginForm" autocomplete="off">
+            <div class="mark">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="10" rx="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+            </div>
+            <h1>Acceso de administración</h1>
+            <p class="sub">Edita la base de conocimiento que usa el asistente de IA de QPayPro.</p>
+
+            <div class="alert err" id="loginError" hidden></div>
+
+            <label class="field" for="password">Contraseña</label>
+            <div class="pw-wrap">
+                <input class="input" type="password" id="password" name="password" autocomplete="current-password"
+                    placeholder="••••••••••" required>
+                <button class="btn reveal" type="button" id="revealPw" aria-label="Mostrar contraseña">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-actions">
+                <a class="btn ghost" href="index.html">Volver a la documentación</a>
+                <button class="btn primary" type="submit" id="loginBtn">Entrar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ============================ Aplicación ============================ -->
+    <div class="app" id="app">
+        <header class="topbar">
+            <div class="brand">
+                <span class="dot">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                </span>
+                <span class="hide-sm">Base de conocimiento</span>
+            </div>
+
+            <span class="chip hide-sm" title="Archivo que resolver.php inyecta en cada consulta">qpaypro_docs.txt</span>
+            <span class="chip warn" id="dirtyChip" hidden>Sin guardar</span>
+
+            <div class="grow"></div>
+
+            <button class="btn sm ghost" id="testBtn" type="button" title="Comprobar cómo responde la IA">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9z" />
+                </svg>
+                <span class="hide-sm">Probar IA</span>
+            </button>
+            <button class="btn sm ghost" id="themeBtn" type="button" aria-label="Cambiar tema">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+                </svg>
+            </button>
+            <button class="btn sm ghost" id="menuBtn" type="button" aria-label="Más opciones" title="Más opciones">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <circle cx="12" cy="5" r="1.4" />
+                    <circle cx="12" cy="12" r="1.4" />
+                    <circle cx="12" cy="19" r="1.4" />
+                </svg>
+            </button>
+            <button class="btn sm primary" id="saveBtn" type="button" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                    <path d="M17 21v-8H7v8M7 3v5h8" />
+                </svg>
+                Guardar
+            </button>
+        </header>
+
+        <div class="main">
+            <aside class="aside">
+                <div class="tabs" role="tablist">
+                    <button class="tab" id="tabOutline" role="tab" aria-selected="true">Secciones</button>
+                    <button class="tab" id="tabVersions" role="tab" aria-selected="false">Historial</button>
+                </div>
+                <div class="pane" id="paneOutline" data-active="1"></div>
+                <div class="pane" id="paneVersions"></div>
+            </aside>
+
+            <section class="editor-wrap">
+                <div class="toolbar">
+                    <div class="search">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round">
+                            <circle cx="11" cy="11" r="7" />
+                            <path d="M20 20l-3.5-3.5" />
+                        </svg>
+                        <input type="search" id="searchInput" placeholder="Buscar en el documento…"
+                            aria-label="Buscar en el documento">
+                        <span class="count" id="searchCount"></span>
+                    </div>
+                    <button class="btn sm ghost" id="insertSection" type="button" title="Insertar plantilla de endpoint">
+                        + Endpoint
+                    </button>
+                    <button class="btn sm ghost" id="downloadBtn" type="button" title="Descargar una copia .txt">
+                        Descargar
+                    </button>
+                    <button class="btn sm ghost" id="reloadBtn" type="button" title="Descartar cambios y recargar">
+                        Recargar
+                    </button>
+                    <div class="grow" style="flex:1"></div>
+                    <span class="chip" id="savedChip">—</span>
+                </div>
+
+                <div class="editor">
+                    <div class="gutter" id="gutter">1</div>
+                    <textarea id="docText" spellcheck="false" wrap="off"
+                        aria-label="Contenido de la base de conocimiento"></textarea>
+                </div>
+
+                <div class="statusbar">
+                    <span>Línea <b id="stLine">1</b>, col <b id="stCol">1</b></span>
+                    <span><b id="stLines">0</b> líneas</span>
+                    <span><b id="stWords">0</b> palabras</span>
+                    <span><b id="stChars">0</b> caracteres</span>
+                    <span id="stTokensWrap">~<b id="stTokens">0</b> tokens de contexto</span>
+                    <span id="stSections"><b>0</b> secciones</span>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- ============================== Modales ============================== -->
+
+    <!-- Guardar -->
+    <div class="backdrop" id="saveModal">
+        <div class="modal">
+            <h2>Publicar cambios</h2>
+            <p class="sub">La versión actual se respalda automáticamente antes de sobrescribir. El asistente usará el
+                texto nuevo en la siguiente consulta.</p>
+            <div class="alert err" id="saveError" hidden></div>
+            <label class="field" for="saveNote">Nota del cambio (opcional)</label>
+            <input class="input" id="saveNote" maxlength="160" placeholder="Ej. Se agregó el endpoint de reembolsos">
+            <div class="modal-actions">
+                <button class="btn ghost" type="button" data-close="saveModal">Cancelar</button>
+                <button class="btn primary" type="button" id="confirmSave">Publicar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparar / restaurar versión -->
+    <div class="backdrop" id="diffModal">
+        <div class="modal wide">
+            <h2 id="diffTitle">Comparar versión</h2>
+            <p class="sub" id="diffSub"></p>
+            <div class="diff" id="diffBody"></div>
+            <div class="modal-actions">
+                <button class="btn ghost" type="button" data-close="diffModal">Cerrar</button>
+                <button class="btn danger" type="button" id="restoreBtn">Restaurar esta versión</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Probar IA -->
+    <div class="backdrop" id="testModal">
+        <div class="modal">
+            <h2>Probar el asistente</h2>
+            <p class="sub">Envía una pregunta real al asistente para verificar que responde con la documentación
+                <b>ya guardada</b>.</p>
+            <label class="field" for="testQuestion">Pregunta</label>
+            <input class="input" id="testQuestion" placeholder="¿Cuál es la URL de sandbox para pagos?">
+            <div class="test-out" id="testOut" hidden></div>
+            <div class="modal-actions">
+                <button class="btn ghost" type="button" data-close="testModal">Cerrar</button>
+                <button class="btn primary" type="button" id="runTest">Preguntar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menú: cambiar contraseña / salir -->
+    <div class="backdrop" id="menuModal">
+        <div class="modal">
+            <h2>Opciones</h2>
+            <p class="sub">Sesión iniciada como administrador.</p>
+
+            <label class="field" for="newPw">Generar hash para una contraseña nueva</label>
+            <div class="pw-wrap">
+                <input class="input" type="text" id="newPw" placeholder="Mínimo 10 caracteres" autocomplete="off">
+            </div>
+            <div class="alert" id="hashOut" hidden style="margin-top:12px;background:var(--surface-2);border-color:var(--border);color:var(--text);font-family:var(--mono);font-size:12px;word-break:break-all"></div>
+            <p class="sub" style="margin-top:8px">Copia el hash en tu archivo <b>.env</b> como
+                <code>ADMIN_PASSWORD_HASH="…"</code> y reinicia el contenedor.</p>
+
+            <div class="modal-actions">
+                <button class="btn ghost" type="button" data-close="menuModal">Cerrar</button>
+                <button class="btn" type="button" id="genHash">Generar hash</button>
+                <button class="btn danger" type="button" id="logoutBtn">Cerrar sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            var API = 'admin.php';
+            var DRAFT_KEY = 'qpay_admin_draft';
+            var THEME_KEY = 'qpay_admin_theme';
+
+            var state = {
+                csrf: null,
+                mtime: null,
+                original: '',
+                versions: [],
+                currentVersion: null,
+                matches: [],
+                matchIndex: -1
+            };
+
+            var $ = function (id) { return document.getElementById(id); };
+
+            /* ------------------------------------------------ Utilidades */
+
+            function api(action, payload) {
+                var body = Object.assign({ action: action }, payload || {});
+                if (state.csrf) body.csrf = state.csrf;
+                return fetch(API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(body)
+                }).then(function (r) {
+                    return r.json().catch(function () {
+                        throw new Error('El servidor devolvió una respuesta ilegible (¿PHP está activo?).');
+                    }).then(function (data) {
+                        if (!r.ok || data.ok === false) {
+                            var err = new Error(data.error || ('Error ' + r.status));
+                            err.status = r.status;
+                            throw err;
+                        }
+                        return data;
+                    });
+                });
+            }
+
+            var toastTimer;
+            function toast(msg, kind) {
+                var t = $('toast');
+                t.textContent = msg;
+                t.dataset.kind = kind || '';
+                t.dataset.show = '1';
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(function () { t.dataset.show = '0'; }, 3200);
+            }
+
+            function fmtDate(ts) {
+                if (!ts) return '—';
+                return new Date(ts * 1000).toLocaleString('es-GT', {
+                    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+            }
+
+            function fmtBytes(n) {
+                if (n < 1024) return n + ' B';
+                return (n / 1024).toFixed(1) + ' KB';
+            }
+
+            function openModal(id) { $(id).dataset.open = '1'; }
+            function closeModal(id) { $(id).dataset.open = '0'; }
+
+            document.addEventListener('click', function (e) {
+                var target = e.target.closest('[data-close]');
+                if (target) closeModal(target.dataset.close);
+                var back = e.target.classList && e.target.classList.contains('backdrop');
+                if (back) e.target.dataset.open = '0';
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    ['saveModal', 'diffModal', 'testModal', 'menuModal'].forEach(function (m) { closeModal(m); });
+                }
+            });
+
+            /* ------------------------------------------------------ Tema */
+
+            var savedTheme = null;
+            try { savedTheme = localStorage.getItem(THEME_KEY); } catch (_) { }
+            if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+            else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.dataset.theme = 'dark';
+            }
+
+            $('themeBtn').addEventListener('click', function () {
+                var next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+                document.documentElement.dataset.theme = next;
+                try { localStorage.setItem(THEME_KEY, next); } catch (_) { }
+            });
+
+            /* ----------------------------------------------------- Login */
+
+            $('revealPw').addEventListener('click', function () {
+                var input = $('password');
+                input.type = input.type === 'password' ? 'text' : 'password';
+                input.focus();
+            });
+
+            $('loginForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                var err = $('loginError');
+                err.hidden = true;
+                $('loginBtn').disabled = true;
+                $('loginBtn').textContent = 'Verificando…';
+
+                api('login', { password: $('password').value }).then(function (data) {
+                    state.csrf = data.csrf;
+                    $('password').value = '';
+                    boot();
+                }).catch(function (e2) {
+                    err.textContent = e2.message;
+                    err.hidden = false;
+                }).finally(function () {
+                    $('loginBtn').disabled = false;
+                    $('loginBtn').textContent = 'Entrar';
+                });
+            });
+
+            /* ------------------------------------------------ Editor core */
+
+            var ta = $('docText');
+
+            function isDirty() { return ta.value !== state.original; }
+
+            function refreshDirty() {
+                var dirty = isDirty();
+                $('dirtyChip').hidden = !dirty;
+                $('saveBtn').disabled = !dirty;
+                if (dirty) saveDraft();
+            }
+
+            var draftTimer;
+            function saveDraft() {
+                clearTimeout(draftTimer);
+                draftTimer = setTimeout(function () {
+                    try {
+                        localStorage.setItem(DRAFT_KEY, JSON.stringify({
+                            content: ta.value, base: state.mtime, at: Date.now()
+                        }));
+                    } catch (_) { }
+                }, 900);
+            }
+
+            function clearDraft() {
+                try { localStorage.removeItem(DRAFT_KEY); } catch (_) { }
+            }
+
+            function updateGutter() {
+                var lines = ta.value.split('\n').length;
+                var out = new Array(lines);
+                for (var i = 0; i < lines; i++) out[i] = i + 1;
+                $('gutter').textContent = out.join('\n');
+                $('gutter').scrollTop = ta.scrollTop;
+            }
+
+            function updateStats() {
+                var text = ta.value;
+                var lines = text.split('\n');
+                var words = (text.match(/[\p{L}\p{N}_]+/gu) || []).length;
+                var sections = (text.match(/^#{1,3}\s+.+$/gm) || []).length;
+                var tokens = Math.ceil(text.length / 4);
+
+                $('stLines').textContent = lines.length.toLocaleString('es-GT');
+                $('stWords').textContent = words.toLocaleString('es-GT');
+                $('stChars').textContent = text.length.toLocaleString('es-GT');
+                $('stTokens').textContent = tokens.toLocaleString('es-GT');
+                $('stSections').innerHTML = '<b>' + sections + '</b> secciones';
+
+                // Aviso: todo el archivo viaja en cada consulta a Gemini.
+                var wrap = $('stTokensWrap');
+                wrap.style.color = tokens > 120000 ? 'var(--danger)' : (tokens > 60000 ? 'var(--warn)' : '');
+                wrap.title = tokens > 60000
+                    ? 'El documento completo se envía en cada consulta; considera recortarlo.'
+                    : 'Estimación del contexto enviado a la IA en cada consulta.';
+            }
+
+            function updateCaret() {
+                var upto = ta.value.slice(0, ta.selectionStart);
+                var lines = upto.split('\n');
+                $('stLine').textContent = lines.length;
+                $('stCol').textContent = lines[lines.length - 1].length + 1;
+            }
+
+            function buildOutline() {
+                var pane = $('paneOutline');
+                var lines = ta.value.split('\n');
+                var html = '';
+                lines.forEach(function (line, i) {
+                    var m = /^(#{1,3})\s+(.+)$/.exec(line);
+                    if (!m) return;
+                    var label = m[2].replace(/[<>&]/g, function (c) {
+                        return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c];
+                    });
+                    html += '<button class="outline-item" data-level="' + m[1].length +
+                        '" data-line="' + i + '" type="button">' + label + '</button>';
+                });
+                pane.innerHTML = html || '<p class="empty">Aún no hay encabezados.<br>Usa <code>## Título</code> para crear secciones.</p>';
+            }
+
+            $('paneOutline').addEventListener('click', function (e) {
+                var btn = e.target.closest('.outline-item');
+                if (!btn) return;
+                gotoLine(parseInt(btn.dataset.line, 10));
+            });
+
+            function gotoLine(lineIndex) {
+                var lines = ta.value.split('\n');
+                var pos = 0;
+                for (var i = 0; i < lineIndex && i < lines.length; i++) pos += lines[i].length + 1;
+                ta.focus();
+                ta.setSelectionRange(pos, pos + (lines[lineIndex] || '').length);
+                // Centrar aproximadamente la línea en la vista.
+                var lineHeight = 21;
+                ta.scrollTop = Math.max(0, lineIndex * lineHeight - ta.clientHeight / 2);
+                updateGutter();
+                updateCaret();
+            }
+
+            function refreshAll() {
+                updateGutter();
+                updateStats();
+                buildOutline();
+                refreshDirty();
+            }
+
+            ta.addEventListener('input', refreshAll);
+            ta.addEventListener('scroll', function () { $('gutter').scrollTop = ta.scrollTop; });
+            ['click', 'keyup'].forEach(function (ev) { ta.addEventListener(ev, updateCaret); });
+
+            // Tab inserta dos espacios en lugar de saltar de campo.
+            ta.addEventListener('keydown', function (e) {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    var s = ta.selectionStart, en = ta.selectionEnd;
+                    ta.value = ta.value.slice(0, s) + '  ' + ta.value.slice(en);
+                    ta.selectionStart = ta.selectionEnd = s + 2;
+                    refreshAll();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                    e.preventDefault();
+                    if (!$('saveBtn').disabled) askSave();
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f' && $('app').dataset.ready === '1') {
+                    e.preventDefault();
+                    $('searchInput').focus();
+                    $('searchInput').select();
+                }
+            });
+
+            window.addEventListener('beforeunload', function (e) {
+                if (isDirty()) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+
+            /* ---------------------------------------------------- Buscar */
+
+            function runSearch() {
+                var q = $('searchInput').value;
+                state.matches = [];
+                state.matchIndex = -1;
+                if (q.length >= 2) {
+                    var hay = ta.value.toLowerCase();
+                    var needle = q.toLowerCase();
+                    var at = hay.indexOf(needle);
+                    while (at !== -1 && state.matches.length < 500) {
+                        state.matches.push(at);
+                        at = hay.indexOf(needle, at + needle.length);
+                    }
+                }
+                $('searchCount').textContent = q.length < 2 ? '' :
+                    (state.matches.length ? '0/' + state.matches.length : 'sin coincidencias');
+                if (state.matches.length) nextMatch();
+            }
+
+            function nextMatch() {
+                if (!state.matches.length) return;
+                state.matchIndex = (state.matchIndex + 1) % state.matches.length;
+                var pos = state.matches[state.matchIndex];
+                var len = $('searchInput').value.length;
+                ta.focus();
+                ta.setSelectionRange(pos, pos + len);
+                var line = ta.value.slice(0, pos).split('\n').length - 1;
+                ta.scrollTop = Math.max(0, line * 21 - ta.clientHeight / 2);
+                $('gutter').scrollTop = ta.scrollTop;
+                $('searchCount').textContent = (state.matchIndex + 1) + '/' + state.matches.length;
+                updateCaret();
+            }
+
+            var searchTimer;
+            $('searchInput').addEventListener('input', function () {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(runSearch, 200);
+            });
+            $('searchInput').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') { e.preventDefault(); state.matches.length ? nextMatch() : runSearch(); }
+            });
+
+            /* ------------------------------------------------- Plantilla */
+
+            $('insertSection').addEventListener('click', function () {
+                var tpl = [
+                    '',
+                    '### POST nombre del endpoint',
+                    'https://api-sandboxpayments.qpaypro.com/ruta/del/recurso',
+                    'Requeridos: x_login, x_private_key, x_api_secret',
+                    'Opcionales: —',
+                    '',
+                    'Ejemplo JSON:',
+                    '{',
+                    '  "x_login": "visanetgt_qpay"',
+                    '}',
+                    ''
+                ].join('\n');
+                var pos = ta.selectionStart;
+                ta.value = ta.value.slice(0, pos) + tpl + ta.value.slice(ta.selectionEnd);
+                ta.selectionStart = ta.selectionEnd = pos + tpl.length;
+                ta.focus();
+                refreshAll();
+            });
+
+            /* -------------------------------------------------- Descargar */
+
+            $('downloadBtn').addEventListener('click', function () {
+                var blob = new Blob([ta.value], { type: 'text/plain;charset=utf-8' });
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'qpaypro_docs_' + new Date().toISOString().slice(0, 10) + '.txt';
+                a.click();
+                setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+            });
+
+            /* --------------------------------------------------- Recargar */
+
+            $('reloadBtn').addEventListener('click', function () {
+                if (isDirty() && !confirm('Se descartarán los cambios sin guardar. ¿Continuar?')) return;
+                clearDraft();
+                loadDoc();
+            });
+
+            /* ---------------------------------------------------- Guardar */
+
+            function askSave() {
+                $('saveError').hidden = true;
+                $('saveNote').value = '';
+                openModal('saveModal');
+                setTimeout(function () { $('saveNote').focus(); }, 50);
+            }
+
+            $('saveBtn').addEventListener('click', askSave);
+
+            $('confirmSave').addEventListener('click', function () { doSave(false); });
+
+            function doSave(force) {
+                var btn = $('confirmSave');
+                btn.disabled = true;
+                btn.textContent = 'Publicando…';
+
+                api('doc.save', {
+                    content: ta.value,
+                    mtime: state.mtime,
+                    note: $('saveNote').value,
+                    force: force ? 1 : 0
+                }).then(function (data) {
+                    state.original = ta.value;
+                    state.mtime = data.mtime;
+                    state.versions = data.versions || [];
+                    clearDraft();
+                    closeModal('saveModal');
+                    renderVersions();
+                    renderSavedChip();
+                    refreshDirty();
+                    toast('Documentación publicada. La IA ya la está usando.', 'ok');
+                }).catch(function (e) {
+                    if (e.status === 409 && confirm(e.message + '\n\n¿Sobrescribir de todas formas con tu versión?')) {
+                        doSave(true);
+                        return;
+                    }
+                    if (e.status === 401) { requireLogin(e.message); return; }
+                    var box = $('saveError');
+                    box.textContent = e.message;
+                    box.hidden = false;
+                }).finally(function () {
+                    btn.disabled = false;
+                    btn.textContent = 'Publicar';
+                });
+            }
+
+            function renderSavedChip() {
+                $('savedChip').textContent = 'Guardado: ' + fmtDate(state.mtime);
+            }
+
+            /* --------------------------------------------------- Historial */
+
+            $('tabOutline').addEventListener('click', function () { switchTab('Outline'); });
+            $('tabVersions').addEventListener('click', function () { switchTab('Versions'); });
+
+            function switchTab(which) {
+                var isOutline = which === 'Outline';
+                $('tabOutline').setAttribute('aria-selected', String(isOutline));
+                $('tabVersions').setAttribute('aria-selected', String(!isOutline));
+                $('paneOutline').dataset.active = isOutline ? '1' : '0';
+                $('paneVersions').dataset.active = isOutline ? '0' : '1';
+            }
+
+            function renderVersions() {
+                var pane = $('paneVersions');
+                if (!state.versions.length) {
+                    pane.innerHTML = '<p class="empty">Todavía no hay versiones anteriores.<br>Se crean solas en cada guardado.</p>';
+                    return;
+                }
+                pane.innerHTML = state.versions.map(function (v) {
+                    var note = (v.note || '').replace(/[<>&]/g, function (c) {
+                        return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c];
+                    });
+                    return '<div class="version">' +
+                        '<div class="when">' + fmtDate(v.ts) + '</div>' +
+                        '<div class="note">' + (note || 'Sin nota') + ' · ' + fmtBytes(v.bytes || 0) +
+                        ' · ' + (v.lines || 0) + ' líneas</div>' +
+                        '<div class="row">' +
+                        '<button class="btn sm" data-diff="' + v.file + '" type="button">Comparar</button>' +
+                        '</div></div>';
+                }).join('');
+            }
+
+            $('paneVersions').addEventListener('click', function (e) {
+                var btn = e.target.closest('[data-diff]');
+                if (!btn) return;
+                openDiff(btn.dataset.diff);
+            });
+
+            function openDiff(file) {
+                var meta = state.versions.filter(function (v) { return v.file === file; })[0] || {};
+                state.currentVersion = file;
+                $('diffTitle').textContent = 'Versión del ' + fmtDate(meta.ts);
+                $('diffSub').textContent = (meta.note || 'Sin nota') +
+                    ' — en rojo lo que esa versión tenía, en verde lo que hay hoy en el editor.';
+                $('diffBody').innerHTML = '<div class="l"><span class="n"></span>Cargando…</div>';
+                openModal('diffModal');
+
+                api('version.get', { file: file }).then(function (data) {
+                    $('diffBody').innerHTML = renderDiff(data.content, ta.value);
+                }).catch(function (e) {
+                    if (e.status === 401) { requireLogin(e.message); return; }
+                    $('diffBody').innerHTML = '<div class="l del"><span class="n"></span>' + e.message + '</div>';
+                });
+            }
+
+            $('restoreBtn').addEventListener('click', function () {
+                if (!state.currentVersion) return;
+                if (!confirm('Se restaurará esta versión como documentación activa.\nEl contenido actual queda respaldado en el historial. ¿Continuar?')) return;
+
+                var btn = $('restoreBtn');
+                btn.disabled = true;
+                btn.textContent = 'Restaurando…';
+
+                api('version.restore', { file: state.currentVersion }).then(function (data) {
+                    ta.value = data.content;
+                    state.original = data.content;
+                    state.mtime = data.mtime;
+                    state.versions = data.versions || [];
+                    clearDraft();
+                    closeModal('diffModal');
+                    renderVersions();
+                    renderSavedChip();
+                    refreshAll();
+                    toast('Versión restaurada.', 'ok');
+                }).catch(function (e) {
+                    if (e.status === 401) { requireLogin(e.message); return; }
+                    toast(e.message, 'err');
+                }).finally(function () {
+                    btn.disabled = false;
+                    btn.textContent = 'Restaurar esta versión';
+                });
+            });
+
+            /* ------------------------------------------- Diff por líneas */
+
+            function escapeHtml(s) {
+                return s.replace(/[<>&]/g, function (c) {
+                    return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c];
+                });
+            }
+
+            function renderDiff(oldText, newText) {
+                var a = oldText.split('\n');
+                var b = newText.split('\n');
+
+                if (a.length * b.length > 4000000) {
+                    return '<div class="l skip"><span class="n"></span>Documento demasiado grande para comparar línea por línea.</div>';
+                }
+
+                // LCS clásico: suficiente para documentos de esta escala.
+                var m = a.length, n = b.length;
+                var dp = [];
+                for (var i = 0; i <= m; i++) dp.push(new Uint32Array(n + 1));
+                for (i = m - 1; i >= 0; i--) {
+                    for (var j = n - 1; j >= 0; j--) {
+                        dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+                    }
+                }
+
+                var ops = [];
+                i = 0; j = 0;
+                while (i < m && j < n) {
+                    if (a[i] === b[j]) { ops.push(['=', a[i], j + 1]); i++; j++; }
+                    else if (dp[i + 1][j] >= dp[i][j + 1]) { ops.push(['-', a[i], '']); i++; }
+                    else { ops.push(['+', b[j], j + 1]); j++; }
+                }
+                while (i < m) { ops.push(['-', a[i++], '']); }
+                while (j < n) { ops.push(['+', b[j], j + 1]); j++; }
+
+                var changed = ops.some(function (o) { return o[0] !== '='; });
+                if (!changed) {
+                    return '<div class="l skip"><span class="n"></span>Esta versión es idéntica al contenido del editor.</div>';
+                }
+
+                // Se colapsan los bloques largos sin cambios (contexto de 3 líneas).
+                var keep = new Array(ops.length).fill(false);
+                ops.forEach(function (op, idx) {
+                    if (op[0] === '=') return;
+                    for (var k = Math.max(0, idx - 3); k <= Math.min(ops.length - 1, idx + 3); k++) keep[k] = true;
+                });
+
+                var html = '';
+                var hidden = 0;
+                ops.forEach(function (op, idx) {
+                    if (!keep[idx]) { hidden++; return; }
+                    if (hidden) {
+                        html += '<div class="l skip"><span class="n">⋯</span>' + hidden + ' línea(s) sin cambios</div>';
+                        hidden = 0;
+                    }
+                    var cls = op[0] === '+' ? 'add' : (op[0] === '-' ? 'del' : '');
+                    var sign = op[0] === '=' ? ' ' : op[0];
+                    html += '<div class="l ' + cls + '"><span class="n">' + (op[2] || '') + '</span>' +
+                        sign + ' ' + escapeHtml(op[1]) + '</div>';
+                });
+                if (hidden) {
+                    html += '<div class="l skip"><span class="n">⋯</span>' + hidden + ' línea(s) sin cambios</div>';
+                }
+                return html;
+            }
+
+            /* --------------------------------------------------- Probar IA */
+
+            $('testBtn').addEventListener('click', function () {
+                $('testOut').hidden = true;
+                openModal('testModal');
+                setTimeout(function () { $('testQuestion').focus(); }, 50);
+            });
+
+            $('testQuestion').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') { e.preventDefault(); $('runTest').click(); }
+            });
+
+            $('runTest').addEventListener('click', function () {
+                var q = $('testQuestion').value.trim();
+                if (!q) return;
+                var out = $('testOut');
+                var btn = $('runTest');
+                btn.disabled = true;
+                btn.textContent = 'Consultando…';
+                out.hidden = false;
+                out.textContent = 'Enviando la pregunta al asistente…';
+
+                if (isDirty()) {
+                    out.textContent = 'Aviso: tienes cambios sin publicar; la IA responderá con la versión guardada.\n\n';
+                }
+
+                fetch('resolver.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ history: [{ role: 'user', parts: [{ text: q }] }] })
+                }).then(function (r) { return r.json(); }).then(function (data) {
+                    if (data.error) { out.textContent = '⚠️ ' + data.error; return; }
+                    var reply = data.reply || {};
+                    var text = reply.diagnostico || '(sin diagnóstico)';
+                    if (reply.codigo_corregido) text += '\n\n--- Código sugerido ---\n' + reply.codigo_corregido;
+                    out.textContent = text;
+                }).catch(function (e) {
+                    out.textContent = '⚠️ No se pudo contactar a resolver.php: ' + e.message;
+                }).finally(function () {
+                    btn.disabled = false;
+                    btn.textContent = 'Preguntar';
+                });
+            });
+
+            /* ------------------------------------------------------- Menú */
+
+            $('menuBtn').addEventListener('click', function () {
+                $('hashOut').hidden = true;
+                $('newPw').value = '';
+                openModal('menuModal');
+            });
+
+            $('genHash').addEventListener('click', function () {
+                api('password.hash', { password: $('newPw').value }).then(function (data) {
+                    var box = $('hashOut');
+                    box.textContent = 'ADMIN_PASSWORD_HASH="' + data.hash + '"';
+                    box.hidden = false;
+                }).catch(function (e) { toast(e.message, 'err'); });
+            });
+
+            $('logoutBtn').addEventListener('click', function () {
+                if (isDirty() && !confirm('Tienes cambios sin guardar. ¿Salir de todas formas?')) return;
+                api('logout').finally(function () {
+                    clearDraft();
+                    location.reload();
+                });
+            });
+
+            /* ------------------------------------------------------- Boot */
+
+            function requireLogin(message) {
+                state.csrf = null;
+                $('app').dataset.ready = '0';
+                $('gate').style.display = '';
+                if (message) {
+                    var err = $('loginError');
+                    err.textContent = message;
+                    err.hidden = false;
+                }
+            }
+
+            function loadDoc() {
+                return api('doc.get').then(function (data) {
+                    state.original = data.content;
+                    state.mtime = data.mtime;
+                    state.versions = data.versions || [];
+                    ta.value = data.content;
+                    renderVersions();
+                    renderSavedChip();
+                    refreshAll();
+                    offerDraft();
+                });
+            }
+
+            // Si el navegador se cerró con cambios sin publicar, se ofrece recuperarlos.
+            function offerDraft() {
+                var raw = null;
+                try { raw = localStorage.getItem(DRAFT_KEY); } catch (_) { return; }
+                if (!raw) return;
+                var draft;
+                try { draft = JSON.parse(raw); } catch (_) { clearDraft(); return; }
+                if (!draft || typeof draft.content !== 'string' || draft.content === state.original) {
+                    clearDraft();
+                    return;
+                }
+                var when = new Date(draft.at || Date.now()).toLocaleString('es-GT');
+                if (confirm('Se encontró un borrador sin publicar del ' + when + '.\n¿Quieres recuperarlo?')) {
+                    ta.value = draft.content;
+                    refreshAll();
+                } else {
+                    clearDraft();
+                }
+            }
+
+            function boot() {
+                $('gate').style.display = 'none';
+                $('app').dataset.ready = '1';
+                loadDoc().catch(function (e) {
+                    requireLogin(e.status === 401 ? '' : e.message);
+                });
+            }
+
+            api('status').then(function (data) {
+                if (!data.configured) {
+                    var err = $('loginError');
+                    err.textContent = 'Falta configurar ADMIN_PASSWORD_HASH en el archivo .env del servidor.';
+                    err.hidden = false;
+                    $('loginBtn').disabled = true;
+                    return;
+                }
+                if (data.authenticated) {
+                    state.csrf = data.csrf;
+                    boot();
+                } else {
+                    $('password').focus();
+                }
+            }).catch(function (e) {
+                var err = $('loginError');
+                err.textContent = e.message;
+                err.hidden = false;
+            });
+        })();
+    </script>
+</body>
+
+</html>

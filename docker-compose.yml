@@ -1,14 +1,15 @@
-version: '3.8'
-
 services:
   web:
-    image: php:8.2-apache
+    # Se construye desde el Dockerfile para heredar AllowOverride All
+    # (necesario para que .htaccess proteja .env y docs_versions/).
+    build: .
     container_name: qpayai_web
-    # Puedes comentar o eliminar los puertos si NO quieres acceso directo por IP. 
+    # Puedes comentar o eliminar los puertos si NO quieres acceso directo por IP.
     # Cloudflare Tunnel se conectará internamente al puerto 80 del contenedor.
     ports:
       - "8001:80"
     volumes:
+      # Montaje en vivo: los cambios que guarda el panel admin persisten en el host.
       - ./:/var/www/html
     restart: unless-stopped
 

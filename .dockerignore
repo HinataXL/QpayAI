@@ -1,5 +1,6 @@
-.env
-docs_versions/
+.git
+.gitignore
+docs_versions
 .admin_attempts.json
 .admin_pw.tmp
 *.tmp

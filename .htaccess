@@ -1,0 +1,16 @@
+# Bloquea el acceso web a archivos sensibles y de estado del panel admin.
+<FilesMatch "^\.env|^\.admin_attempts\.json$|\.sqlite$|\.sql$|\.tmp[0-9a-f]*$">
+    Require all denied
+</FilesMatch>
+
+# Los respaldos de la documentación solo se leen a través de admin.php.
+RedirectMatch 404 ^/docs_versions/
+
+<IfModule mod_headers.c>
+    # El panel no debe indexarse ni incrustarse en otros sitios.
+    <FilesMatch "^admin\.(html|php)$">
+        Header always set X-Robots-Tag "noindex, nofollow"
+        Header always set X-Frame-Options "DENY"
+        Header always set Referrer-Policy "no-referrer"
+    </FilesMatch>
+</IfModule>
