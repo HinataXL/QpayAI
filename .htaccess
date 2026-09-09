@@ -1,5 +1,5 @@
-# Bloquea el acceso web a archivos sensibles y de estado del panel admin.
-<FilesMatch "^\.env|^\.admin_attempts\.json$|\.sqlite$|\.sql$|\.tmp[0-9a-f]*$">
+# Bloquea el acceso web a archivos sensibles y de estado interno.
+<FilesMatch "^\.env|^\.admin_attempts\.json$|^\.try_rate\.json$|\.sqlite$|\.sql$|\.tmp[0-9a-f]*$">
     Require all denied
 </FilesMatch>
 

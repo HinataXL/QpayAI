@@ -3,3 +3,4 @@ docs_versions/
 .admin_attempts.json
 .admin_pw.tmp
 *.tmp
+.try_rate.json

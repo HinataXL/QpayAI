@@ -605,6 +605,371 @@
             margin-top: 0;
         }
 
+        /* ---------------- Consola "Probar" ---------------- */
+        .try-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex: none;
+            border: 1px solid var(--accent-strong);
+            background: linear-gradient(135deg, var(--brand), var(--brand-600));
+            color: #fff;
+            border-radius: 8px;
+            padding: 5px 12px;
+            font: inherit;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .try-btn:hover {
+            filter: brightness(1.12);
+        }
+
+        .try-btn svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        .try-btn[aria-expanded="true"] {
+            background: var(--surface-3);
+            color: var(--text);
+            border-color: var(--border-strong);
+        }
+
+        .console {
+            border-top: 1px solid var(--border);
+            background: var(--surface-2);
+            padding: 16px 18px;
+        }
+
+        .console[hidden] {
+            display: none;
+        }
+
+        .console-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .console-row>label {
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: .6px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .console select,
+        .console input[type="text"],
+        .console textarea {
+            font-family: var(--mono);
+            font-size: 12.5px;
+            color: var(--text);
+            background: var(--surface);
+            border: 1px solid var(--border-strong);
+            border-radius: 8px;
+            padding: 7px 10px;
+        }
+
+        .console select {
+            font-family: var(--font);
+            cursor: pointer;
+        }
+
+        .console input[type="text"].url-input {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .console textarea {
+            width: 100%;
+            min-height: 150px;
+            resize: vertical;
+            line-height: 1.55;
+            tab-size: 2;
+            white-space: pre;
+            overflow-wrap: normal;
+            overflow-x: auto;
+        }
+
+        .console :focus-visible {
+            border-color: var(--accent-strong);
+        }
+
+        .path-var {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .path-var code {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--warn);
+        }
+
+        .path-var input {
+            width: 130px;
+        }
+
+        .console-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .send-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            border: 0;
+            background: var(--brand);
+            color: #fff;
+            border-radius: 9px;
+            padding: 9px 18px;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            background: var(--brand-600);
+        }
+
+        .send-btn:disabled {
+            opacity: .6;
+            cursor: progress;
+        }
+
+        .send-btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .console-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        /* ---------------- Respuesta ---------------- */
+        .response {
+            margin-top: 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            overflow: hidden;
+        }
+
+        .response[hidden] {
+            display: none;
+        }
+
+        .resp-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface-2);
+            flex-wrap: wrap;
+        }
+
+        .status-pill {
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 999px;
+            border: 1px solid;
+        }
+
+        .status-pill.s2 {
+            color: var(--ok);
+            background: var(--ok-bg);
+            border-color: var(--ok-border);
+        }
+
+        .status-pill.s4 {
+            color: var(--warn);
+            background: var(--warn-bg);
+            border-color: var(--warn-border);
+        }
+
+        .status-pill.s5,
+        .status-pill.err {
+            color: var(--delete);
+            background: var(--delete-bg);
+            border-color: var(--delete);
+        }
+
+        .resp-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: var(--mono);
+        }
+
+        .resp-tabs {
+            display: flex;
+            gap: 2px;
+            margin-left: auto;
+        }
+
+        .resp-tab {
+            border: 0;
+            background: transparent;
+            color: var(--text-muted);
+            font: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .resp-tab[aria-selected="true"] {
+            background: var(--surface-3);
+            color: var(--text);
+        }
+
+        .resp-body {
+            margin: 0;
+            padding: 13px 15px;
+            max-height: 420px;
+            overflow: auto;
+            background: var(--code-bg);
+            color: var(--code-text);
+            font-family: var(--mono);
+            font-size: 12.5px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .resp-body[hidden] {
+            display: none;
+        }
+
+        /* Coloreado mínimo del JSON de respuesta. */
+        .resp-body .j-key {
+            color: #7dd3fc;
+        }
+
+        .resp-body .j-str {
+            color: #86efac;
+        }
+
+        .resp-body .j-num {
+            color: #fdba74;
+        }
+
+        .resp-body .j-bool {
+            color: #c4b5fd;
+        }
+
+        .resp-body .j-null {
+            color: #94a3b8;
+        }
+
+        .try-warn {
+            display: flex;
+            gap: 8px;
+            font-size: 12.5px;
+            color: var(--warn);
+            background: var(--warn-bg);
+            border: 1px solid var(--warn-border);
+            border-radius: 9px;
+            padding: 8px 11px;
+            margin-bottom: 12px;
+        }
+
+        /* ---------------- Modal de credenciales ---------------- */
+        .creds-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 16, 32, .55);
+            z-index: 60;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+        }
+
+        .creds-backdrop[hidden] {
+            display: none;
+        }
+
+        .creds-modal {
+            width: 100%;
+            max-width: 460px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--shadow-lg);
+            padding: 22px;
+        }
+
+        .creds-modal h2 {
+            margin: 0 0 6px;
+            font-size: 17px;
+        }
+
+        .creds-modal p.sub {
+            margin: 0 0 16px;
+            color: var(--text-muted);
+            font-size: 13.5px;
+        }
+
+        .creds-modal label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin: 12px 0 5px;
+            font-family: var(--mono);
+        }
+
+        .creds-modal input {
+            width: 100%;
+            padding: 9px 11px;
+            border-radius: 8px;
+            border: 1px solid var(--border-strong);
+            background: var(--surface-2);
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .creds-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .creds-actions button {
+            border: 1px solid var(--border-strong);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 9px;
+            padding: 8px 15px;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .creds-actions button.primary {
+            background: var(--brand);
+            border-color: var(--brand);
+            color: #fff;
+        }
+
         /* ---------------- Tables ---------------- */
         .table-wrap {
             overflow-x: auto;
@@ -1125,6 +1490,14 @@
             <label class="sr-only" for="search" style="position:absolute;left:-9999px">Buscar</label>
             <input id="search" type="search" placeholder="Buscar endpoint, parámetro…" autocomplete="off">
         </div>
+        <button class="icon-btn" id="credsBtn" type="button" aria-label="Mis credenciales de prueba"
+            title="Mis credenciales de prueba">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="7.5" cy="15.5" r="3.5" />
+                <path d="M10 13L20 3M17 6l2 2M14 9l2 2" />
+            </svg>
+        </button>
         <a class="icon-btn" id="adminBtn" href="admin.html" rel="nofollow"
             aria-label="Administrar la base de conocimiento" title="Administrar la base de conocimiento">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -2701,6 +3074,489 @@ window.addEventListener("message", function (event) {
                 }
             }
 
+            /* =======================================================================
+               Consola de pruebas: permite lanzar cada request desde la propia
+               documentación. Las peticiones pasan por try.php porque los dominios
+               de QPayPro no envían cabeceras CORS al navegador.
+               ======================================================================= */
+
+            var PROD_OF = {
+                'api-sandboxpayments.qpaypro.com': 'api-payments.qpaypro.com',
+                'sandboxpayments.qpaypro.com': 'payments.qpaypro.com',
+                'devbilling.qpaypro.com': 'billing.qpaypro.com'
+            };
+            var SANDBOX_OF = {};
+            Object.keys(PROD_OF).forEach(function (k) { SANDBOX_OF[PROD_OF[k]] = k; });
+
+            // Claves de autenticación que el botón "Mis credenciales" sustituye.
+            var CRED_KEYS = ['x_login', 'x_private_key', 'x_api_secret', 'x_api_key', 'public_key'];
+            var CREDS_STORE = 'qpay_try_creds';
+
+            function loadCreds() {
+                try {
+                    var raw = localStorage.getItem(CREDS_STORE);
+                    return raw ? JSON.parse(raw) : {};
+                } catch (e) { return {}; }
+            }
+
+            function saveCreds(obj) {
+                try { localStorage.setItem(CREDS_STORE, JSON.stringify(obj)); } catch (e) { /* modo privado */ }
+            }
+
+            function hasCreds() {
+                var c = loadCreds();
+                return CRED_KEYS.some(function (k) { return c[k]; });
+            }
+
+            function hostOf(url) {
+                try { return new URL(url).hostname; } catch (e) { return ''; }
+            }
+
+            function swapHost(url, from, to) {
+                return url.replace('://' + from, '://' + to);
+            }
+
+            function escapeHtml(s) {
+                return String(s).replace(/[&<>]/g, function (c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
+                });
+            }
+
+            /** Colorea un JSON ya formateado. Devuelve HTML seguro (entrada escapada). */
+            function highlightJson(text) {
+                return escapeHtml(text).replace(
+                    /("(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|\bnull\b|-?\d+(\.\d*)?([eE][+-]?\d+)?)/g,
+                    function (match) {
+                        var cls = 'j-num';
+                        if (/^"/.test(match)) {
+                            cls = /:$/.test(match) ? 'j-key' : 'j-str';
+                        } else if (/true|false/.test(match)) {
+                            cls = 'j-bool';
+                        } else if (/null/.test(match)) {
+                            cls = 'j-null';
+                        }
+                        return '<span class="' + cls + '">' + match + '</span>';
+                    }
+                );
+            }
+
+            /** Formatea si es JSON válido; si no, devuelve el texto tal cual. */
+            function prettyMaybeJson(text) {
+                try {
+                    return { json: true, text: JSON.stringify(JSON.parse(text), null, 2) };
+                } catch (e) {
+                    return { json: false, text: text };
+                }
+            }
+
+            function curlFor(method, url, headers, body) {
+                var lines = ["curl -X " + method + " '" + url + "'"];
+                Object.keys(headers).forEach(function (h) {
+                    lines.push("  -H '" + h + ": " + headers[h] + "'");
+                });
+                if (body && body.trim()) {
+                    // Comillas simples dentro del body: se cierra, se escapa y se reabre.
+                    lines.push("  -d '" + body.replace(/'/g, "'\\''") + "'");
+                }
+                return lines.join(" \\\n");
+            }
+
+            /**
+             * Modal para guardar las credenciales propias una sola vez, en lugar de
+             * escribirlas en cada una de las consolas. Se quedan en localStorage,
+             * en el navegador de quien las escribe.
+             */
+            var credsModal = null;
+
+            function openCredsModal(onSave) {
+                if (!credsModal) {
+                    credsModal = el('div', 'creds-backdrop');
+                    var box = el('div', 'creds-modal');
+                    box.appendChild(el('h2', null, 'Mis credenciales'));
+                    box.appendChild(el('p', 'sub',
+                        'Se guardan solo en este navegador y se usan para reemplazar las llaves de ' +
+                        'ejemplo al pulsar «Mis credenciales» en cualquier endpoint. Deja en blanco lo que no uses.'));
+
+                    var fields = {};
+                    CRED_KEYS.forEach(function (key) {
+                        var label = el('label', null, key);
+                        label.htmlFor = 'cred-' + key;
+                        box.appendChild(label);
+                        var input = el('input');
+                        input.type = 'text';
+                        input.id = 'cred-' + key;
+                        input.autocomplete = 'off';
+                        input.spellcheck = false;
+                        box.appendChild(input);
+                        fields[key] = input;
+                    });
+
+                    var actions = el('div', 'creds-actions');
+                    var clear = el('button', null, 'Borrar');
+                    var cancel = el('button', null, 'Cancelar');
+                    var save = el('button', 'primary', 'Guardar');
+                    [clear, cancel, save].forEach(function (b) { b.type = 'button'; });
+                    actions.appendChild(clear);
+                    actions.appendChild(cancel);
+                    actions.appendChild(save);
+                    box.appendChild(actions);
+                    credsModal.appendChild(box);
+                    document.body.appendChild(credsModal);
+
+                    credsModal.fields = fields;
+                    credsModal.onSave = null;
+
+                    function close() {
+                        credsModal.hidden = true;
+                        credsModal.onSave = null;
+                    }
+
+                    cancel.addEventListener('click', close);
+                    credsModal.addEventListener('click', function (e) {
+                        if (e.target === credsModal) close();
+                    });
+                    document.addEventListener('keydown', function (e) {
+                        if (e.key === 'Escape' && !credsModal.hidden) close();
+                    });
+
+                    clear.addEventListener('click', function () {
+                        CRED_KEYS.forEach(function (k) { fields[k].value = ''; });
+                        saveCreds({});
+                        close();
+                    });
+
+                    save.addEventListener('click', function () {
+                        var data = {};
+                        CRED_KEYS.forEach(function (k) {
+                            var v = fields[k].value.trim();
+                            if (v) data[k] = v;
+                        });
+                        saveCreds(data);
+                        var cb = credsModal.onSave;
+                        close();
+                        if (cb) cb();
+                    });
+                }
+
+                var stored = loadCreds();
+                CRED_KEYS.forEach(function (k) { credsModal.fields[k].value = stored[k] || ''; });
+                credsModal.onSave = onSave || null;
+                credsModal.hidden = false;
+                credsModal.querySelector('input').focus();
+            }
+
+            function buildConsole(host, ep) {
+                var baseUrl = ep.url;
+                var pathVars = (baseUrl.match(/\{[a-z_]+\}/gi) || []);
+
+                var warn = el('div', 'try-warn',
+                    '<span aria-hidden="true">🔐</span><span>Las peticiones salen desde este servidor, no desde tu navegador. ' +
+                    'Usa credenciales de <strong>sandbox</strong>; no escribas llaves de producción en una página compartida.</span>');
+                host.appendChild(warn);
+
+                /* ---- Fila 1: entorno + URL ---- */
+                var row1 = el('div', 'console-row');
+                var currentHost = hostOf(baseUrl);
+                var envSelect = null;
+
+                if (PROD_OF[currentHost] || SANDBOX_OF[currentHost]) {
+                    envSelect = el('select');
+                    envSelect.setAttribute('aria-label', 'Entorno');
+                    ['Sandbox', 'Producción'].forEach(function (name) {
+                        var opt = document.createElement('option');
+                        opt.value = name;
+                        opt.textContent = name;
+                        envSelect.appendChild(opt);
+                    });
+                    envSelect.value = SANDBOX_OF[currentHost] ? 'Producción' : 'Sandbox';
+                    row1.appendChild(envSelect);
+                }
+
+                var urlInput = el('input', 'url-input');
+                urlInput.type = 'text';
+                urlInput.value = baseUrl;
+                urlInput.setAttribute('aria-label', 'URL de la petición');
+                row1.appendChild(urlInput);
+                host.appendChild(row1);
+
+                if (envSelect) {
+                    envSelect.addEventListener('change', function () {
+                        var h = hostOf(urlInput.value);
+                        if (envSelect.value === 'Producción' && PROD_OF[h]) {
+                            urlInput.value = swapHost(urlInput.value, h, PROD_OF[h]);
+                        } else if (envSelect.value === 'Sandbox' && SANDBOX_OF[h]) {
+                            urlInput.value = swapHost(urlInput.value, h, SANDBOX_OF[h]);
+                        }
+                    });
+                }
+
+                /* ---- Fila 2: variables de ruta como {id} ---- */
+                var varInputs = {};
+                if (pathVars.length) {
+                    var row2 = el('div', 'console-row');
+                    row2.appendChild(el('label', null, 'Ruta'));
+                    pathVars.forEach(function (v) {
+                        var name = v.slice(1, -1);
+                        var wrap = el('div', 'path-var');
+                        wrap.appendChild(el('code', null, v));
+                        var input = el('input');
+                        input.type = 'text';
+                        input.placeholder = name;
+                        input.setAttribute('aria-label', 'Valor de ' + v);
+                        wrap.appendChild(input);
+                        varInputs[v] = input;
+                        row2.appendChild(wrap);
+                    });
+                    host.appendChild(row2);
+                }
+
+                /* ---- Body ---- */
+                var bodyArea = null;
+                if (ep.body) {
+                    host.appendChild(el('div', 'sub-label', 'Body de la petición'));
+                    bodyArea = el('textarea');
+                    bodyArea.value = ep.body;
+                    bodyArea.spellcheck = false;
+                    bodyArea.setAttribute('aria-label', 'Cuerpo de la petición');
+                    host.appendChild(bodyArea);
+                }
+
+                /* ---- Acciones ---- */
+                var actions = el('div', 'console-actions');
+
+                var sendBtn = el('button', 'send-btn',
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" ' +
+                    'stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/>' +
+                    '<path d="M22 2l-7 20-4-9-9-4z"/></svg><span>Enviar</span>');
+                sendBtn.type = 'button';
+                actions.appendChild(sendBtn);
+
+                var credsBtn = el('button', 'mini-copy', 'Mis credenciales');
+                credsBtn.type = 'button';
+                credsBtn.title = 'Sustituye las llaves de ejemplo por las tuyas';
+                actions.appendChild(credsBtn);
+
+                if (bodyArea) {
+                    var fmtBtn = el('button', 'mini-copy', 'Formatear');
+                    fmtBtn.type = 'button';
+                    fmtBtn.addEventListener('click', function () {
+                        var r = prettyMaybeJson(bodyArea.value);
+                        if (r.json) {
+                            bodyArea.value = r.text;
+                        } else {
+                            flash(fmtBtn, 'JSON inválido', 'Formatear');
+                        }
+                    });
+                    actions.appendChild(fmtBtn);
+                }
+
+                var curlBtn = el('button', 'mini-copy', 'Copiar cURL');
+                curlBtn.type = 'button';
+                actions.appendChild(curlBtn);
+
+                var resetBtn = el('button', 'mini-copy', 'Restablecer');
+                resetBtn.type = 'button';
+                actions.appendChild(resetBtn);
+
+                actions.appendChild(el('span', 'console-hint', 'Ctrl + Enter para enviar'));
+                host.appendChild(actions);
+
+                /* ---- Panel de respuesta ---- */
+                var resp = el('div', 'response');
+                resp.hidden = true;
+                var respHead = el('div', 'resp-head');
+                var pill = el('span', 'status-pill');
+                var meta = el('span', 'resp-meta');
+                respHead.appendChild(pill);
+                respHead.appendChild(meta);
+
+                var tabs = el('div', 'resp-tabs');
+                var tabBody = el('button', 'resp-tab', 'Respuesta');
+                var tabHeaders = el('button', 'resp-tab', 'Cabeceras');
+                var copyResp = el('button', 'resp-tab', 'Copiar');
+                [tabBody, tabHeaders, copyResp].forEach(function (t) { t.type = 'button'; });
+                tabBody.setAttribute('aria-selected', 'true');
+                tabHeaders.setAttribute('aria-selected', 'false');
+                tabs.appendChild(tabBody);
+                tabs.appendChild(tabHeaders);
+                tabs.appendChild(copyResp);
+                respHead.appendChild(tabs);
+                resp.appendChild(respHead);
+
+                var outBody = el('pre', 'resp-body');
+                var outHeaders = el('pre', 'resp-body');
+                outHeaders.hidden = true;
+                resp.appendChild(outBody);
+                resp.appendChild(outHeaders);
+                host.appendChild(resp);
+
+                function showTab(which) {
+                    var isBody = which === 'body';
+                    outBody.hidden = !isBody;
+                    outHeaders.hidden = isBody;
+                    tabBody.setAttribute('aria-selected', String(isBody));
+                    tabHeaders.setAttribute('aria-selected', String(!isBody));
+                }
+                tabBody.addEventListener('click', function () { showTab('body'); });
+                tabHeaders.addEventListener('click', function () { showTab('headers'); });
+                copyResp.addEventListener('click', function () {
+                    copyText(outBody.textContent, copyResp, 'Copiar');
+                });
+
+                /* ---- Estado actual de la petición ---- */
+                function currentUrl() {
+                    var url = urlInput.value.trim();
+                    Object.keys(varInputs).forEach(function (v) {
+                        var val = varInputs[v].value.trim();
+                        if (val) url = url.replace(v, encodeURIComponent(val));
+                    });
+                    return url;
+                }
+
+                function currentHeaders() {
+                    var headers = {};
+                    (ep.headers || []).forEach(function (h) { headers[h[0]] = h[1]; });
+                    if (bodyArea && !headers['Content-Type']) {
+                        headers['Content-Type'] = 'application/json';
+                    }
+                    return headers;
+                }
+
+                function flash(btn, text, original) {
+                    btn.textContent = text;
+                    btn.classList.add('copied');
+                    setTimeout(function () {
+                        btn.textContent = original;
+                        btn.classList.remove('copied');
+                    }, 1600);
+                }
+
+                credsBtn.addEventListener('click', function () {
+                    if (!hasCreds()) {
+                        openCredsModal(function () { credsBtn.click(); });
+                        return;
+                    }
+                    if (!bodyArea) {
+                        flash(credsBtn, 'Sin body', 'Mis credenciales');
+                        return;
+                    }
+                    var creds = loadCreds();
+                    var applied = 0;
+                    var text = bodyArea.value;
+                    CRED_KEYS.forEach(function (key) {
+                        if (!creds[key]) return;
+                        // Solo sustituye la clave si ya existe en el body de ejemplo.
+                        var re = new RegExp('("' + key + '"\\s*:\\s*)"[^"]*"');
+                        if (re.test(text)) {
+                            text = text.replace(re, '$1"' + creds[key].replace(/"/g, '\\"') + '"');
+                            applied++;
+                        }
+                    });
+                    bodyArea.value = text;
+                    flash(credsBtn, applied ? applied + ' aplicadas' : 'No aplica aquí', 'Mis credenciales');
+                });
+
+                curlBtn.addEventListener('click', function () {
+                    copyText(
+                        curlFor(ep.method, currentUrl(), currentHeaders(), bodyArea ? bodyArea.value : ''),
+                        curlBtn, 'Copiar cURL'
+                    );
+                });
+
+                resetBtn.addEventListener('click', function () {
+                    urlInput.value = baseUrl;
+                    if (envSelect) envSelect.value = SANDBOX_OF[hostOf(baseUrl)] ? 'Producción' : 'Sandbox';
+                    Object.keys(varInputs).forEach(function (v) { varInputs[v].value = ''; });
+                    if (bodyArea) bodyArea.value = ep.body;
+                    resp.hidden = true;
+                });
+
+                if (bodyArea) {
+                    bodyArea.addEventListener('keydown', function (e) {
+                        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                            e.preventDefault();
+                            sendBtn.click();
+                        }
+                    });
+                }
+
+                /* ---- Envío ---- */
+                sendBtn.addEventListener('click', function () {
+                    var missing = Object.keys(varInputs).filter(function (v) {
+                        return !varInputs[v].value.trim();
+                    });
+                    if (missing.length) {
+                        resp.hidden = false;
+                        pill.className = 'status-pill err';
+                        pill.textContent = 'Falta dato';
+                        meta.textContent = '';
+                        outBody.textContent = 'Completa el valor de ' + missing.join(', ') +
+                            ' antes de enviar la petición.';
+                        showTab('body');
+                        varInputs[missing[0]].focus();
+                        return;
+                    }
+
+                    sendBtn.disabled = true;
+                    sendBtn.querySelector('span').textContent = 'Enviando…';
+                    resp.hidden = false;
+                    pill.className = 'status-pill';
+                    pill.textContent = '···';
+                    meta.textContent = 'esperando respuesta';
+                    outBody.textContent = '';
+                    showTab('body');
+
+                    fetch('try.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            url: currentUrl(),
+                            method: ep.method,
+                            headers: currentHeaders(),
+                            body: bodyArea ? bodyArea.value : ''
+                        })
+                    }).then(function (r) {
+                        return r.json().catch(function () {
+                            throw new Error('El proxy devolvió una respuesta ilegible. ¿Está PHP activo?');
+                        });
+                    }).then(function (data) {
+                        if (!data.ok) {
+                            pill.className = 'status-pill err';
+                            pill.textContent = 'Error';
+                            meta.textContent = data.ms ? data.ms + ' ms' : '';
+                            outBody.textContent = data.error || 'Error desconocido.';
+                            return;
+                        }
+
+                        var group = Math.floor(data.status / 100);
+                        pill.className = 'status-pill s' + (group === 2 ? '2' : group === 4 ? '4' : group === 5 ? '5' : '');
+                        pill.textContent = data.status;
+                        meta.textContent = data.ms + ' ms · ' +
+                            (data.size < 1024 ? data.size + ' B' : (data.size / 1024).toFixed(1) + ' KB') +
+                            (data.truncated ? ' (recortado)' : '');
+
+                        var pretty = prettyMaybeJson(data.body);
+                        if (pretty.json) {
+                            outBody.innerHTML = highlightJson(pretty.text);
+                        } else {
+                            outBody.textContent = pretty.text || '(respuesta vacía)';
+                        }
+
+                        outHeaders.textContent = Object.keys(data.headers || {}).map(function (h) {
+                            return h + ': ' + data.headers[h];
+                        }).join('\n') || '(sin cabeceras)';
+                    }).catch(function (e) {
+                        pill.className = 'status-pill err';
+                        pill.textContent = 'Error';
+                        meta.textContent = '';
+                        outBody.textContent = e.message;
+                    }).finally(function () {
+                        sendBtn.disabled = false;
+                        sendBtn.querySelector('span').textContent = 'Enviar';
+                    });
+                });
+            }
+
             function renderEndpoint(ep) {
                 var art = el('article', 'endpoint');
                 art.id = ep.id;
@@ -2711,6 +3567,14 @@ window.addEventListener("message", function (event) {
                 var title = el('div', 'ep-title');
                 title.appendChild(el('span', 'method ' + ep.method, ep.method));
                 title.appendChild(el('h3', null, ep.name));
+
+                var tryBtn = el('button', 'try-btn',
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" ' +
+                    'stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9z"/></svg>' +
+                    '<span>Probar</span>');
+                tryBtn.type = 'button';
+                tryBtn.setAttribute('aria-expanded', 'false');
+                title.appendChild(tryBtn);
                 head.appendChild(title);
 
                 var urlRow = el('div', 'ep-url');
@@ -2745,6 +3609,28 @@ window.addEventListener("message", function (event) {
                 (ep.after || []).forEach(function (b) { renderBlock(b, body); });
 
                 art.appendChild(body);
+
+                // La consola se construye la primera vez que se abre (39 endpoints:
+                // crearlas todas de entrada haría el render inicial mucho más lento).
+                var panel = el('div', 'console');
+                panel.hidden = true;
+                art.appendChild(panel);
+
+                tryBtn.addEventListener('click', function () {
+                    var open = panel.hidden;
+                    if (open && !panel.dataset.built) {
+                        buildConsole(panel, ep);
+                        panel.dataset.built = '1';
+                    }
+                    panel.hidden = !open;
+                    tryBtn.setAttribute('aria-expanded', String(open));
+                    tryBtn.querySelector('span').textContent = open ? 'Cerrar' : 'Probar';
+                    if (open) {
+                        var firstField = panel.querySelector('input, textarea');
+                        if (firstField) firstField.focus({ preventScroll: true });
+                    }
+                });
+
                 return art;
             }
 
@@ -2861,6 +3747,10 @@ window.addEventListener("message", function (event) {
 
             themeBtn.addEventListener('click', function () {
                 applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+            });
+
+            document.getElementById('credsBtn').addEventListener('click', function () {
+                openCredsModal();
             });
 
             /* ---------------- Drawer IA ---------------- */
