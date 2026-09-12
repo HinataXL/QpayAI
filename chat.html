@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Agente de IA de Qpaypro: diagnostica errores de integración de la API en segundos.">
     <meta name="color-scheme" content="light dark">
-    <title>Qpaypro · API AI Support</title>
+    <title>Qpaypro · Tappy AI Support</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
     <style>
         :root {
             --brand: #002D72;
@@ -306,6 +309,22 @@
         .message.ia .avatar {
             background: linear-gradient(135deg, var(--accent), var(--brand));
             color: #fff;
+        }
+
+        /* Tappy va suelto junto a su mensaje: sin círculo de fondo que lo encajone. */
+        .message.ia .avatar.tappy {
+            width: 38px;
+            height: 38px;
+            margin: -2px -4px 0 -4px;
+            background: none;
+            border-radius: 0;
+        }
+
+        .message.ia .avatar.tappy img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 3px rgba(6, 20, 48, .28));
         }
 
         .message.user .avatar {
@@ -767,7 +786,7 @@
 
         <div class="typing-indicator" id="typingIndicator" data-visible="false">
             <span class="typing-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-            <span>El agente está analizando tu consulta…</span>
+            <span>Tappy está analizando tu consulta…</span>
         </div>
 
         <div class="chat-input">
@@ -794,7 +813,7 @@
         (function () {
             'use strict';
 
-            var WELCOME = '¡Hola! Soy el **Agente de IA de Qpaypro**. Pega aquí el JSON que falló o hazme cualquier pregunta sobre tu integración y te daré un diagnóstico rápido.';
+            var WELCOME = '¡Hola! Soy **Tappy**, la Inteligencia Artificial de QPayPro. Pega aquí el JSON que falló o hazme cualquier pregunta sobre tu integración y te daré un diagnóstico rápido.';
 
             var SUGGESTIONS = [
                 'Mi transacción devuelve error de autenticación',
@@ -943,7 +962,18 @@
                 var avatar = document.createElement('div');
                 avatar.className = 'avatar';
                 avatar.setAttribute('aria-hidden', 'true');
-                avatar.textContent = role === 'user' ? 'Tú' : (opts.error ? '!' : 'AI');
+                if (role !== 'user' && !opts.error) {
+                    // Los mensajes del agente los firma Tappy.
+                    avatar.className = 'avatar tappy';
+                    var tappy = document.createElement('img');
+                    tappy.src = 'assets/tappy.png';
+                    tappy.alt = '';
+                    tappy.width = 38;
+                    tappy.height = 38;
+                    avatar.appendChild(tappy);
+                } else {
+                    avatar.textContent = role === 'user' ? 'Tú' : '!';
+                }
 
                 var bubble = document.createElement('div');
                 bubble.className = 'bubble';

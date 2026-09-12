@@ -8,6 +8,9 @@
         content="Documentación técnica de la API de QPayPro: checkout, pagos, 3D-Secure, tokenización, QpayFel y cobros automáticos.">
     <meta name="color-scheme" content="light dark">
     <title>QPayPro API · Documentación</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
     <style>
         :root {
             --brand: #002D72;
@@ -223,35 +226,42 @@
             display: none;
         }
 
-        .ai-btn {
+        /* ---------------- Tappy (barra superior) ---------------- */
+        .tappy-btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             flex: none;
-            border: none;
-            border-radius: 10px;
-            padding: 9px 15px;
-            background: linear-gradient(135deg, var(--accent), #0090b8);
-            color: #00243f;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 3px 15px 3px 5px;
+            background: var(--surface-2);
+            color: var(--text);
             font: inherit;
             font-size: 13.5px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 144, 184, .35);
-            transition: filter .15s, transform .1s;
+            transition: border-color .15s, background .15s, transform .1s;
         }
 
-        .ai-btn:hover {
-            filter: brightness(1.07);
+        .tappy-btn img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+            transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
         }
 
-        .ai-btn:active {
+        .tappy-btn:hover {
+            border-color: var(--accent-strong);
+            background: var(--surface-3);
+        }
+
+        .tappy-btn:hover img {
+            transform: scale(1.12) rotate(-6deg);
+        }
+
+        .tappy-btn:active {
             transform: scale(.97);
-        }
-
-        .ai-btn svg {
-            width: 16px;
-            height: 16px;
         }
 
         /* ---------------- Layout ---------------- */
@@ -1279,35 +1289,100 @@
         }
 
         /* ---------------- Drawer IA ---------------- */
-        .fab {
+        /* ---------------- Tappy flotante ---------------- */
+        .tappy-fab {
             position: fixed;
-            right: 24px;
-            bottom: 24px;
+            right: 20px;
+            bottom: 16px;
             z-index: 45;
-            display: inline-flex;
-            align-items: center;
-            gap: 9px;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
             border: none;
-            border-radius: 999px;
-            padding: 13px 20px;
-            background: linear-gradient(135deg, var(--accent), #0090b8);
-            color: #00243f;
+            background: none;
+            padding: 0;
             font: inherit;
-            font-size: 14px;
-            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0, 100, 140, .45);
-            transition: transform .15s, filter .15s;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .fab:hover {
-            filter: brightness(1.07);
-            transform: translateY(-2px);
+        .tappy-fab img {
+            width: 96px;
+            height: 96px;
+            object-fit: contain;
+            /* La sombra sigue la silueta, no una caja: Tappy es un PNG recortado. */
+            filter: drop-shadow(0 10px 14px rgba(6, 20, 48, .35));
+            animation: tappy-float 3.6s ease-in-out infinite;
+            transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
         }
 
-        .fab svg {
-            width: 18px;
-            height: 18px;
+        @keyframes tappy-float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-7px);
+            }
+        }
+
+        .tappy-fab:hover img,
+        .tappy-fab:focus-visible img {
+            animation-play-state: paused;
+            transform: translateY(-7px) scale(1.07);
+        }
+
+        .tappy-fab .tappy-bubble {
+            position: relative;
+            max-width: 190px;
+            margin-bottom: 26px;
+            padding: 9px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.4;
+            text-align: left;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(6px) scale(.94);
+            transform-origin: bottom right;
+            transition: opacity .22s, transform .22s;
+            pointer-events: none;
+        }
+
+        /* La cola del globo apunta hacia Tappy. */
+        .tappy-fab .tappy-bubble::after {
+            content: "";
+            position: absolute;
+            right: -6px;
+            bottom: 13px;
+            width: 11px;
+            height: 11px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            transform: rotate(-45deg);
+        }
+
+        .tappy-fab:hover .tappy-bubble,
+        .tappy-fab:focus-visible .tappy-bubble,
+        .tappy-fab .tappy-bubble[data-show="true"] {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .tappy-fab:focus-visible {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .tappy-fab:focus-visible img {
+            filter: drop-shadow(0 0 0 3px var(--accent)) drop-shadow(0 10px 14px rgba(6, 20, 48, .35));
         }
 
         .drawer-backdrop {
@@ -1383,9 +1458,11 @@
             html,
             .drawer,
             .drawer-backdrop,
-            .fab {
+            .tappy-fab img,
+            .tappy-fab .tappy-bubble {
                 scroll-behavior: auto;
                 transition: none;
+                animation: none;
             }
         }
 
@@ -1428,26 +1505,35 @@
                 flex: 1;
             }
 
-            .ai-btn span {
+            .tappy-btn span {
                 display: none;
             }
 
-            .ai-btn {
-                padding: 9px 11px;
+            .tappy-btn {
+                padding: 3px;
             }
 
-            .fab span {
+            .tappy-fab .tappy-bubble {
                 display: none;
             }
 
-            .fab {
-                padding: 15px;
-                right: 16px;
-                bottom: 16px;
+            .tappy-fab {
+                right: 10px;
+                bottom: 10px;
+            }
+
+            .tappy-fab img {
+                width: 76px;
+                height: 76px;
             }
         }
 
         @media (max-width: 560px) {
+            /* En pantallas pequeñas basta con el Tappy flotante: el de la barra sobra. */
+            .tappy-btn {
+                display: none;
+            }
+
             .drawer-head .sub {
                 display: none;
             }
@@ -1510,13 +1596,10 @@
             <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                 stroke-linecap="round" stroke-linejoin="round"></svg>
         </button>
-        <button class="ai-btn" id="aiBtnTop" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9z" />
-                <path d="M18 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" />
-            </svg>
-            <span>Preguntar a la IA</span>
+        <button class="tappy-btn" id="aiBtnTop" type="button" aria-haspopup="dialog"
+            aria-label="Hablar con Tappy, el asistente de integración">
+            <img src="assets/tappy.png" alt="" width="40" height="40">
+            <span>Tappy</span>
         </button>
     </header>
 
@@ -1537,7 +1620,7 @@
                             <path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9z" />
                             <path d="M18 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" />
                         </svg>
-                        Resolver mi integración con IA
+                        Resolver mi integración con Tappy
                     </button>
                     <a href="#autenticacion">Empezar por autenticación</a>
                 </div>
@@ -1549,21 +1632,18 @@
         </main>
     </div>
 
-    <button class="fab" id="aiFab" type="button" aria-haspopup="dialog">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9z" />
-            <path d="M18 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" />
-        </svg>
-        <span>Asistente IA</span>
+    <button class="tappy-fab" id="aiFab" type="button" aria-haspopup="dialog"
+        aria-label="Hablar con Tappy, el asistente de integración">
+        <span class="tappy-bubble" aria-hidden="true">¿Te ayudo con tu integración?</span>
+        <img src="assets/tappy.png" alt="" width="96" height="96">
     </button>
 
     <div class="drawer-backdrop" id="drawerBackdrop" data-open="false"></div>
     <aside class="drawer" id="drawer" data-open="false" role="dialog" aria-modal="true"
-        aria-label="Asistente de integración con IA">
+        aria-label="Tappy, asistente de integración">
         <div class="drawer-head">
             <div class="grow">
-                <strong>Asistente de integración</strong>
+                <strong>Tappy</strong>
                 <span class="sub">Pega el JSON que falló y te digo qué corregir</span>
             </div>
             <button class="icon-btn" id="drawerReset" type="button" title="Nueva conversación"
@@ -1589,7 +1669,7 @@
                 </svg>
             </button>
         </div>
-        <iframe id="aiFrame" title="Asistente de integración QPayPro" data-src="chat.html?embed=1"></iframe>
+        <iframe id="aiFrame" title="Tappy, asistente de integración de QPayPro" data-src="chat.html?embed=1"></iframe>
     </aside>
 
     <script>
@@ -2898,7 +2978,7 @@ window.addEventListener("message", function (event) {
                                 ['<strong>HTTP 303</strong>', 'El banco solicita doble autenticación. Lee <code class="ic">responseObject.responseObjectBac.redirect</code> y redirige al cliente a esa URL.']
                             ]
                         },
-                        { type: 'callout', variant: 'info', html: '¿No encuentras tu error aquí? Abre el <strong>Asistente IA</strong>, pega el JSON que falló y te dirá exactamente qué corregir. Si no está en la documentación, escalará tu caso a un ticket de soporte.' }
+                        { type: 'callout', variant: 'info', html: '¿No encuentras tu error aquí? Pregúntale a <strong>Tappy</strong>: pega el JSON que falló y te dirá exactamente qué corregir. Si no está en la documentación, escalará tu caso a un ticket de soporte.' }
                     ]
                 },
                 {
@@ -2911,7 +2991,7 @@ window.addEventListener("message", function (event) {
                             type: 'cards', items: [
                                 { k: 'Correo de soporte', v: 'soporte@qpaypro.com' },
                                 { k: 'Credenciales', p: 'Encuéntralas en tu plataforma, en la ruta /integrations.' },
-                                { k: 'Asistente IA', p: 'Diagnóstico inmediato de tu JSON y escalamiento a ticket cuando hace falta.' }
+                                { k: 'Tappy, el asistente', p: 'Diagnóstico inmediato de tu JSON y escalamiento a ticket cuando hace falta.' }
                             ]
                         },
                         { type: 'callout', variant: 'warn', html: 'Esta documentación está basada en la funcionalidad actual de la API. Algunas características pueden variar según la versión y configuración de tu entorno.' }
@@ -3785,6 +3865,21 @@ window.addEventListener("message", function (event) {
             ['aiFab', 'aiBtnTop', 'aiBtnHero'].forEach(function (id) {
                 document.getElementById(id).addEventListener('click', openDrawer);
             });
+
+            // Tappy saluda una sola vez por sesión para no volverse insistente.
+            (function greet() {
+                var bubble = document.querySelector('.tappy-bubble');
+                if (!bubble) return;
+                var greeted = false;
+                try { greeted = sessionStorage.getItem('tappy-saludo') === '1'; } catch (e) { /* sin storage */ }
+                if (greeted) return;
+                setTimeout(function () {
+                    if (drawer.dataset.open === 'true') return;
+                    bubble.dataset.show = 'true';
+                    try { sessionStorage.setItem('tappy-saludo', '1'); } catch (e) { /* sin storage */ }
+                    setTimeout(function () { delete bubble.dataset.show; }, 6000);
+                }, 1400);
+            })();
             document.getElementById('drawerClose').addEventListener('click', closeDrawer);
             document.getElementById('drawerReset').addEventListener('click', function () {
                 if (aiFrame.contentWindow && aiFrame.src) {
