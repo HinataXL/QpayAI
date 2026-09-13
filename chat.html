@@ -369,6 +369,13 @@
             color: var(--danger);
         }
 
+        /* Aviso de límite de consultas: no es una falla, Tappy solo pide esperar. */
+        .message.notice .bubble {
+            background: var(--warn-bg);
+            border-color: var(--warn-border);
+            color: var(--warn);
+        }
+
         .bubble .meta {
             display: block;
             margin-top: 8px;
@@ -649,6 +656,12 @@
             margin: 8px 4px 0;
             font-size: 11.5px;
             color: var(--text-muted);
+        }
+
+        #charCount[data-cooldown="true"] {
+            color: var(--warn);
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
         }
 
         kbd {
@@ -957,7 +970,8 @@
                 var stick = isNearBottom();
 
                 var row = document.createElement('div');
-                row.className = 'message ' + (role === 'user' ? 'user' : 'ia') + (opts.error ? ' error' : '');
+                row.className = 'message ' + (role === 'user' ? 'user' : 'ia') +
+                    (opts.error ? ' error' : '') + (opts.notice ? ' notice' : '');
 
                 var avatar = document.createElement('div');
                 avatar.className = 'avatar';
@@ -1019,6 +1033,7 @@
                 els.messages.appendChild(row);
 
                 if (stick || role === 'user') scrollToBottom();
+                return row;
             }
 
             /* ---------------- sugerencias ---------------- */
@@ -1056,8 +1071,55 @@
 
             function syncSendState() {
                 var len = els.input.value.trim().length;
-                els.send.disabled = busy || len === 0;
-                els.charCount.textContent = len > 0 ? len.toLocaleString('es') + ' caracteres' : '';
+                var wait = cooldownLeft();
+                els.send.disabled = busy || len === 0 || wait > 0;
+
+                // La cuenta regresiva va en el pie del compositor y no en la cabecera:
+                // dentro del panel de la documentación la cabecera está oculta.
+                if (wait > 0) {
+                    els.charCount.dataset.cooldown = 'true';
+                    els.charCount.textContent = 'Podrás enviar en ' + formatWait(wait);
+                } else {
+                    delete els.charCount.dataset.cooldown;
+                    els.charCount.textContent = len > 0 ? len.toLocaleString('es') + ' caracteres' : '';
+                }
+            }
+
+            /* ---------------- límite de consultas ---------------- */
+
+            var cooldownUntil = 0;
+            var cooldownTimer = null;
+
+            function cooldownLeft() {
+                return Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000));
+            }
+
+            function formatWait(seconds) {
+                if (seconds < 60) return seconds + ' s';
+                if (seconds < 3600) {
+                    var m = Math.floor(seconds / 60);
+                    var s = seconds % 60;
+                    return m + ':' + (s < 10 ? '0' : '') + s;
+                }
+                // Se redondea a minutos antes de separar horas: si no, 86 399 s daría "23 h 60 min".
+                var totalMin = Math.ceil(seconds / 60);
+                var h = Math.floor(totalMin / 60);
+                var min = totalMin % 60;
+                return h + ' h' + (min ? ' ' + min + ' min' : '');
+            }
+
+            // Se puede seguir escribiendo durante la espera; solo se bloquea el envío.
+            function startCooldown(seconds) {
+                cooldownUntil = Date.now() + Math.max(1, seconds) * 1000;
+                clearInterval(cooldownTimer);
+                cooldownTimer = setInterval(function () {
+                    syncSendState();
+                    if (cooldownLeft() === 0) {
+                        clearInterval(cooldownTimer);
+                        cooldownTimer = null;
+                    }
+                }, 1000);
+                syncSendState();
             }
 
             function setBusy(value) {
@@ -1085,9 +1147,9 @@
 
             function sendMessage() {
                 var text = els.input.value.trim();
-                if (!text || busy) return;
+                if (!text || busy || cooldownLeft() > 0) return;
 
-                addMessage('user', text);
+                var userRow = addMessage('user', text);
                 els.input.value = '';
                 autoGrow();
 
@@ -1109,7 +1171,16 @@
                         throw new Error('Respuesta no válida del servidor: ' + rawText);
                     }
 
-                    if (data.error) {
+                    if (data.rate_limited) {
+                        // La consulta no se procesó: se retira del chat y el texto vuelve
+                        // al compositor para reenviarlo sin reescribirlo cuando termine la espera.
+                        chatHistory.pop();
+                        userRow.remove();
+                        els.input.value = text;
+                        addMessage('ia', data.error, { notice: true });
+                        autoGrow();
+                        startCooldown(parseInt(data.retry_after, 10) || 60);
+                    } else if (data.error) {
                         addMessage('ia', data.error, { error: true });
                         chatHistory.pop();
                     } else if (data.success) {

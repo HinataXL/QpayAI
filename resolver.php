@@ -14,6 +14,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// 1.1 Límite de peticiones por IP
+// Va antes de todo lo demás: cada consulta que pasa de aquí cuesta una llamada
+// a Gemini y puede terminar en un ticket de Zoho. Los tramos se ajustan por
+// entorno (0 desactiva uno); ver LIMITES.md.
+require_once __DIR__ . '/lib/rate_limit.php';
+
+$limite = rate_limit_hit('tappy', [
+    'minuto' => [(int) rl_env('RATE_LIMIT_PER_MINUTE', '8'), 60],
+    'hora'   => [(int) rl_env('RATE_LIMIT_PER_HOUR', '40'), 3600],
+    'dia'    => [(int) rl_env('RATE_LIMIT_PER_DAY', '150'), 86400],
+]);
+
+if ($limite['remaining'] !== null) {
+    header('X-RateLimit-Remaining: ' . $limite['remaining']);
+}
+
+if (!$limite['allowed']) {
+    $espera = rate_limit_human($limite['retry_after']);
+    $mensaje = match ($limite['window']) {
+        'dia'   => "Alcanzaste el límite diario de consultas a Tappy. Podrás volver a escribir en $espera.",
+        'hora'  => "Alcanzaste el límite de consultas por hora. Podrás volver a escribir en $espera.",
+        default => "Estás enviando consultas muy seguido. Espera $espera y vuelve a intentarlo.",
+    };
+
+    http_response_code(429);
+    header('Retry-After: ' . $limite['retry_after']);
+    echo json_encode([
+        "error"        => $mensaje,
+        "rate_limited" => true,
+        "retry_after"  => $limite['retry_after'],
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 $env_path = __DIR__ . '/.env';
 $env = file_exists($env_path) ? parse_ini_file($env_path) : [];
 

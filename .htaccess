@@ -1,10 +1,13 @@
 # Bloquea el acceso web a archivos sensibles y de estado interno.
-<FilesMatch "^\.env|^\.admin_attempts\.json$|^\.try_rate\.json$|\.sqlite$|\.sql$|\.tmp[0-9a-f]*$">
+<FilesMatch "^\.env|^\.admin_attempts\.json$|^\.try_rate\.json$|\.sqlite(-wal|-shm|-journal)?$|\.sql$|\.tmp[0-9a-f]*$">
     Require all denied
 </FilesMatch>
 
 # Los respaldos de la documentación solo se leen a través de admin.php.
 RedirectMatch 404 ^/docs_versions/
+
+# Código de soporte que solo se incluye desde PHP, nunca se pide por HTTP.
+RedirectMatch 404 ^/lib/
 
 <IfModule mod_headers.c>
     # El panel no debe indexarse ni incrustarse en otros sitios.
