@@ -12,107 +12,129 @@
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
     <style>
+        /* =====================================================================
+           Tokens
+           ===================================================================== */
         :root {
-            --brand: #002D72;
-            --brand-600: #003c96;
-            --accent: #00D1FF;
-            --accent-strong: #0090b8;
-
-            --bg: #f5f7fb;
+            --bg: #f8f8f6;
             --surface: #ffffff;
-            --surface-2: #f6f8fc;
-            --surface-3: #eaeff7;
-            --border: #dde4ef;
-            --border-strong: #c6d2e4;
-            --text: #16202e;
-            --text-muted: #5c6b80;
+            --surface-2: #f2f2ef;
+            --surface-3: #e9e9e5;
+            --border: #e5e5e0;
+            --border-strong: #d4d4cd;
+            --text: #1b1b20;
+            --text-muted: #62626c;
+            --text-subtle: #8b8b94;
 
-            --code-bg: #0f172a;
-            --code-text: #e2e8f0;
-            --code-border: #1e293b;
+            /* Índigo: combina con el color del logo de QPayPro. */
+            --accent: #4338ca;
+            --accent-hover: #3730a3;
+            --accent-soft: #efeefc;
+            --accent-soft-2: #e2dffb;
+            --accent-text: #3730a3;
 
-            --get: #067647;
-            --get-bg: #ecfdf3;
-            --post: #175cd3;
-            --post-bg: #eff8ff;
-            --put: #b54708;
-            --put-bg: #fffaeb;
-            --delete: #b42318;
-            --delete-bg: #fef3f2;
+            /* Nombres que usan los estilos heredados de la consola y los bloques. */
+            --brand: #4338ca;
+            --brand-600: #3730a3;
+            --accent-strong: #4338ca;
 
-            --warn: #b54708;
-            --warn-bg: #fffaeb;
-            --warn-border: #fedf89;
-            --info: #175cd3;
-            --info-bg: #eff8ff;
-            --info-border: #b2ddff;
-            --ok: #067647;
-            --ok-bg: #ecfdf3;
-            --ok-border: #a6f4c5;
+            --code-bg: #17171a;
+            --code-text: #e4e4e7;
+            --code-border: #26262b;
 
-            --shadow-sm: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .1);
-            --shadow-lg: 0 20px 50px rgba(6, 20, 48, .18);
-            --ring: 0 0 0 3px rgba(0, 209, 255, .35);
+            --ok: #15803d;
+            --ok-bg: #effbf3;
+            --ok-border: #b7ebc6;
+            --warn: #a55309;
+            --warn-bg: #fff8eb;
+            --warn-border: #f5d9a8;
+            --info: #4338ca;
+            --info-bg: #f1f0fd;
+            --info-border: #d4d0f7;
+            --delete: #b91c1c;
+            --delete-bg: #fef2f2;
 
-            --font: 'Segoe UI', system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-            --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            --m-get: #2563eb;
+            --m-post: #16a34a;
+            --m-put: #d97706;
+            --m-delete: #dc2626;
 
-            --sidebar-w: 288px;
-            --header-h: 62px;
+            --shadow-sm: 0 1px 2px rgba(20, 20, 30, .05);
+            --shadow-lg: 0 18px 48px rgba(20, 20, 40, .16);
+            --ring: 0 0 0 3px rgba(67, 56, 202, .22);
+
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+            --topbar-h: 54px;
+            --sidebar-w: 236px;
+            --panel-w: 360px;
         }
 
         html[data-theme="dark"] {
-            --bg: #0a1120;
-            --surface: #101a2b;
-            --surface-2: #0d1626;
-            --surface-3: #18233a;
-            --border: #223049;
-            --border-strong: #2e3f5e;
-            --text: #e6edf7;
-            --text-muted: #93a3ba;
+            --bg: #101013;
+            --surface: #16161a;
+            --surface-2: #1c1c21;
+            --surface-3: #25252c;
+            --border: #29292f;
+            --border-strong: #37373f;
+            --text: #ececf1;
+            --text-muted: #a3a3ad;
+            --text-subtle: #7d7d87;
 
-            --code-bg: #060b16;
-            --code-text: #d7e3f4;
-            --code-border: #1c2942;
+            --accent: #8b84ff;
+            --accent-hover: #a29dff;
+            --accent-soft: #24223f;
+            --accent-soft-2: #2e2b55;
+            --accent-text: #b9b5ff;
 
-            --get: #5fd39b;
-            --get-bg: #0d2a1e;
-            --post: #7fb5ff;
-            --post-bg: #0d1f38;
-            --put: #f5c26b;
-            --put-bg: #251a08;
-            --delete: #ff9a90;
-            --delete-bg: #2a1412;
+            --brand: #5b52f0;
+            --brand-600: #4c43e0;
+            --accent-strong: #8b84ff;
 
-            --warn: #f5c26b;
-            --warn-bg: #241a08;
-            --warn-border: #6b4c14;
-            --info: #7fb5ff;
-            --info-bg: #0d1f38;
-            --info-border: #24446f;
-            --ok: #5fd39b;
-            --ok-bg: #0d2a1e;
-            --ok-border: #1d5c40;
+            --code-bg: #0b0b0d;
+            --code-text: #e4e4e7;
+            --code-border: #222227;
 
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
-            --shadow-lg: 0 20px 50px rgba(0, 0, 0, .6);
+            --ok: #4ade80;
+            --ok-bg: #0f2a1a;
+            --ok-border: #1f5a36;
+            --warn: #f5b454;
+            --warn-bg: #2a1d0a;
+            --warn-border: #5e4214;
+            --info: #b9b5ff;
+            --info-bg: #1e1c36;
+            --info-border: #3a3670;
+            --delete: #f87171;
+            --delete-bg: #2a1212;
+
+            --shadow-lg: 0 18px 48px rgba(0, 0, 0, .55);
+            --ring: 0 0 0 3px rgba(139, 132, 255, .3);
         }
 
+        /* =====================================================================
+           Base
+           ===================================================================== */
         * {
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
+        html,
+        body {
+            height: 100%;
         }
 
         body {
             margin: 0;
-            font-family: var(--font);
-            font-size: 15px;
-            line-height: 1.65;
-            color: var(--text);
+            overflow: hidden;
             background: var(--bg);
+            color: var(--text);
+            font: 14.5px/1.6 var(--font);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: var(--accent);
         }
 
         :focus-visible {
@@ -121,464 +143,406 @@
             border-radius: 6px;
         }
 
-        a {
-            color: var(--post);
-        }
-
-        /* ---------------- Topbar ---------------- */
-        .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            height: var(--header-h);
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 0 18px;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .topbar .logo {
-            height: 30px;
-            flex: none;
-        }
-
-        html[data-theme="dark"] .topbar .logo {
-            background: #fff;
-            padding: 3px 7px;
-            border-radius: 7px;
-            box-sizing: content-box;
-        }
-
-        .topbar .brand {
-            font-weight: 700;
-            font-size: 15px;
-            white-space: nowrap;
-            padding-left: 14px;
-            margin-left: 2px;
-            border-left: 1px solid var(--border);
-            color: var(--text-muted);
-        }
-
-        .topbar .spacer {
-            flex: 1;
-        }
-
-        .search-wrap {
-            position: relative;
-            flex: 0 1 320px;
-        }
-
-        .search-wrap svg {
+        .sr-only {
             position: absolute;
-            left: 11px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 15px;
-            height: 15px;
-            color: var(--text-muted);
-            pointer-events: none;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
         }
 
-        #search {
-            width: 100%;
-            padding: 8px 12px 8px 33px;
+        kbd {
+            font-family: var(--font);
+            font-size: 11px;
+            color: var(--text-subtle);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            background: var(--surface-2);
-            color: var(--text);
-            font: inherit;
-            font-size: 13.5px;
-        }
-
-        #search:focus {
-            outline: none;
-            border-color: var(--accent-strong);
-            box-shadow: var(--ring);
-        }
-
-        .icon-btn {
-            width: 36px;
-            height: 36px;
-            display: inline-grid;
-            place-items: center;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--surface-2);
-            color: var(--text-muted);
-            cursor: pointer;
-            flex: none;
-            transition: background .15s, color .15s;
-        }
-
-        .icon-btn:hover {
-            background: var(--surface-3);
-            color: var(--text);
-        }
-
-        .icon-btn svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        #menuBtn {
-            display: none;
-        }
-
-        /* ---------------- Tappy (barra superior) ---------------- */
-        .tappy-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            flex: none;
-            border: 1px solid var(--border);
-            border-radius: 999px;
-            padding: 3px 15px 3px 5px;
-            background: var(--surface-2);
-            color: var(--text);
-            font: inherit;
-            font-size: 13.5px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: border-color .15s, background .15s, transform .1s;
-        }
-
-        .tappy-btn img {
-            width: 34px;
-            height: 34px;
-            object-fit: contain;
-            transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
-        }
-
-        .tappy-btn:hover {
-            border-color: var(--accent-strong);
-            background: var(--surface-3);
-        }
-
-        .tappy-btn:hover img {
-            transform: scale(1.12) rotate(-6deg);
-        }
-
-        .tappy-btn:active {
-            transform: scale(.97);
-        }
-
-        /* ---------------- Layout ---------------- */
-        .layout {
-            display: grid;
-            grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
-            align-items: start;
-        }
-
-        .sidebar {
-            position: sticky;
-            top: var(--header-h);
-            height: calc(100dvh - var(--header-h));
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            padding: 20px 12px 40px;
-            border-right: 1px solid var(--border);
+            border-bottom-width: 2px;
+            border-radius: 5px;
+            padding: 0 5px;
             background: var(--surface);
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 9px;
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 99px;
-            border: 3px solid var(--surface);
-        }
-
-        .nav-group {
-            margin-bottom: 6px;
-        }
-
-        .nav-group > a {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 13.8px;
-            font-weight: 600;
-            color: var(--text);
-            text-decoration: none;
-        }
-
-        .nav-group > a:hover {
-            background: var(--surface-3);
-        }
-
-        .nav-group > a.active {
-            background: var(--info-bg);
-            color: var(--post);
-        }
-
-        .nav-group .emoji {
-            font-size: 14px;
-            line-height: 1;
-        }
-
-        .nav-sub {
-            margin: 2px 0 8px;
-            padding-left: 20px;
-            border-left: 1px solid var(--border);
-            margin-left: 18px;
-        }
-
-        .nav-sub a {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            padding: 5px 8px;
-            border-radius: 6px;
-            font-size: 12.8px;
-            color: var(--text-muted);
-            text-decoration: none;
-        }
-
-        .nav-sub a:hover {
-            background: var(--surface-3);
-            color: var(--text);
-        }
-
-        .nav-sub a.active {
-            color: var(--post);
-            font-weight: 600;
-        }
-
-        .nav-sub .m {
-            font-family: var(--mono);
-            font-size: 9.5px;
-            font-weight: 700;
-            letter-spacing: .3px;
-            flex: none;
-            width: 34px;
-        }
-
-        .nav-empty {
-            padding: 10px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        /* ---------------- Content ---------------- */
-        .content {
-            max-width: 900px;
-            padding: 34px 40px 120px;
-            min-width: 0;
-        }
-
-        .hero {
-            padding: 30px 32px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, var(--brand), #00408f 55%, #0090b8);
-            color: #fff;
-            margin-bottom: 34px;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .hero h1 {
-            margin: 0 0 8px;
-            font-size: 28px;
-            line-height: 1.25;
-        }
-
-        .hero p {
-            margin: 0;
-            max-width: 60ch;
-            color: rgba(255, 255, 255, .88);
-            font-size: 15px;
-        }
-
-        .hero-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .hero-actions button,
-        .hero-actions a {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border-radius: 10px;
-            padding: 9px 16px;
-            font: inherit;
-            font-size: 13.5px;
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: none;
-            border: 1px solid rgba(255, 255, 255, .35);
-            background: rgba(255, 255, 255, .12);
-            color: #fff;
-            transition: background .15s;
-        }
-
-        .hero-actions button:hover,
-        .hero-actions a:hover {
-            background: rgba(255, 255, 255, .22);
-        }
-
-        .hero-actions .primary {
-            background: var(--accent);
-            border-color: transparent;
-            color: #00243f;
-        }
-
-        .hero-actions .primary:hover {
-            background: #4ee0ff;
-        }
-
-        .hero-actions svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        section.doc-section {
-            margin-bottom: 46px;
-            scroll-margin-top: calc(var(--header-h) + 16px);
-        }
-
-        section.doc-section > h2 {
-            margin: 0 0 6px;
-            font-size: 23px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .section-intro {
-            color: var(--text-muted);
-            margin: 12px 0 20px;
-        }
-
-        h3.block-title {
-            margin: 28px 0 10px;
-            font-size: 17px;
-        }
-
-        .doc-p {
-            margin: 0 0 14px;
-        }
-
-        .doc-list {
-            margin: 0 0 16px;
-            padding-left: 22px;
-        }
-
-        .doc-list li {
-            margin-bottom: 5px;
         }
 
         code.ic {
             font-family: var(--mono);
-            font-size: 12.5px;
-            background: var(--surface-3);
+            font-size: .87em;
+            background: var(--surface-2);
             border: 1px solid var(--border);
-            border-radius: 5px;
+            border-radius: 4px;
             padding: 1px 5px;
             white-space: nowrap;
         }
 
-        /* ---------------- Endpoint ---------------- */
-        .endpoint {
-            border: 1px solid var(--border);
-            border-radius: 14px;
+        /* =====================================================================
+           Barra superior
+           ===================================================================== */
+        .topbar {
+            position: relative;
+            z-index: 30;
+            height: var(--topbar-h);
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 16px;
+            padding: 0 16px 0 20px;
             background: var(--surface);
-            margin: 22px 0;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            scroll-margin-top: calc(var(--header-h) + 16px);
-        }
-
-        .ep-head {
-            padding: 15px 18px;
             border-bottom: 1px solid var(--border);
         }
 
-        .ep-title {
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 650;
+            font-size: 15px;
+            white-space: nowrap;
+        }
+
+        .brand .logo {
+            height: 22px;
+            width: auto;
+        }
+
+        html[data-theme="dark"] .brand .logo {
+            background: #fff;
+            padding: 3px 6px;
+            border-radius: 6px;
+            box-sizing: content-box;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 26px;
+        }
+
+        .tab {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            color: var(--text);
+        }
+
+        .tab[aria-current="page"] {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .top-actions {
+            justify-self: end;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .search-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 32px;
+            min-width: 176px;
+            padding: 0 7px 0 10px;
+            margin-right: 6px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text-subtle);
+            font: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .search-trigger:hover {
+            border-color: var(--border-strong);
+            color: var(--text-muted);
+        }
+
+        .search-trigger svg {
+            width: 14px;
+            height: 14px;
+            flex: none;
+        }
+
+        .search-trigger kbd {
+            margin-left: auto;
+        }
+
+        /* Selector de entorno: ocupa el lugar del selector de versión. */
+        .env {
+            position: relative;
+            margin-right: 4px;
+        }
+
+        .env select {
+            appearance: none;
+            -webkit-appearance: none;
+            height: 30px;
+            padding: 0 26px 0 10px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            background: var(--surface);
+            color: var(--text-muted);
+            font-family: var(--mono);
+            font-size: 12.5px;
+            cursor: pointer;
+        }
+
+        .env select:hover {
+            border-color: var(--border-strong);
+            color: var(--text);
+        }
+
+        .env::after {
+            content: "";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            width: 0;
+            height: 0;
+            margin-top: -2px;
+            border: 4px solid transparent;
+            border-top-color: var(--text-subtle);
+            border-bottom: 0;
+            pointer-events: none;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            display: inline-grid;
+            place-items: center;
+            flex: none;
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--text-subtle);
+            cursor: pointer;
+        }
+
+        .icon-btn:hover {
+            background: var(--surface-2);
+            color: var(--text);
+        }
+
+        .icon-btn svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .menu-btn,
+        .assistant-toggle {
+            display: none;
+        }
+
+        .assistant-toggle img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+        }
+
+        /* =====================================================================
+           Estructura de tres columnas
+           ===================================================================== */
+        .shell {
+            position: fixed;
+            top: var(--topbar-h);
+            right: 0;
+            bottom: 0;
+            left: 0;
+            display: grid;
+            grid-template-columns: var(--sidebar-w) minmax(0, 1fr) var(--panel-w);
+        }
+
+        .sidebar {
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding: 22px 12px 48px;
+            border-right: 1px solid var(--border);
+            background: var(--bg);
+        }
+
+        .nav-label {
+            margin: 22px 8px 6px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            color: var(--text-subtle);
+        }
+
+        .nav-label:first-child {
+            margin-top: 0;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 4px 8px;
+            margin: 1px 0;
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.45;
+            text-decoration: underline;
+            text-decoration-color: var(--border-strong);
+            text-underline-offset: 3px;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            text-decoration-color: var(--text-subtle);
+        }
+
+        .nav-link[aria-current="page"] {
+            background: var(--accent-soft);
+            color: var(--accent-text);
+            text-decoration-color: currentColor;
+        }
+
+        .main {
+            overflow-y: auto;
+            overscroll-behavior: contain;
+        }
+
+        .page {
+            max-width: 780px;
+            padding: 42px 44px 110px 34px;
+        }
+
+        /* =====================================================================
+           Página
+           ===================================================================== */
+        .crumbs {
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .crumbs a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .crumbs a:hover {
+            color: var(--text);
+            text-decoration: underline;
+        }
+
+        .crumbs .sep {
+            margin: 0 5px;
+            color: var(--text-subtle);
+        }
+
+        .title-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .page h1 {
+            margin: 0 0 14px;
+            font-size: 27px;
+            font-weight: 650;
+            line-height: 1.25;
+            letter-spacing: -.012em;
+        }
+
+        .lead {
+            max-width: 66ch;
+            margin: 0 0 24px;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .ep-line {
             display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        .ep-title h3 {
-            margin: 0;
-            font-size: 16px;
-        }
-
-        .method {
-            font-family: var(--mono);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: .6px;
-            padding: 3px 8px;
-            border-radius: 6px;
+        .badge {
+            display: inline-block;
             flex: none;
+            padding: 2px 8px;
+            border-radius: 5px;
+            color: #fff;
+            font-family: var(--mono);
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: .03em;
+            line-height: 1.6;
         }
 
-        .method.GET {
-            color: var(--get);
-            background: var(--get-bg);
+        .badge.GET {
+            background: var(--m-get);
         }
 
-        .method.POST {
-            color: var(--post);
-            background: var(--post-bg);
+        .badge.POST {
+            background: var(--m-post);
         }
 
-        .method.PUT {
-            color: var(--put);
-            background: var(--put-bg);
+        .badge.PUT {
+            background: var(--m-put);
         }
 
-        .method.DELETE {
-            color: var(--delete);
-            background: var(--delete-bg);
+        .badge.DELETE {
+            background: var(--m-delete);
         }
 
-        .ep-url {
+        .path {
+            font-family: var(--mono);
+            font-size: 14px;
+            color: var(--text);
+            overflow-wrap: anywhere;
+        }
+
+        .ep-host {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            padding: 8px 10px;
-            font-family: var(--mono);
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
             font-size: 12.5px;
-            color: var(--text);
+            color: var(--text-muted);
         }
 
-        /* Solo la URL hace scroll; el botón de copiar nunca se recorta. */
-        .ep-url .u {
-            flex: 1;
-            min-width: 0;
-            overflow-x: auto;
+        .ep-host .host {
+            font-family: var(--mono);
+            overflow-wrap: anywhere;
+        }
+
+        .env-tag {
+            padding: 0 7px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            font-size: 11.5px;
+            color: var(--text-subtle);
             white-space: nowrap;
-        }
-
-        .ep-url .mini-copy {
-            flex: none;
         }
 
         .mini-copy {
             border: 1px solid var(--border);
             background: var(--surface);
             color: var(--text-muted);
-            border-radius: 7px;
-            padding: 3px 8px;
+            border-radius: 6px;
+            padding: 2px 8px;
             font: inherit;
-            font-size: 11.5px;
+            font-size: 12px;
             cursor: pointer;
             white-space: nowrap;
         }
@@ -593,28 +557,304 @@
             border-color: var(--ok-border);
         }
 
-        .ep-body {
-            padding: 16px 18px;
-        }
-
-        .ep-desc {
-            margin: 0 0 16px;
-            color: var(--text-muted);
-        }
-
         .sub-label {
+            margin: 30px 0 8px;
             font-size: 11.5px;
-            font-weight: 700;
-            letter-spacing: .7px;
+            font-weight: 600;
+            letter-spacing: .08em;
             text-transform: uppercase;
+            color: var(--text-subtle);
+        }
+
+        .console .sub-label {
+            margin-top: 14px;
+        }
+
+        .block-title {
+            margin: 32px 0 10px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .doc-p {
+            margin: 0 0 14px;
+        }
+
+        .doc-list {
+            margin: 0 0 16px;
+            padding-left: 22px;
+        }
+
+        /* Filas de parámetros y encabezados: nombre a la izquierda, tipo a la derecha. */
+        .rows {
+            border-top: 1px solid var(--border);
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 3px 16px;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .row-name {
+            font-family: var(--mono);
+            font-size: 13.5px;
+            color: var(--text);
+            overflow-wrap: anywhere;
+        }
+
+        .row-meta {
+            font-size: 12.5px;
+            color: var(--text-subtle);
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .row-meta.req {
             color: var(--text-muted);
-            margin: 18px 0 8px;
         }
 
-        .sub-label:first-child {
-            margin-top: 0;
+        .row-meta.mono {
+            font-family: var(--mono);
+            white-space: normal;
         }
 
+        .row-desc {
+            grid-column: 1 / -1;
+            font-size: 13.5px;
+            color: var(--text-muted);
+        }
+
+        /* Lista de endpoints en la vista de una sección. */
+        .ep-list {
+            margin: 4px 0 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .ep-row {
+            display: grid;
+            grid-template-columns: 62px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 8px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .ep-row:hover {
+            background: var(--surface-2);
+        }
+
+        .ep-row .badge {
+            justify-self: start;
+            font-size: 10.5px;
+        }
+
+        .ep-row .name {
+            font-weight: 500;
+        }
+
+        .ep-row .p {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--text-subtle);
+        }
+
+        /* Anterior / Siguiente */
+        .pager {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 52px;
+        }
+
+        .pager a {
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .pager a:hover {
+            border-color: var(--border-strong);
+        }
+
+        .pager small {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-subtle);
+        }
+
+        .pager .next {
+            grid-column: 2;
+            text-align: right;
+        }
+
+        /* =====================================================================
+           Bloques de código (oscuros, como la solicitud de la referencia)
+           ===================================================================== */
+        .code-block {
+            margin: 0 0 16px;
+            overflow: hidden;
+            border: 1px solid var(--code-border);
+            border-radius: 10px;
+            background: var(--code-bg);
+        }
+
+        .code-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 9px 10px 0 18px;
+            color: #71717a;
+            font-family: var(--mono);
+            font-size: 12.5px;
+        }
+
+        .code-head::before {
+            content: "// ";
+            white-space: pre;
+        }
+
+        .request .code-head::before {
+            content: none;
+        }
+
+        .code-block pre {
+            margin: 0;
+            max-height: 380px;
+            overflow: auto;
+            padding: 8px 18px 18px;
+            color: var(--code-text);
+            font: 13px/1.7 var(--mono);
+        }
+
+        .copy-btn {
+            margin-left: auto;
+            border: 1px solid #34343b;
+            border-radius: 6px;
+            background: transparent;
+            color: #a1a1aa;
+            padding: 2px 9px;
+            font: 11.5px var(--font);
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            color: #fff;
+            border-color: #52525b;
+        }
+
+        .copy-btn.copied {
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, .4);
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 2px;
+        }
+
+        .code-tabs button {
+            border: 0;
+            border-radius: 6px;
+            background: transparent;
+            color: #71717a;
+            padding: 3px 9px;
+            font: 12px var(--mono);
+            cursor: pointer;
+        }
+
+        .code-tabs button[aria-selected="true"] {
+            background: #26262b;
+            color: #e4e4e7;
+        }
+
+        /* Coloreado: cadenas en ámbar y números en verde, como la referencia. */
+        .c-com {
+            color: #71717a;
+        }
+
+        .c-cmd {
+            color: #fafafa;
+        }
+
+        .c-flag {
+            color: #a1a1aa;
+        }
+
+        .c-str,
+        .code-block .j-str {
+            color: #fcd34d;
+        }
+
+        .code-block .j-key {
+            color: #d4d4d8;
+        }
+
+        .code-block .j-num {
+            color: #86efac;
+        }
+
+        .code-block .j-bool {
+            color: #c4b5fd;
+        }
+
+        .code-block .j-null {
+            color: #a1a1aa;
+        }
+
+        /* =====================================================================
+           Tablas (minimalistas, sin caja)
+           ===================================================================== */
+        .table-wrap {
+            margin: 0 0 18px;
+            overflow-x: auto;
+            border-top: 1px solid var(--border);
+        }
+
+        .table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+        }
+
+        .table-wrap th {
+            padding: 10px 14px 8px 0;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--text-subtle);
+            white-space: nowrap;
+        }
+
+        .table-wrap td {
+            padding: 11px 14px 11px 0;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .table-wrap td:last-child,
+        .table-wrap th:last-child {
+            padding-right: 0;
+        }
+
+        /* ===== Estilos heredados (consola, respuesta, credenciales) ===== */
         /* ---------------- Consola "Probar" ---------------- */
         .try-btn {
             display: inline-flex;
@@ -820,6 +1060,33 @@
             border-color: var(--delete);
         }
 
+        /* Tappy en la cabecera de la respuesta: su cara adelanta el resultado. Los
+           márgenes negativos evitan que la cabecera crezca por la imagen. */
+        .resp-tappy {
+            width: 38px;
+            height: 38px;
+            flex: none;
+            margin: -6px -2px -6px -4px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 3px rgba(6, 20, 48, .28));
+        }
+
+        .resp-tappy[data-mood="trabajando"] {
+            animation: tappy-working .9s ease-in-out infinite;
+        }
+
+        @keyframes tappy-working {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-2px);
+            }
+        }
+
         .resp-meta {
             font-size: 12px;
             color: var(--text-muted);
@@ -978,127 +1245,6 @@
             background: var(--brand);
             border-color: var(--brand);
             color: #fff;
-        }
-
-        /* ---------------- Tables ---------------- */
-        .table-wrap {
-            overflow-x: auto;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13.5px;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 9px 12px;
-            border-bottom: 1px solid var(--border);
-            vertical-align: top;
-        }
-
-        th {
-            background: var(--surface-2);
-            font-size: 11.5px;
-            letter-spacing: .5px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            white-space: nowrap;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        td.pname {
-            font-family: var(--mono);
-            font-size: 12.5px;
-            white-space: nowrap;
-        }
-
-        .req {
-            display: inline-block;
-            font-size: 10.5px;
-            font-weight: 700;
-            padding: 1px 6px;
-            border-radius: 5px;
-            margin-left: 6px;
-            vertical-align: 1px;
-        }
-
-        .req.yes {
-            color: var(--delete);
-            background: var(--delete-bg);
-        }
-
-        .req.no {
-            color: var(--text-muted);
-            background: var(--surface-3);
-        }
-
-        /* ---------------- Code ---------------- */
-        .code-block {
-            border-radius: 11px;
-            overflow: hidden;
-            border: 1px solid var(--code-border);
-            background: var(--code-bg);
-            margin: 0 0 14px;
-        }
-
-        .code-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            padding: 6px 9px 6px 12px;
-            background: rgba(255, 255, 255, .05);
-            border-bottom: 1px solid var(--code-border);
-            color: #94a3b8;
-            font-size: 11px;
-            letter-spacing: .5px;
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-
-        .copy-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(255, 255, 255, .08);
-            color: #cbd5e1;
-            border: 1px solid rgba(255, 255, 255, .13);
-            border-radius: 7px;
-            padding: 3px 9px;
-            font: inherit;
-            font-size: 11px;
-            text-transform: none;
-            letter-spacing: 0;
-            cursor: pointer;
-        }
-
-        .copy-btn:hover {
-            background: rgba(255, 255, 255, .17);
-            color: #fff;
-        }
-
-        .copy-btn.copied {
-            color: #6ee7b7;
-            border-color: rgba(110, 231, 183, .4);
-        }
-
-        .code-block pre {
-            margin: 0;
-            padding: 14px;
-            overflow-x: auto;
-            max-height: 460px;
-            color: var(--code-text);
-            font-family: var(--mono);
-            font-size: 12.5px;
-            line-height: 1.6;
         }
 
         /* ---------------- Callouts ---------------- */
@@ -1288,32 +1434,137 @@
             color: var(--text-muted);
         }
 
-        /* ---------------- Drawer IA ---------------- */
-        /* ---------------- Tappy flotante ---------------- */
+
+        /* =====================================================================
+           Ajustes sobre los estilos heredados de la consola
+           ===================================================================== */
+        .try-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex: none;
+            margin-top: 4px;
+            padding: 6px 12px;
+            border: 1px solid var(--border-strong);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .try-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent-text);
+        }
+
+        .try-btn[aria-expanded="true"] {
+            background: var(--accent-soft);
+            border-color: transparent;
+            color: var(--accent-text);
+        }
+
+        .try-btn svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .console {
+            margin: 0 0 22px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+        }
+
+        .callout {
+            border-radius: 8px;
+        }
+
+        /* =====================================================================
+           Asistente (columna derecha)
+           ===================================================================== */
+        .assistant {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            border-left: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .assistant-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 10px 14px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .assistant-head .dot {
+            width: 8px;
+            height: 8px;
+            flex: none;
+            border-radius: 50%;
+            background: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, .15);
+        }
+
+        .assistant-head .grow {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .assistant-head .t {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .assistant-head .s {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
+
+        .assistant-head .close-btn {
+            display: none;
+        }
+
+        .assistant iframe {
+            flex: 1;
+            width: 100%;
+            min-height: 0;
+            border: 0;
+            background: var(--surface);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: var(--topbar-h) 0 0 0;
+            z-index: 35;
+            background: rgba(15, 15, 22, .32);
+        }
+
         .tappy-fab {
             position: fixed;
-            right: 20px;
-            bottom: 16px;
-            z-index: 45;
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            border: none;
-            background: none;
+            right: 16px;
+            bottom: 14px;
+            z-index: 34;
+            display: none;
             padding: 0;
-            font: inherit;
+            border: 0;
+            background: none;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .tappy-fab img {
-            width: 96px;
-            height: 96px;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
-            /* La sombra sigue la silueta, no una caja: Tappy es un PNG recortado. */
-            filter: drop-shadow(0 10px 14px rgba(6, 20, 48, .35));
+            filter: drop-shadow(0 10px 14px rgba(20, 20, 40, .3));
             animation: tappy-float 3.6s ease-in-out infinite;
-            transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
         }
 
         @keyframes tappy-float {
@@ -1324,235 +1575,265 @@
             }
 
             50% {
-                transform: translateY(-7px);
+                transform: translateY(-6px);
             }
         }
 
-        .tappy-fab:hover img,
-        .tappy-fab:focus-visible img {
-            animation-play-state: paused;
-            transform: translateY(-7px) scale(1.07);
-        }
-
-        .tappy-fab .tappy-bubble {
-            position: relative;
-            max-width: 190px;
-            margin-bottom: 26px;
-            padding: 9px 14px;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--text);
-            font-size: 13px;
-            font-weight: 600;
-            line-height: 1.4;
-            text-align: left;
-            box-shadow: var(--shadow-lg);
-            opacity: 0;
-            transform: translateY(6px) scale(.94);
-            transform-origin: bottom right;
-            transition: opacity .22s, transform .22s;
-            pointer-events: none;
-        }
-
-        /* La cola del globo apunta hacia Tappy. */
-        .tappy-fab .tappy-bubble::after {
-            content: "";
-            position: absolute;
-            right: -6px;
-            bottom: 13px;
-            width: 11px;
-            height: 11px;
-            background: var(--surface);
-            border-right: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-            transform: rotate(-45deg);
-        }
-
-        .tappy-fab:hover .tappy-bubble,
-        .tappy-fab:focus-visible .tappy-bubble,
-        .tappy-fab .tappy-bubble[data-show="true"] {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        .tappy-fab:focus-visible {
-            outline: none;
-            box-shadow: none;
-        }
-
-        .tappy-fab:focus-visible img {
-            filter: drop-shadow(0 0 0 3px var(--accent)) drop-shadow(0 10px 14px rgba(6, 20, 48, .35));
-        }
-
-        .drawer-backdrop {
+        /* =====================================================================
+           Búsqueda (paleta Ctrl/⌘ + K)
+           ===================================================================== */
+        .palette-backdrop {
             position: fixed;
             inset: 0;
-            z-index: 60;
-            background: rgba(6, 16, 34, .5);
-            backdrop-filter: blur(2px);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .25s;
+            z-index: 70;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 11vh 16px 16px;
+            background: rgba(15, 15, 22, .38);
         }
 
-        .drawer-backdrop[data-open="true"] {
-            opacity: 1;
-            pointer-events: auto;
+        /* display:flex de arriba anularía el atributo hidden. */
+        .palette-backdrop[hidden],
+        .overlay[hidden],
+        .console[hidden] {
+            display: none;
         }
 
-        .drawer {
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 61;
-            width: min(460px, 100vw);
+        .palette {
+            width: min(640px, 100%);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 12px;
             background: var(--surface);
-            border-left: 1px solid var(--border);
-            box-shadow: -20px 0 60px rgba(0, 0, 0, .3);
-            transform: translateX(102%);
-            transition: transform .28s cubic-bezier(.4, 0, .2, 1);
-            display: flex;
-            flex-direction: column;
+            box-shadow: var(--shadow-lg);
         }
 
-        .drawer[data-open="true"] {
-            transform: translateX(0);
-        }
-
-        .drawer-head {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 14px;
+        .palette input {
+            width: 100%;
+            padding: 15px 18px;
+            border: 0;
             border-bottom: 1px solid var(--border);
-            flex: none;
+            outline: none;
+            background: transparent;
+            color: var(--text);
+            font: 15px var(--font);
         }
 
-        .drawer-head strong {
-            font-size: 14.5px;
+        .palette-results {
+            max-height: 54vh;
+            overflow-y: auto;
+            padding: 6px;
         }
 
-        .drawer-head .sub {
-            display: block;
-            font-size: 12px;
-            font-weight: 400;
+        .pr {
+            display: grid;
+            grid-template-columns: 62px minmax(0, 1fr);
+            gap: 1px 10px;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .pr[aria-selected="true"] {
+            background: var(--accent-soft);
+        }
+
+        .pr .kind {
+            justify-self: start;
+            grid-row: span 2;
+            font-size: 11px;
+            color: var(--text-subtle);
+        }
+
+        .pr .kind.badge {
+            font-size: 10.5px;
+            color: #fff;
+        }
+
+        .pr .ttl {
+            font-size: 14px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .pr .snip {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .pr mark {
+            background: rgba(250, 204, 21, .35);
+            color: inherit;
+            border-radius: 2px;
+        }
+
+        .palette-empty {
+            padding: 26px 18px;
+            text-align: center;
             color: var(--text-muted);
         }
 
-        .drawer-head .grow {
-            flex: 1;
-            min-width: 0;
+        .palette-foot {
+            display: flex;
+            gap: 16px;
+            padding: 8px 14px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-subtle);
         }
 
-        .drawer iframe {
-            flex: 1;
-            width: 100%;
-            border: none;
-            background: var(--surface);
-        }
-
+        /* =====================================================================
+           Movimiento reducido
+           ===================================================================== */
         @media (prefers-reduced-motion: reduce) {
 
-            html,
-            .drawer,
-            .drawer-backdrop,
             .tappy-fab img,
-            .tappy-fab .tappy-bubble {
-                scroll-behavior: auto;
-                transition: none;
-                animation: none;
+            .resp-tappy,
+            .assistant,
+            .sidebar {
+                animation: none !important;
+                transition: none !important;
             }
         }
 
-        /* ---------------- Responsive ---------------- */
-        @media (max-width: 1080px) {
-            .content {
-                padding: 28px 24px 120px;
-            }
-        }
+        /* =====================================================================
+           Responsive
+           ===================================================================== */
 
-        @media (max-width: 900px) {
-            #menuBtn {
+        /* Sin espacio para tres columnas: el asistente pasa a panel deslizable. */
+        @media (max-width: 1279px) {
+            .shell {
+                grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+            }
+
+            .assistant {
+                position: fixed;
+                top: var(--topbar-h);
+                right: 0;
+                bottom: 0;
+                z-index: 40;
+                width: min(400px, 100vw);
+                box-shadow: var(--shadow-lg);
+                transform: translateX(102%);
+                transition: transform .25s cubic-bezier(.4, 0, .2, 1);
+            }
+
+            .assistant[data-open="true"] {
+                transform: translateX(0);
+            }
+
+            .assistant-head .close-btn,
+            .assistant-toggle {
                 display: inline-grid;
             }
 
-            .topbar .brand {
+            .tappy-fab {
+                display: block;
+            }
+
+            .assistant[data-open="true"]~.tappy-fab {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1060px) {
+            .tabs {
+                gap: 18px;
+            }
+
+            .search-trigger {
+                min-width: 0;
+            }
+
+            .search-trigger span,
+            .search-trigger kbd {
+                display: none;
+            }
+        }
+
+        /* Pantallas angostas: la barra lateral también pasa a panel. */
+        @media (max-width: 900px) {
+            .topbar {
+                grid-template-columns: 1fr auto;
+                padding: 0 10px 0 8px;
+            }
+
+            .tabs {
                 display: none;
             }
 
-            .layout {
+            .menu-btn {
+                display: inline-grid;
+            }
+
+            .shell {
                 grid-template-columns: minmax(0, 1fr);
             }
 
             .sidebar {
                 position: fixed;
-                top: var(--header-h);
+                top: var(--topbar-h);
+                bottom: 0;
                 left: 0;
-                width: 300px;
-                z-index: 50;
-                transform: translateX(-102%);
-                transition: transform .25s;
+                z-index: 40;
+                width: min(290px, 86vw);
+                background: var(--surface);
                 box-shadow: var(--shadow-lg);
+                transform: translateX(-102%);
+                transition: transform .25s cubic-bezier(.4, 0, .2, 1);
             }
 
             .sidebar[data-open="true"] {
                 transform: translateX(0);
             }
 
-            .search-wrap {
-                flex: 1;
+            .page {
+                padding: 26px 18px 110px;
             }
 
-            .tappy-btn span {
-                display: none;
-            }
-
-            .tappy-btn {
-                padding: 3px;
-            }
-
-            .tappy-fab .tappy-bubble {
-                display: none;
-            }
-
-            .tappy-fab {
-                right: 10px;
-                bottom: 10px;
-            }
-
-            .tappy-fab img {
-                width: 76px;
-                height: 76px;
+            .page h1 {
+                font-size: 23px;
             }
         }
 
         @media (max-width: 560px) {
-            /* En pantallas pequeñas basta con el Tappy flotante: el de la barra sobra. */
-            .tappy-btn {
+
+            .env,
+            #adminBtn {
                 display: none;
             }
 
-            .drawer-head .sub {
+            .brand .docs-label {
                 display: none;
             }
 
-            .content {
-                padding: 20px 14px 110px;
+            .ep-row {
+                grid-template-columns: 56px minmax(0, 1fr);
             }
 
-            .hero {
-                padding: 22px 18px;
+            .ep-row .p {
+                display: none;
             }
 
-            .hero h1 {
-                font-size: 22px;
+            .pager {
+                grid-template-columns: 1fr;
             }
 
-            .ep-head,
-            .ep-body {
-                padding: 13px 13px;
+            .pager .next {
+                grid-column: 1;
+            }
+
+            .tappy-fab img {
+                width: 66px;
+                height: 66px;
             }
         }
     </style>
@@ -1560,117 +1841,137 @@
 
 <body>
     <header class="topbar">
-        <button class="icon-btn" id="menuBtn" type="button" aria-label="Abrir menú" aria-expanded="false">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M4 7h16M4 12h16M4 17h16" />
-            </svg>
-        </button>
-        <img class="logo" src="data:image/png;base64,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" alt="QPayPro">
-        <span class="brand">API Docs</span>
-        <div class="spacer"></div>
-        <div class="search-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <circle cx="11" cy="11" r="7" />
-                <path d="M20 20l-3.5-3.5" />
-            </svg>
-            <label class="sr-only" for="search" style="position:absolute;left:-9999px">Buscar</label>
-            <input id="search" type="search" placeholder="Buscar endpoint, parámetro…" autocomplete="off">
+        <div class="top-left">
+            <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Abrir menú"
+                aria-expanded="false" aria-controls="sidebar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M4 7h16M4 12h16M4 17h16" />
+                </svg>
+            </button>
+            <a class="brand" href="#introduccion">
+                <img class="logo" src="data:image/png;base64,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" alt="QPayPro">
+                <span class="docs-label">· Docs</span>
+            </a>
         </div>
-        <button class="icon-btn" id="credsBtn" type="button" aria-label="Mis credenciales de prueba"
-            title="Mis credenciales de prueba">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round">
-                <circle cx="7.5" cy="15.5" r="3.5" />
-                <path d="M10 13L20 3M17 6l2 2M14 9l2 2" />
-            </svg>
-        </button>
-        <a class="icon-btn" id="adminBtn" href="admin.html" rel="nofollow"
-            aria-label="Administrar la base de conocimiento" title="Administrar la base de conocimiento">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M12 20h9" />
-                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
-            </svg>
-        </a>
-        <button class="icon-btn" id="themeBtn" type="button" aria-label="Cambiar tema" title="Cambiar tema">
-            <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                stroke-linecap="round" stroke-linejoin="round"></svg>
-        </button>
-        <button class="tappy-btn" id="aiBtnTop" type="button" aria-haspopup="dialog"
-            aria-label="Hablar con Tappy, el asistente de integración">
-            <img src="assets/tappy.png" alt="" width="40" height="40">
-            <span>Tappy</span>
-        </button>
+
+        <nav class="tabs" aria-label="Secciones principales">
+            <a class="tab" href="#introduccion" data-tab="ref">Referencia API</a>
+            <a class="tab" href="#errores" data-tab="errores">Errores</a>
+            <a class="tab" href="#faq" data-tab="faq">Preguntas frecuentes</a>
+            <a class="tab" href="#soporte" data-tab="soporte">Soporte</a>
+        </nav>
+
+        <div class="top-actions">
+            <button class="search-trigger" id="searchBtn" type="button" aria-label="Buscar en la documentación">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M20 20l-3.5-3.5" />
+                </svg>
+                <span>Buscar</span>
+                <kbd id="searchKbd">Ctrl K</kbd>
+            </button>
+            <label class="env" title="Entorno de las URL y de la consola de pruebas">
+                <span class="sr-only">Entorno</span>
+                <select id="envSelect">
+                    <option value="sandbox">sandbox</option>
+                    <option value="produccion">producción</option>
+                </select>
+            </label>
+            <button class="icon-btn" id="credsBtn" type="button" aria-label="Mis credenciales de prueba"
+                title="Mis credenciales de prueba">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="7.5" cy="15.5" r="3.5" />
+                    <path d="M10 13L20 3M17 6l2 2M14 9l2 2" />
+                </svg>
+            </button>
+            <a class="icon-btn" id="adminBtn" href="admin.html" rel="nofollow"
+                aria-label="Administrar la base de conocimiento" title="Administrar la base de conocimiento">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                </svg>
+            </a>
+            <button class="icon-btn" id="themeBtn" type="button" aria-label="Cambiar tema" title="Cambiar tema">
+                <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round"></svg>
+            </button>
+            <button class="icon-btn assistant-toggle" id="assistantBtn" type="button"
+                aria-label="Abrir a Tappy, el asistente de la API" aria-controls="assistant">
+                <img src="assets/tappy/feliz.png" alt="" width="26" height="26">
+            </button>
+        </div>
     </header>
 
-    <div class="layout">
+    <div class="shell">
+        <!-- Dentro de .shell a propósito: .shell es position:fixed y crea su propio contexto
+             de apilamiento. Fuera de él, este fondo quedaba encima del menú y del asistente
+             y se tragaba los toques. -->
+        <div class="overlay" id="overlay" hidden></div>
+
         <aside class="sidebar" id="sidebar" data-open="false">
             <nav id="nav" aria-label="Índice de la documentación"></nav>
         </aside>
 
-        <main class="content">
-            <div class="hero">
-                <h1>Documentación de la API de QPayPro</h1>
-                <p>Todos los recursos para integrar cobros en línea: página de pago alojada, procesamiento de pagos,
-                    3D-Secure, tokenización de tarjetas, facturación electrónica (QpayFel) y cobros automáticos.</p>
-                <div class="hero-actions">
-                    <button class="primary" id="aiBtnHero" type="button">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9z" />
-                            <path d="M18 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" />
-                        </svg>
-                        Resolver mi integración con Tappy
-                    </button>
-                    <a href="#autenticacion">Empezar por autenticación</a>
-                </div>
-            </div>
-
-            <div id="doc"></div>
-
-            <p id="noResults" hidden style="color:var(--text-muted)">Sin resultados para tu búsqueda.</p>
+        <main class="main" id="main">
+            <article class="page" id="doc"></article>
         </main>
+
+        <aside class="assistant" id="assistant" data-open="false" aria-label="Tappy, asistente de la API">
+            <div class="assistant-head">
+                <span class="dot" aria-hidden="true"></span>
+                <div class="grow">
+                    <div class="t">Tappy · Asistente de la API</div>
+                    <div class="s">Responde con base en esta documentación</div>
+                </div>
+                <button class="icon-btn" id="assistantReset" type="button" title="Nueva conversación"
+                    aria-label="Nueva conversación">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 3-6.7" />
+                        <path d="M3 4v5h5" />
+                    </svg>
+                </button>
+                <a class="icon-btn" href="chat.html" target="_blank" rel="noopener" title="Abrir en pestaña nueva"
+                    aria-label="Abrir el asistente en una pestaña nueva">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 4h6v6" />
+                        <path d="M20 4l-8 8" />
+                        <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+                    </svg>
+                </a>
+                <button class="icon-btn close-btn" id="assistantClose" type="button" aria-label="Cerrar asistente">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                </button>
+            </div>
+            <iframe id="aiFrame" title="Tappy, asistente de integración de QPayPro"
+                data-src="chat.html?embed=1"></iframe>
+        </aside>
+
+        <button class="tappy-fab" id="aiFab" type="button" aria-label="Abrir a Tappy, el asistente de la API"
+            aria-controls="assistant">
+            <img src="assets/tappy-256.png" alt="" width="80" height="80">
+        </button>
     </div>
 
-    <button class="tappy-fab" id="aiFab" type="button" aria-haspopup="dialog"
-        aria-label="Hablar con Tappy, el asistente de integración">
-        <span class="tappy-bubble" aria-hidden="true">¿Te ayudo con tu integración?</span>
-        <img src="assets/tappy.png" alt="" width="96" height="96">
-    </button>
-
-    <div class="drawer-backdrop" id="drawerBackdrop" data-open="false"></div>
-    <aside class="drawer" id="drawer" data-open="false" role="dialog" aria-modal="true"
-        aria-label="Tappy, asistente de integración">
-        <div class="drawer-head">
-            <div class="grow">
-                <strong>Tappy</strong>
-                <span class="sub">Pega el JSON que falló y te digo qué corregir</span>
+    <div class="palette-backdrop" id="palette" hidden>
+        <div class="palette" role="dialog" aria-modal="true" aria-label="Buscar en la documentación">
+            <input id="paletteInput" type="search" placeholder="Buscar endpoint, parámetro, código de error…"
+                autocomplete="off" spellcheck="false" aria-controls="paletteResults"
+                aria-autocomplete="list">
+            <div class="palette-results" id="paletteResults" role="listbox"></div>
+            <div class="palette-foot">
+                <span><kbd>↑</kbd> <kbd>↓</kbd> navegar</span>
+                <span><kbd>Enter</kbd> abrir</span>
+                <span><kbd>Esc</kbd> cerrar</span>
             </div>
-            <button class="icon-btn" id="drawerReset" type="button" title="Nueva conversación"
-                aria-label="Nueva conversación">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M3 12a9 9 0 1 0 3-6.7" />
-                    <path d="M3 4v5h5" />
-                </svg>
-            </button>
-            <a class="icon-btn" id="openFull" href="chat.html" target="_blank" rel="noopener"
-                title="Abrir en pestaña nueva" aria-label="Abrir en pestaña nueva">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M14 4h6v6" />
-                    <path d="M20 4l-8 8" />
-                    <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
-                </svg>
-            </a>
-            <button class="icon-btn" id="drawerClose" type="button" aria-label="Cerrar asistente">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                    <path d="M6 6l12 12M18 6L6 18" />
-                </svg>
-            </button>
         </div>
-        <iframe id="aiFrame" title="Tappy, asistente de integración de QPayPro" data-src="chat.html?embed=1"></iframe>
-    </aside>
+    </div>
 
     <script>
         (function () {
@@ -2975,7 +3276,11 @@ window.addEventListener("message", function (event) {
                                 ['<strong>El comercio no tiene INFILE habilitado para facturar</strong>', 'Tu comercio no tiene configurada la integración con INFILE. Contacta con soporte para habilitarla.'],
                                 ['<strong>Error al conectar con pasarela</strong>', 'Hay un problema de conectividad con el servicio de pagos. Verifica tu conexión o contacta con soporte si persiste.'],
                                 ['<strong>HTTP 422 · responseCode 1003</strong>', 'La transacción tiene definida la pasarela BAC y requiere autenticación 3D-Secure. Sigue la documentación de <a href="#pagos3ds-bac">Pagos 3DS BAC</a>.'],
-                                ['<strong>HTTP 303</strong>', 'El banco solicita doble autenticación. Lee <code class="ic">responseObject.responseObjectBac.redirect</code> y redirige al cliente a esa URL.']
+                                ['<strong>HTTP 303</strong>', 'El banco solicita doble autenticación. Lee <code class="ic">responseObject.responseObjectBac.redirect</code> y redirige al cliente a esa URL.'],
+                                // Las dos filas siguientes no vienen de la documentación oficial: se
+                                // comprobaron con peticiones reales al sandbox desde la consola Probar.
+                                ['<strong>HTTP 400 · x_login inactive or does not exists</strong>', 'Alguna de las credenciales no es válida. La API de pagos devuelve este mismo mensaje sin importar cuál falle, así que revisa las tres: <code class="ic">x_login</code>, <code class="ic">x_private_key</code> y <code class="ic">x_api_secret</code>. <em>Observado en el sandbox.</em>'],
+                                ['<strong>HTTP 502 Bad Gateway</strong> (sandbox)', 'El sandbox lo devuelve de forma intermitente, <strong>incluso con peticiones válidas</strong>: la misma llamada puede responder 200 y, segundos después, 502. No indica un error en tu petición; reintenta tras unos segundos. Llega como página HTML, no como JSON, así que revisa el código HTTP antes de interpretar el cuerpo o tu integración fallará al parsearlo. <em>Observado en el sandbox.</em>']
                             ]
                         },
                         { type: 'callout', variant: 'info', html: '¿No encuentras tu error aquí? Pregúntale a <strong>Tappy</strong>: pega el JSON que falló y te dirá exactamente qué corregir. Si no está en la documentación, escalará tu caso a un ticket de soporte.' }
@@ -3325,7 +3630,50 @@ window.addEventListener("message", function (event) {
                 credsModal.querySelector('input').focus();
             }
 
+            /* ---- Tappy en la consola ---- */
+
+            var CONSOLE_MOODS = ['trabajando', 'aliviado', 'pensativo', 'triste', 'ansioso'];
+            var consoleMoodsLoaded = false;
+
+            // Se precargan al abrir la primera consola, no con la página: la mayoría de
+            // visitantes lee la documentación sin probar ningún endpoint.
+            function preloadConsoleMoods() {
+                if (consoleMoodsLoaded) return;
+                consoleMoodsLoaded = true;
+                CONSOLE_MOODS.forEach(function (mood) {
+                    new Image().src = 'assets/tappy/' + mood + '.png';
+                });
+            }
+
+            /** QPayPro puede responder HTTP 2xx con "result": 0 cuando la operación no se concretó. */
+            function businessFailed(body) {
+                try {
+                    var json = JSON.parse(body);
+                    return !!json && typeof json === 'object' && (json.result === 0 || json.result === '0');
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            // Tappy lee la respuesta como lo haría un integrador: primero el código HTTP y,
+            // si es 2xx, el campo `result`, para no celebrar un pago rechazado.
+            function moodForResponse(status, body) {
+                var group = Math.floor(status / 100);
+                if (group === 5) return 'triste';
+                if (group === 2) return businessFailed(body) ? 'pensativo' : 'aliviado';
+                // 3xx (como el 303 de 3-D Secure) y 4xx: hay un paso más o algo por revisar.
+                return 'pensativo';
+            }
+
+            // Errores del propio proxy (try.php), no de QPayPro.
+            function moodForProxyError(proxyStatus) {
+                if (proxyStatus === 429) return 'ansioso';                     // límite de pruebas
+                if (proxyStatus >= 400 && proxyStatus < 500) return 'pensativo'; // URL, método o body a corregir
+                return 'triste';                                                // timeout, TLS, sin conexión
+            }
+
             function buildConsole(host, ep) {
+                preloadConsoleMoods();
                 var baseUrl = ep.url;
                 var pathVars = (baseUrl.match(/\{[a-z_]+\}/gi) || []);
 
@@ -3445,8 +3793,15 @@ window.addEventListener("message", function (event) {
                 var resp = el('div', 'response');
                 resp.hidden = true;
                 var respHead = el('div', 'resp-head');
+                var respTappy = el('img', 'resp-tappy');
+                respTappy.alt = '';
+                respTappy.width = 38;
+                respTappy.height = 38;
+                // Decorativo: el estado lo comunican la píldora y el texto de al lado.
+                respTappy.setAttribute('aria-hidden', 'true');
                 var pill = el('span', 'status-pill');
                 var meta = el('span', 'resp-meta');
+                respHead.appendChild(respTappy);
                 respHead.appendChild(pill);
                 respHead.appendChild(meta);
 
@@ -3469,6 +3824,11 @@ window.addEventListener("message", function (event) {
                 resp.appendChild(outBody);
                 resp.appendChild(outHeaders);
                 host.appendChild(resp);
+
+                function setMood(mood) {
+                    respTappy.src = 'assets/tappy/' + mood + '.png';
+                    respTappy.dataset.mood = mood;
+                }
 
                 function showTab(which) {
                     var isBody = which === 'body';
@@ -3567,6 +3927,7 @@ window.addEventListener("message", function (event) {
                     });
                     if (missing.length) {
                         resp.hidden = false;
+                        setMood('pensativo');
                         pill.className = 'status-pill err';
                         pill.textContent = 'Falta dato';
                         meta.textContent = '';
@@ -3580,12 +3941,14 @@ window.addEventListener("message", function (event) {
                     sendBtn.disabled = true;
                     sendBtn.querySelector('span').textContent = 'Enviando…';
                     resp.hidden = false;
+                    setMood('trabajando');
                     pill.className = 'status-pill';
                     pill.textContent = '···';
                     meta.textContent = 'esperando respuesta';
                     outBody.textContent = '';
                     showTab('body');
 
+                    var proxyStatus = 0;
                     fetch('try.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -3596,11 +3959,13 @@ window.addEventListener("message", function (event) {
                             body: bodyArea ? bodyArea.value : ''
                         })
                     }).then(function (r) {
+                        proxyStatus = r.status;
                         return r.json().catch(function () {
                             throw new Error('El proxy devolvió una respuesta ilegible. ¿Está PHP activo?');
                         });
                     }).then(function (data) {
                         if (!data.ok) {
+                            setMood(moodForProxyError(proxyStatus));
                             pill.className = 'status-pill err';
                             pill.textContent = 'Error';
                             meta.textContent = data.ms ? data.ms + ' ms' : '';
@@ -3611,9 +3976,13 @@ window.addEventListener("message", function (event) {
                         var group = Math.floor(data.status / 100);
                         pill.className = 'status-pill s' + (group === 2 ? '2' : group === 4 ? '4' : group === 5 ? '5' : '');
                         pill.textContent = data.status;
+                        setMood(moodForResponse(data.status, data.body));
                         meta.textContent = data.ms + ' ms · ' +
                             (data.size < 1024 ? data.size + ' B' : (data.size / 1024).toFixed(1) + ' KB') +
-                            (data.truncated ? ' (recortado)' : '');
+                            (data.truncated ? ' (recortado)' : '') +
+                            // La píldora sigue mostrando el HTTP real; esto explica por qué
+                            // Tappy no celebra un 200 que QPayPro marcó como no exitoso.
+                            (group === 2 && businessFailed(data.body) ? ' · result: 0' : '');
 
                         var pretty = prettyMaybeJson(data.body);
                         if (pretty.json) {
@@ -3626,6 +3995,7 @@ window.addEventListener("message", function (event) {
                             return h + ': ' + data.headers[h];
                         }).join('\n') || '(sin cabeceras)';
                     }).catch(function (e) {
+                        setMood('triste');
                         pill.className = 'status-pill err';
                         pill.textContent = 'Error';
                         meta.textContent = '';
@@ -3637,171 +4007,640 @@ window.addEventListener("message", function (event) {
                 });
             }
 
+
+            /* =======================================================================
+               Vista de una página: cada sección y cada endpoint tiene su propia
+               ruta (#id). Los enlaces internos del contenido ya usan esos ids.
+               ======================================================================= */
+
+            var mainEl = document.getElementById('main');
+            var START_IDS = ['introduccion', 'autenticacion', 'entornos'];
+            var HELP_IDS = ['faq', 'errores', 'soporte'];
+            var SHORT_LABEL = {
+                checkout: 'Checkout',
+                pagos: 'Pagos',
+                'pagos3ds-bac': '3DS BAC',
+                tokenizacion: 'Tokenización',
+                pagos3ds2: '3D-Secure 2',
+                qpayfel: 'QpayFel',
+                suscripciones: 'Cobros automáticos'
+            };
+            var ENV_STORE = 'qpay-docs-env';
+
+            var sectionsById = {};
+            var endpointsById = {};
+            var routes = [];            // orden lineal para Anterior / Siguiente
+            var currentRoute = null;
+
+            DOCS.forEach(function (section) {
+                sectionsById[section.id] = section;
+                section.blocks.forEach(function (b) {
+                    if (b.type === 'endpoint') endpointsById[b.id] = { ep: b, section: section };
+                });
+            });
+
+            var apiSections = DOCS.filter(function (s) {
+                return START_IDS.indexOf(s.id) === -1 && HELP_IDS.indexOf(s.id) === -1;
+            });
+
+            function endpointsOf(section) {
+                return section.blocks.filter(function (b) { return b.type === 'endpoint'; });
+            }
+
+            function shortLabel(section) {
+                return SHORT_LABEL[section.id] || section.title;
+            }
+
+            START_IDS.forEach(function (id) { if (sectionsById[id]) routes.push(id); });
+            apiSections.forEach(function (s) {
+                routes.push(s.id);
+                endpointsOf(s).forEach(function (ep) { routes.push(ep.id); });
+            });
+            HELP_IDS.forEach(function (id) { if (sectionsById[id]) routes.push(id); });
+
+            function titleOf(id) {
+                if (endpointsById[id]) return endpointsById[id].ep.name;
+                return sectionsById[id] ? sectionsById[id].title : '';
+            }
+
+            // No se reutiliza `el(tag, cls, html)` para textos: esto escribe textContent.
+            function textEl(tag, cls, text) {
+                var node = document.createElement(tag);
+                if (cls) node.className = cls;
+                node.textContent = text;
+                return node;
+            }
+
+            /* ---------------- Entorno (sandbox / producción) ---------------- */
+
+            var envSelect = document.getElementById('envSelect');
+            var currentEnv = 'sandbox';
+            try { if (localStorage.getItem(ENV_STORE) === 'produccion') currentEnv = 'produccion'; } catch (e) { /* sin storage */ }
+            envSelect.value = currentEnv;
+
+            // Solo se cambia de host cuando la documentación da la URL de sandbox y existe
+            // su equivalente de producción. Las URL documentadas únicamente en producción
+            // (QpayFel, cobros automáticos) se muestran tal cual: no se inventa un sandbox.
+            function hasSandboxPair(url) {
+                return !!PROD_OF[hostOf(url)];
+            }
+
+            function envUrl(url) {
+                var h = hostOf(url);
+                return currentEnv === 'produccion' && PROD_OF[h] ? swapHost(url, h, PROD_OF[h]) : url;
+            }
+
+            function pathOf(url) {
+                try {
+                    return decodeURIComponent(new URL(url).pathname);
+                } catch (e) {
+                    return url;
+                }
+            }
+
+            envSelect.addEventListener('change', function () {
+                currentEnv = envSelect.value;
+                try { localStorage.setItem(ENV_STORE, currentEnv); } catch (e) { /* sin storage */ }
+                if (currentRoute) render(currentRoute, { keepScroll: true });
+            });
+
+            /* ---------------- Barra lateral ---------------- */
+
+            function navLink(id, text) {
+                var a = textEl('a', 'nav-link', text);
+                a.href = '#' + id;
+                a.dataset.route = id;
+                return a;
+            }
+
+            function buildNav() {
+                navEl.appendChild(textEl('div', 'nav-label', 'Empezar'));
+                START_IDS.forEach(function (id) {
+                    if (sectionsById[id]) navEl.appendChild(navLink(id, sectionsById[id].title));
+                });
+
+                apiSections.forEach(function (section) {
+                    navEl.appendChild(textEl('div', 'nav-label', shortLabel(section)));
+                    navEl.appendChild(navLink(section.id, 'Descripción general'));
+                    endpointsOf(section).forEach(function (ep) {
+                        navEl.appendChild(navLink(ep.id, ep.name));
+                    });
+                });
+
+                navEl.appendChild(textEl('div', 'nav-label', 'Ayuda'));
+                HELP_IDS.forEach(function (id) {
+                    if (sectionsById[id]) navEl.appendChild(navLink(id, sectionsById[id].title));
+                });
+            }
+
+            /* ---------------- Piezas de página ---------------- */
+
+            function crumbs(parts) {
+                var nav = el('nav', 'crumbs');
+                nav.setAttribute('aria-label', 'Ruta');
+                parts.forEach(function (part, i) {
+                    if (i) nav.appendChild(textEl('span', 'sep', '/'));
+                    if (part.href) {
+                        var a = textEl('a', null, part.text);
+                        a.href = part.href;
+                        nav.appendChild(a);
+                    } else {
+                        nav.appendChild(textEl('span', null, part.text));
+                    }
+                });
+                return nav;
+            }
+
+            function groupCrumb(section) {
+                if (START_IDS.indexOf(section.id) !== -1) return { text: 'Empezar', href: '#introduccion' };
+                if (HELP_IDS.indexOf(section.id) !== -1) return { text: 'Ayuda', href: '#faq' };
+                return { text: shortLabel(section), href: '#' + section.id };
+            }
+
+            // renderBlock (heredado) sin colorear; aquí se colorean los JSON de ejemplo.
+            function renderBlockPlus(block, host) {
+                renderBlock(block, host);
+                if (block.type === 'code' && (block.lang || 'json') === 'json') {
+                    var codes = host.querySelectorAll('.code-block code');
+                    var last = codes[codes.length - 1];
+                    if (last) last.innerHTML = highlightJson(block.code);
+                }
+            }
+
+            function endpointRow(ep) {
+                var a = el('a', 'ep-row');
+                a.href = '#' + ep.id;
+                a.appendChild(textEl('span', 'badge ' + ep.method, ep.method));
+                a.appendChild(textEl('span', 'name', ep.name));
+                a.appendChild(textEl('span', 'p', pathOf(envUrl(ep.url))));
+                return a;
+            }
+
+            // Lo usa renderBlock para bloques 'endpoint'; en esta vista se listan como filas.
             function renderEndpoint(ep) {
-                var art = el('article', 'endpoint');
-                art.id = ep.id;
-                art.dataset.search = (ep.method + ' ' + ep.name + ' ' + ep.url + ' ' + (ep.desc || '') +
-                    ' ' + (ep.params || []).map(function (p) { return p[0]; }).join(' ')).toLowerCase();
+                return endpointRow(ep);
+            }
 
-                var head = el('div', 'ep-head');
-                var title = el('div', 'ep-title');
-                title.appendChild(el('span', 'method ' + ep.method, ep.method));
-                title.appendChild(el('h3', null, ep.name));
+            function pager(id) {
+                var i = routes.indexOf(id);
+                var wrap = el('nav', 'pager');
+                wrap.setAttribute('aria-label', 'Páginas anterior y siguiente');
+                if (i > 0) {
+                    var prev = el('a', 'prev');
+                    prev.href = '#' + routes[i - 1];
+                    prev.appendChild(textEl('small', null, '← Anterior'));
+                    prev.appendChild(document.createTextNode(titleOf(routes[i - 1])));
+                    wrap.appendChild(prev);
+                }
+                if (i >= 0 && i < routes.length - 1) {
+                    var next = el('a', 'next');
+                    next.href = '#' + routes[i + 1];
+                    next.appendChild(textEl('small', null, 'Siguiente →'));
+                    next.appendChild(document.createTextNode(titleOf(routes[i + 1])));
+                    wrap.appendChild(next);
+                }
+                return wrap;
+            }
 
+            /* ---------------- Página de sección ---------------- */
+
+            function renderSectionPage(section) {
+                var page = docEl;
+                var parts = [{ text: 'Referencia API', href: '#introduccion' }];
+                var group = groupCrumb(section);
+                if (group.href !== '#' + section.id) parts.push(group);
+                parts.push({ text: section.id in SHORT_LABEL ? 'Descripción general' : section.title });
+                page.appendChild(crumbs(parts));
+
+                page.appendChild(textEl('h1', null, section.title));
+                if (section.intro) page.appendChild(textEl('p', 'lead', section.intro));
+
+                // Se respeta el orden original: los endpoints consecutivos se agrupan en
+                // una lista, y los bloques de explicación quedan en su lugar entre ellos.
+                var list = null;
+                section.blocks.forEach(function (block) {
+                    if (block.type === 'endpoint') {
+                        if (!list) {
+                            list = el('div', 'ep-list');
+                            page.appendChild(list);
+                        }
+                        list.appendChild(endpointRow(block));
+                        return;
+                    }
+                    list = null;
+                    renderBlockPlus(block, page);
+                });
+
+                page.appendChild(pager(section.id));
+            }
+
+            /* ---------------- Página de endpoint ---------------- */
+
+            function highlightCurl(text) {
+                return escapeHtml(text).replace(/('[^']*')|(^|\s)(-[A-Za-z])\b|^(curl)\b/gm,
+                    function (m, str, space, flag, cmd) {
+                        if (str) return '<span class="c-str">' + str + '</span>';
+                        if (flag) return space + '<span class="c-flag">' + flag + '</span>';
+                        return '<span class="c-cmd">' + cmd + '</span>';
+                    });
+            }
+
+            function requestHeaders(ep) {
+                var headers = {};
+                (ep.headers || []).forEach(function (h) { headers[h[0]] = h[1]; });
+                if (ep.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+                return headers;
+            }
+
+            function requestBlock(ep) {
+                var url = envUrl(ep.url);
+                var curl = curlFor(ep.method, url, requestHeaders(ep), ep.body || '');
+                var views = [{ id: 'curl', label: 'cURL', raw: curl, html: '<span class="c-com">// solicitud</span>\n' + highlightCurl(curl) }];
+                if (ep.body) {
+                    views.push({ id: 'json', label: 'JSON', raw: ep.body, html: '<span class="c-com">// body</span>\n' + highlightJson(ep.body) });
+                }
+
+                var wrap = el('div', 'code-block request');
+                var head = el('div', 'code-head');
+                var tabs = el('div', 'code-tabs');
+                tabs.setAttribute('role', 'tablist');
+                var code = document.createElement('code');
+                var active = views[0];
+
+                function show(view) {
+                    active = view;
+                    code.innerHTML = view.html;
+                    [].forEach.call(tabs.children, function (b) {
+                        b.setAttribute('aria-selected', String(b.dataset.view === view.id));
+                    });
+                }
+
+                views.forEach(function (view) {
+                    var b = textEl('button', null, view.label);
+                    b.type = 'button';
+                    b.setAttribute('role', 'tab');
+                    b.dataset.view = view.id;
+                    b.addEventListener('click', function () { show(view); });
+                    tabs.appendChild(b);
+                });
+
+                var copy = textEl('button', 'copy-btn', 'Copiar');
+                copy.type = 'button';
+                copy.addEventListener('click', function () { copyText(active.raw, copy, 'Copiar'); });
+
+                head.appendChild(tabs);
+                head.appendChild(copy);
+                var pre = document.createElement('pre');
+                pre.appendChild(code);
+                wrap.appendChild(head);
+                wrap.appendChild(pre);
+                show(views[0]);
+                return wrap;
+            }
+
+            function rowsFrom(items) {
+                var wrap = el('div', 'rows');
+                items.forEach(function (item) {
+                    var row = el('div', 'row');
+                    row.appendChild(textEl('div', 'row-name', item.name));
+                    var meta = textEl('div', 'row-meta' + (item.metaClass ? ' ' + item.metaClass : ''), item.meta);
+                    row.appendChild(meta);
+                    if (item.desc) row.appendChild(el('div', 'row-desc', item.desc));   // HTML propio del contenido
+                    wrap.appendChild(row);
+                });
+                return wrap;
+            }
+
+            var openConsole = null;   // función para abrir la consola de la página actual
+
+            function renderEndpointPage(ep, section) {
+                var page = docEl;
+                page.appendChild(crumbs([
+                    { text: 'Referencia API', href: '#introduccion' },
+                    { text: shortLabel(section), href: '#' + section.id },
+                    { text: ep.name }
+                ]));
+
+                var titleRow = el('div', 'title-row');
+                titleRow.appendChild(textEl('h1', null, ep.name));
                 var tryBtn = el('button', 'try-btn',
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" ' +
-                    'stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9z"/></svg>' +
+                    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg>' +
                     '<span>Probar</span>');
                 tryBtn.type = 'button';
                 tryBtn.setAttribute('aria-expanded', 'false');
-                title.appendChild(tryBtn);
-                head.appendChild(title);
+                titleRow.appendChild(tryBtn);
+                page.appendChild(titleRow);
 
-                var urlRow = el('div', 'ep-url');
-                urlRow.appendChild(el('div', 'u', ep.url));
-                var copyUrl = el('button', 'mini-copy', 'Copiar URL');
+                var url = envUrl(ep.url);
+                var line = el('div', 'ep-line');
+                line.appendChild(textEl('span', 'badge ' + ep.method, ep.method));
+                line.appendChild(textEl('span', 'path', pathOf(url)));
+                page.appendChild(line);
+
+                var hostLine = el('div', 'ep-host');
+                hostLine.appendChild(textEl('span', 'host', url.replace(/^(https?:\/\/[^/]+).*$/, '$1')));
+                hostLine.appendChild(textEl('span', 'env-tag',
+                    hasSandboxPair(ep.url) ? (currentEnv === 'produccion' ? 'producción' : 'sandbox') : 'solo producción documentada'));
+                var copyUrl = textEl('button', 'mini-copy', 'Copiar URL');
                 copyUrl.type = 'button';
-                copyUrl.addEventListener('click', function () { copyText(ep.url, copyUrl, 'Copiar URL'); });
-                urlRow.appendChild(copyUrl);
-                head.appendChild(urlRow);
-                art.appendChild(head);
+                copyUrl.addEventListener('click', function () { copyText(url, copyUrl, 'Copiar URL'); });
+                hostLine.appendChild(copyUrl);
+                page.appendChild(hostLine);
 
-                var body = el('div', 'ep-body');
-                if (ep.desc) body.appendChild(el('p', 'ep-desc', ep.desc));
+                if (ep.desc) page.appendChild(textEl('p', 'lead', ep.desc));
 
-                if (ep.headers && ep.headers.length) {
-                    body.appendChild(el('div', 'sub-label', 'Headers'));
-                    body.appendChild(makeTable(null, ep.headers.map(function (h) {
-                        return ['<code class="ic">' + h[0] + '</code>', '<code class="ic">' + h[1] + '</code>'];
-                    })));
-                }
+                page.appendChild(requestBlock(ep));
 
-                if (ep.params && ep.params.length) {
-                    body.appendChild(el('div', 'sub-label', 'Parámetros'));
-                    body.appendChild(makeParamsTable(ep.params));
-                }
-
-                if (ep.body) {
-                    body.appendChild(el('div', 'sub-label', 'Body raw (json)'));
-                    body.appendChild(makeCode(ep.body, 'json'));
-                }
-
-                (ep.after || []).forEach(function (b) { renderBlock(b, body); });
-
-                art.appendChild(body);
-
-                // La consola se construye la primera vez que se abre (39 endpoints:
-                // crearlas todas de entrada haría el render inicial mucho más lento).
+                // Consola "Probar": se construye al abrirla por primera vez.
                 var panel = el('div', 'console');
                 panel.hidden = true;
-                art.appendChild(panel);
+                page.appendChild(panel);
 
-                tryBtn.addEventListener('click', function () {
-                    var open = panel.hidden;
+                openConsole = function (forceOpen) {
+                    var open = forceOpen ? true : panel.hidden;
                     if (open && !panel.dataset.built) {
                         buildConsole(panel, ep);
                         panel.dataset.built = '1';
+                        // La consola arranca en el entorno elegido arriba.
+                        var sel = panel.querySelector('select');
+                        if (sel && hasSandboxPair(ep.url)) {
+                            sel.value = currentEnv === 'produccion' ? 'Producción' : 'Sandbox';
+                            sel.dispatchEvent(new Event('change'));
+                        }
                     }
                     panel.hidden = !open;
                     tryBtn.setAttribute('aria-expanded', String(open));
                     tryBtn.querySelector('span').textContent = open ? 'Cerrar' : 'Probar';
                     if (open) {
-                        var firstField = panel.querySelector('input, textarea');
-                        if (firstField) firstField.focus({ preventScroll: true });
+                        panel.scrollIntoView({ block: 'nearest' });
+                        var first = panel.querySelector('textarea, input');
+                        if (first) first.focus({ preventScroll: true });
                     }
-                });
+                };
+                tryBtn.addEventListener('click', function () { openConsole(false); });
 
-                return art;
+                if (ep.headers && ep.headers.length) {
+                    page.appendChild(textEl('div', 'sub-label', 'Encabezados'));
+                    page.appendChild(rowsFrom(ep.headers.map(function (h) {
+                        return { name: h[0], meta: h[1], metaClass: 'mono' };
+                    })));
+                }
+
+                if (ep.params && ep.params.length) {
+                    page.appendChild(textEl('div', 'sub-label', 'Parámetros del cuerpo'));
+                    page.appendChild(rowsFrom(ep.params.map(function (p) {
+                        return { name: p[0], meta: p[1] ? 'requerido' : 'opcional', metaClass: p[1] ? 'req' : '', desc: p[2] };
+                    })));
+                }
+
+                (ep.after || []).forEach(function (b) { renderBlockPlus(b, page); });
+
+                page.appendChild(pager(ep.id));
             }
 
-            DOCS.forEach(function (section) {
-                var sec = el('section', 'doc-section');
-                sec.id = section.id;
-                sec.appendChild(el('h2', null, '<span aria-hidden="true">' + section.emoji + '</span> ' + section.title));
-                if (section.intro) sec.appendChild(el('p', 'section-intro', section.intro));
-                section.blocks.forEach(function (b) { renderBlock(b, sec); });
-                docEl.appendChild(sec);
+            /* ---------------- Enrutador ---------------- */
 
-                var group = el('div', 'nav-group');
-                var link = el('a', null, '<span class="emoji" aria-hidden="true">' + section.emoji + '</span>' + section.title);
-                link.href = '#' + section.id;
-                link.dataset.section = section.id;
-                group.appendChild(link);
+            var tabsEl = document.querySelector('.tabs');
 
-                var endpoints = section.blocks.filter(function (b) { return b.type === 'endpoint'; });
-                if (endpoints.length) {
-                    var sub = el('div', 'nav-sub');
-                    endpoints.forEach(function (ep) {
-                        var a = el('a', null, '<span class="m" style="color:var(--' + ep.method.toLowerCase() + ')">' + ep.method + '</span><span>' + ep.name + '</span>');
-                        a.href = '#' + ep.id;
-                        a.dataset.endpoint = ep.id;
-                        sub.appendChild(a);
-                    });
-                    group.appendChild(sub);
+            function render(requested, opts) {
+                opts = opts || {};
+                var id = (endpointsById[requested] || sectionsById[requested]) ? requested : 'introduccion';
+                var prevScroll = mainEl.scrollTop;
+                currentRoute = id;
+                openConsole = null;
+                docEl.innerHTML = '';
+
+                if (endpointsById[id]) {
+                    renderEndpointPage(endpointsById[id].ep, endpointsById[id].section);
+                } else {
+                    renderSectionPage(sectionsById[id]);
                 }
-                navEl.appendChild(group);
+
+                navEl.querySelectorAll('[aria-current]').forEach(function (a) { a.removeAttribute('aria-current'); });
+                var link = navEl.querySelector('[data-route="' + id + '"]');
+                if (link) {
+                    link.setAttribute('aria-current', 'page');
+                    link.scrollIntoView({ block: 'nearest' });
+                }
+
+                var tab = HELP_IDS.indexOf(id) !== -1 ? id : 'ref';
+                tabsEl.querySelectorAll('.tab').forEach(function (t) {
+                    if (t.dataset.tab === tab) t.setAttribute('aria-current', 'page');
+                    else t.removeAttribute('aria-current');
+                });
+
+                mainEl.scrollTop = opts.keepScroll ? prevScroll : 0;
+                document.title = titleOf(id) + ' · QPayPro Docs';
+                sendContext();
+                closeSidebar();
+            }
+
+            window.addEventListener('hashchange', function () {
+                render(decodeURIComponent(location.hash.slice(1)));
             });
 
-            /* ---------------- Búsqueda ---------------- */
+            /* ---------------- Búsqueda en todo el contenido ---------------- */
 
-            var searchEl = document.getElementById('search');
-            var noResults = document.getElementById('noResults');
+            var parser = new DOMParser();
 
-            searchEl.addEventListener('input', function () {
-                var q = searchEl.value.trim().toLowerCase();
-                var anyVisible = false;
+            // DOMParser no ejecuta scripts ni manejadores: seguro para extraer texto.
+            function plain(html) {
+                return (parser.parseFromString(String(html || ''), 'text/html').body.textContent || '')
+                    .replace(/\s+/g, ' ').trim();
+            }
 
+            function norm(s) {
+                // Quita tildes: "tokenizacion" encuentra "Tokenización".
+                return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            }
+
+            function blockText(b) {
+                switch (b.type) {
+                    case 'p':
+                    case 'callout': return plain(b.html);
+                    case 'h3': return b.text;
+                    case 'list':
+                    case 'steps': return b.items.map(plain).join(' ');
+                    case 'code': return b.code;
+                    case 'table': return [].concat(b.head || [], [].concat.apply([], b.rows)).map(plain).join(' ');
+                    case 'cards': return b.items.map(function (c) { return [c.k, c.v, c.p].join(' '); }).join(' ');
+                    case 'faq': return b.items.map(function (q) { return plain(q[0]) + ' ' + plain(q[1]); }).join(' ');
+                    default: return '';
+                }
+            }
+
+            var searchIndex = [];
+
+            function buildIndex() {
                 DOCS.forEach(function (section) {
-                    var sec = document.getElementById(section.id);
-                    var navLink = navEl.querySelector('[data-section="' + section.id + '"]');
-                    var group = navLink.parentElement;
+                    var texts = [section.intro || ''];
+                    section.blocks.forEach(function (b) {
+                        if (b.type !== 'endpoint') texts.push(blockText(b));
 
-                    if (!q) {
-                        sec.hidden = false;
-                        group.hidden = false;
-                        sec.querySelectorAll('.endpoint').forEach(function (e) { e.hidden = false; });
-                        navEl.querySelectorAll('[data-endpoint]').forEach(function (a) { a.hidden = false; });
-                        anyVisible = true;
-                        return;
-                    }
-
-                    var sectionMatch = (section.title + ' ' + (section.intro || '')).toLowerCase().indexOf(q) !== -1;
-                    var visibleEndpoints = 0;
-
-                    sec.querySelectorAll('.endpoint').forEach(function (e) {
-                        var match = sectionMatch || e.dataset.search.indexOf(q) !== -1;
-                        e.hidden = !match;
-                        var navItem = navEl.querySelector('[data-endpoint="' + e.id + '"]');
-                        if (navItem) navItem.hidden = !match;
-                        if (match) visibleEndpoints++;
+                        // Cada fila de una tabla de errores y cada pregunta frecuente son
+                        // resultados propios: quien busca "502" quiere esa fila, no la sección.
+                        if (b.type === 'table' && section.id === 'errores') {
+                            b.rows.forEach(function (row) {
+                                searchIndex.push({ id: section.id, kind: 'Error', title: plain(row[0]), text: plain(row.join(' ')) });
+                            });
+                        }
+                        if (b.type === 'faq') {
+                            b.items.forEach(function (q) {
+                                searchIndex.push({ id: section.id, kind: 'FAQ', title: plain(q[0]), text: plain(q[1]) });
+                            });
+                        }
+                        if (b.type === 'endpoint') {
+                            var ep = b;
+                            searchIndex.push({
+                                id: ep.id,
+                                kind: ep.method,
+                                title: ep.name,
+                                text: [shortLabel(section), ep.url, ep.desc || '',
+                                    (ep.params || []).map(function (p) { return p[0] + ' ' + plain(p[2]); }).join(' '),
+                                    (ep.headers || []).map(function (h) { return h.join(' '); }).join(' '),
+                                    ep.body || '',
+                                    (ep.after || []).map(blockText).join(' ')].join(' ')
+                            });
+                        }
                     });
-
-                    var show = sectionMatch || visibleEndpoints > 0;
-                    sec.hidden = !show;
-                    group.hidden = !show;
-                    if (show) anyVisible = true;
+                    searchIndex.push({ id: section.id, kind: 'Sección', title: section.title, text: texts.join(' ') });
                 });
+                searchIndex.forEach(function (item) {
+                    item.nTitle = norm(item.title);
+                    item.nText = norm(item.text);
+                });
+            }
 
-                noResults.hidden = anyVisible;
-            });
+            function search(query) {
+                var tokens = norm(query).split(/\s+/).filter(Boolean);
+                if (!tokens.length) return [];
+                var nq = tokens.join(' ');
+                return searchIndex.map(function (item) {
+                    var hay = item.nTitle + ' ' + item.nText;
+                    for (var i = 0; i < tokens.length; i++) {
+                        if (hay.indexOf(tokens[i]) === -1) return null;
+                    }
+                    var score = 0;
+                    if (item.nTitle === nq) score += 40;
+                    if (item.nTitle.indexOf(nq) === 0) score += 20;
+                    if (item.nTitle.indexOf(nq) !== -1) score += 12;
+                    tokens.forEach(function (t) { if (item.nTitle.indexOf(t) !== -1) score += 4; });
+                    if (item.kind !== 'Sección') score += 1;
+                    return { item: item, score: score };
+                }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).slice(0, 40);
+            }
 
-            /* ---------------- Scroll spy ---------------- */
-
-            var spyTargets = [].slice.call(document.querySelectorAll('.doc-section, .endpoint'));
-            var spyObserver = new IntersectionObserver(function (entries) {
-                entries.forEach(function (entry) {
-                    if (!entry.isIntersecting) return;
-                    var id = entry.target.id;
-                    navEl.querySelectorAll('a.active').forEach(function (a) { a.classList.remove('active'); });
-                    var link = navEl.querySelector('[href="#' + id + '"]');
-                    if (link) {
-                        link.classList.add('active');
-                        var section = link.closest('.nav-group').querySelector('[data-section]');
-                        if (section && section !== link) section.classList.add('active');
+            /** Fragmento del texto alrededor de la primera coincidencia, con las coincidencias marcadas. */
+            function snippet(item, tokens) {
+                var text = item.text;
+                var nText = item.nText;
+                var at = -1;
+                tokens.forEach(function (t) {
+                    var i = nText.indexOf(t);
+                    if (i !== -1 && (at === -1 || i < at)) at = i;
+                });
+                if (at === -1) at = 0;
+                var start = Math.max(0, at - 40);
+                var slice = text.slice(start, start + 150);
+                var nSlice = norm(slice);
+                var marks = [];
+                tokens.forEach(function (t) {
+                    var from = 0;
+                    var i;
+                    while (t && (i = nSlice.indexOf(t, from)) !== -1) {
+                        marks.push([i, i + t.length]);
+                        from = i + t.length;
                     }
                 });
-            }, { rootMargin: '-70px 0px -70% 0px' });
-            spyTargets.forEach(function (t) { spyObserver.observe(t); });
+                marks.sort(function (a, b) { return a[0] - b[0]; });
+                var html = '';
+                var pos = 0;
+                marks.forEach(function (m) {
+                    if (m[0] < pos) return;
+                    html += escapeHtml(slice.slice(pos, m[0])) + '<mark>' + escapeHtml(slice.slice(m[0], m[1])) + '</mark>';
+                    pos = m[1];
+                });
+                html += escapeHtml(slice.slice(pos));
+                return (start > 0 ? '…' : '') + html;
+            }
+
+            var palette = document.getElementById('palette');
+            var paletteInput = document.getElementById('paletteInput');
+            var paletteResults = document.getElementById('paletteResults');
+            var paletteSel = 0;
+            var lastFocusBeforePalette = null;
+
+            function renderResults() {
+                var q = paletteInput.value;
+                var tokens = norm(q).split(/\s+/).filter(Boolean);
+                paletteResults.innerHTML = '';
+                paletteSel = 0;
+
+                if (!tokens.length) {
+                    paletteResults.appendChild(textEl('div', 'palette-empty', 'Escribe para buscar en toda la documentación: endpoints, parámetros, errores y preguntas frecuentes.'));
+                    return;
+                }
+                var results = search(q);
+                if (!results.length) {
+                    paletteResults.appendChild(textEl('div', 'palette-empty', 'Sin resultados para «' + q + '». Prueba preguntarle a Tappy.'));
+                    return;
+                }
+                results.forEach(function (r, i) {
+                    var a = el('a', 'pr');
+                    a.href = '#' + r.item.id;
+                    a.setAttribute('role', 'option');
+                    a.setAttribute('aria-selected', String(i === 0));
+                    var isMethod = /^(GET|POST|PUT|DELETE)$/.test(r.item.kind);
+                    a.appendChild(textEl('span', 'kind' + (isMethod ? ' badge ' + r.item.kind : ''), r.item.kind));
+                    a.appendChild(textEl('span', 'ttl', r.item.title));
+                    a.appendChild(el('span', 'snip', snippet(r.item, tokens)));
+                    a.addEventListener('mousemove', function () { select(i); });
+                    a.addEventListener('click', function () { closePalette(true); });
+                    paletteResults.appendChild(a);
+                });
+            }
+
+            function select(i) {
+                var items = paletteResults.querySelectorAll('.pr');
+                if (!items.length) return;
+                paletteSel = (i + items.length) % items.length;
+                items.forEach(function (item, k) { item.setAttribute('aria-selected', String(k === paletteSel)); });
+                items[paletteSel].scrollIntoView({ block: 'nearest' });
+            }
+
+            function openPalette() {
+                lastFocusBeforePalette = document.activeElement;
+                palette.hidden = false;
+                paletteInput.value = '';
+                renderResults();
+                paletteInput.focus();
+            }
+
+            function closePalette(navigating) {
+                palette.hidden = true;
+                if (!navigating && lastFocusBeforePalette && lastFocusBeforePalette.focus) lastFocusBeforePalette.focus();
+            }
+
+            paletteInput.addEventListener('input', renderResults);
+            paletteInput.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowDown') { e.preventDefault(); select(paletteSel + 1); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); select(paletteSel - 1); }
+                else if (e.key === 'Enter') {
+                    var item = paletteResults.querySelectorAll('.pr')[paletteSel];
+                    if (item) {
+                        e.preventDefault();
+                        closePalette(true);
+                        location.hash = item.getAttribute('href');
+                    }
+                }
+            });
+            palette.addEventListener('click', function (e) {
+                if (e.target === palette) closePalette(false);
+            });
+            document.getElementById('searchBtn').addEventListener('click', openPalette);
+            if (/Mac|iPhone|iPad/.test(navigator.platform || '')) {
+                document.getElementById('searchKbd').textContent = '⌘ K';
+            }
 
             /* ---------------- Tema ---------------- */
 
@@ -3809,21 +4648,23 @@ window.addEventListener("message", function (event) {
             var themeIcon = document.getElementById('themeIcon');
             var aiFrame = document.getElementById('aiFrame');
 
+            function postToFrame(message) {
+                if (aiFrame.src && aiFrame.contentWindow) aiFrame.contentWindow.postMessage(message, '*');
+            }
+
             function applyTheme(theme) {
                 document.documentElement.dataset.theme = theme;
                 themeIcon.innerHTML = theme === 'dark'
                     ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
                     : '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>';
                 themeBtn.setAttribute('aria-label', theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
-                try { localStorage.setItem('qpay-theme', theme); } catch (e) { /* almacenamiento no disponible */ }
-                if (aiFrame.contentWindow && aiFrame.src) {
-                    aiFrame.contentWindow.postMessage({ type: 'qpay-theme', theme: theme }, '*');
-                }
+                try { localStorage.setItem('qpay-theme', theme); } catch (e) { /* sin storage */ }
+                postToFrame({ type: 'qpay-theme', theme: theme });
             }
 
-            var stored = null;
-            try { stored = localStorage.getItem('qpay-theme'); } catch (e) { /* almacenamiento no disponible */ }
-            applyTheme(stored || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+            var storedTheme = null;
+            try { storedTheme = localStorage.getItem('qpay-theme'); } catch (e) { /* sin storage */ }
+            applyTheme(storedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 
             themeBtn.addEventListener('click', function () {
                 applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
@@ -3833,86 +4674,149 @@ window.addEventListener("message", function (event) {
                 openCredsModal();
             });
 
-            /* ---------------- Drawer IA ---------------- */
+            /* ---------------- Asistente ---------------- */
 
-            var drawer = document.getElementById('drawer');
-            var backdrop = document.getElementById('drawerBackdrop');
-            var lastFocus = null;
-
-            function openDrawer() {
-                lastFocus = document.activeElement;
-                // Cargamos el chat la primera vez que se abre, no en el load de la página.
-                if (!aiFrame.src) {
-                    aiFrame.src = aiFrame.dataset.src;
-                    aiFrame.addEventListener('load', function () {
-                        aiFrame.contentWindow.postMessage(
-                            { type: 'qpay-theme', theme: document.documentElement.dataset.theme }, '*');
-                    });
-                }
-                drawer.dataset.open = 'true';
-                backdrop.dataset.open = 'true';
-                document.body.style.overflow = 'hidden';
-                setTimeout(function () { aiFrame.focus(); }, 300);
-            }
-
-            function closeDrawer() {
-                drawer.dataset.open = 'false';
-                backdrop.dataset.open = 'false';
-                document.body.style.overflow = '';
-                if (lastFocus && lastFocus.focus) lastFocus.focus();
-            }
-
-            ['aiFab', 'aiBtnTop', 'aiBtnHero'].forEach(function (id) {
-                document.getElementById(id).addEventListener('click', openDrawer);
-            });
-
-            // Tappy saluda una sola vez por sesión para no volverse insistente.
-            (function greet() {
-                var bubble = document.querySelector('.tappy-bubble');
-                if (!bubble) return;
-                var greeted = false;
-                try { greeted = sessionStorage.getItem('tappy-saludo') === '1'; } catch (e) { /* sin storage */ }
-                if (greeted) return;
-                setTimeout(function () {
-                    if (drawer.dataset.open === 'true') return;
-                    bubble.dataset.show = 'true';
-                    try { sessionStorage.setItem('tappy-saludo', '1'); } catch (e) { /* sin storage */ }
-                    setTimeout(function () { delete bubble.dataset.show; }, 6000);
-                }, 1400);
-            })();
-            document.getElementById('drawerClose').addEventListener('click', closeDrawer);
-            document.getElementById('drawerReset').addEventListener('click', function () {
-                if (aiFrame.contentWindow && aiFrame.src) {
-                    aiFrame.contentWindow.postMessage({ type: 'qpay-reset' }, '*');
-                }
-            });
-            backdrop.addEventListener('click', closeDrawer);
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && drawer.dataset.open === 'true') closeDrawer();
-                if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
-                    e.preventDefault();
-                    searchEl.focus();
-                    searchEl.select();
-                }
-            });
-
-            /* ---------------- Menú móvil ---------------- */
-
+            var assistant = document.getElementById('assistant');
+            var overlay = document.getElementById('overlay');
             var sidebar = document.getElementById('sidebar');
             var menuBtn = document.getElementById('menuBtn');
+            var wideMq = window.matchMedia('(min-width: 1280px)');
+            var narrowMq = window.matchMedia('(max-width: 900px)');
+
+            // Qué está mirando el usuario, para que Tappy responda sobre eso.
+            function contextFor(id) {
+                var chips = [];
+                var entry = endpointsById[id];
+                if (entry) {
+                    chips.push({ action: 'try', label: currentEnv === 'produccion' ? 'Probar en producción' : 'Probar en sandbox' });
+                    chips.push({ action: 'errors', label: 'Ver códigos de error' });
+                    return {
+                        kind: 'endpoint',
+                        label: entry.ep.method + ' ' + entry.ep.name,
+                        url: envUrl(entry.ep.url),
+                        placeholder: 'Pregunta sobre este endpoint…',
+                        chips: chips
+                    };
+                }
+                if (id !== 'errores') chips.push({ action: 'errors', label: 'Ver códigos de error' });
+                return {
+                    kind: 'section',
+                    label: sectionsById[id] ? sectionsById[id].title : '',
+                    placeholder: 'Pregunta sobre esta sección…',
+                    chips: chips
+                };
+            }
+
+            function sendContext() {
+                if (currentRoute) postToFrame({ type: 'qpay-context', context: contextFor(currentRoute) });
+            }
+
+            function ensureFrame() {
+                if (aiFrame.src) return;
+                aiFrame.addEventListener('load', function () {
+                    postToFrame({ type: 'qpay-theme', theme: document.documentElement.dataset.theme });
+                    sendContext();
+                });
+                aiFrame.src = aiFrame.dataset.src;
+            }
+
+            function syncOverlay() {
+                var open = assistant.dataset.open === 'true' || sidebar.dataset.open === 'true';
+                overlay.hidden = !open;
+            }
+
+            function openAssistant() {
+                ensureFrame();
+                if (!wideMq.matches) {
+                    closeSidebar();
+                    assistant.dataset.open = 'true';
+                    syncOverlay();
+                }
+                setTimeout(function () { aiFrame.focus(); }, 260);
+            }
+
+            function closeAssistant() {
+                assistant.dataset.open = 'false';
+                syncOverlay();
+            }
+
+            function closeSidebar() {
+                if (sidebar.dataset.open !== 'true') return;
+                sidebar.dataset.open = 'false';
+                menuBtn.setAttribute('aria-expanded', 'false');
+                syncOverlay();
+            }
+
+            // En pantallas anchas el asistente está siempre a la vista: se carga de entrada.
+            if (wideMq.matches) ensureFrame();
+            wideMq.addEventListener('change', function (e) {
+                if (e.matches) {
+                    ensureFrame();
+                    closeAssistant();
+                }
+            });
+
+            document.getElementById('aiFab').addEventListener('click', openAssistant);
+            document.getElementById('assistantBtn').addEventListener('click', openAssistant);
+            document.getElementById('assistantClose').addEventListener('click', closeAssistant);
+            document.getElementById('assistantReset').addEventListener('click', function () {
+                postToFrame({ type: 'qpay-reset' });
+            });
+
+            // Acciones que el chat pide a la documentación (los botones de contexto).
+            window.addEventListener('message', function (event) {
+                if (event.source !== aiFrame.contentWindow) return;
+                var data = event.data;
+                if (!data || data.type !== 'qpay-action') return;
+                if (data.action === 'errors') {
+                    closeAssistant();
+                    location.hash = '#errores';
+                } else if (data.action === 'try' && openConsole) {
+                    closeAssistant();
+                    openConsole(true);
+                }
+            });
+
+            /* ---------------- Menú lateral en pantallas angostas ---------------- */
 
             menuBtn.addEventListener('click', function () {
                 var open = sidebar.dataset.open !== 'true';
+                if (open) closeAssistant();
                 sidebar.dataset.open = open ? 'true' : 'false';
-                menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                menuBtn.setAttribute('aria-expanded', String(open));
+                syncOverlay();
             });
 
-            navEl.addEventListener('click', function (e) {
-                if (e.target.closest('a') && window.innerWidth <= 900) {
-                    sidebar.dataset.open = 'false';
-                    menuBtn.setAttribute('aria-expanded', 'false');
+            overlay.addEventListener('click', function () {
+                closeAssistant();
+                closeSidebar();
+            });
+
+            narrowMq.addEventListener('change', function (e) {
+                if (!e.matches) closeSidebar();
+            });
+
+            /* ---------------- Teclado ---------------- */
+
+            document.addEventListener('keydown', function (e) {
+                if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
+                    e.preventDefault();
+                    if (palette.hidden) openPalette();
+                    else closePalette(false);
+                    return;
+                }
+                if (e.key === 'Escape') {
+                    if (!palette.hidden) closePalette(false);
+                    else if (assistant.dataset.open === 'true') closeAssistant();
+                    else closeSidebar();
                 }
             });
+
+            /* ---------------- Arranque ---------------- */
+
+            buildNav();
+            buildIndex();
+            render(decodeURIComponent(location.hash.slice(1)));
         })();
     </script>
 </body>

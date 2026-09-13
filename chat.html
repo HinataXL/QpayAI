@@ -279,7 +279,8 @@
         @media (prefers-reduced-motion: reduce) {
 
             .message,
-            .chat-messages {
+            .chat-messages,
+            .typing-tappy {
                 animation: none;
                 scroll-behavior: auto;
             }
@@ -317,6 +318,7 @@
             height: 38px;
             margin: -2px -4px 0 -4px;
             background: none;
+            border: none;          /* los errores ya no llevan el círculo rojo: los firma Tappy triste */
             border-radius: 0;
         }
 
@@ -491,6 +493,18 @@
             border-color: rgba(95, 211, 155, .30);
         }
 
+        .note.security {
+            align-items: center;
+        }
+
+        .note .note-tappy {
+            width: 30px;
+            height: 30px;
+            flex: none;
+            margin: -4px 0 -4px -2px;
+            object-fit: contain;
+        }
+
         /* ---------- Suggestions ---------- */
         .suggestions {
             display: flex;
@@ -538,6 +552,30 @@
 
         .typing-indicator[data-visible="true"] {
             display: flex;
+        }
+
+        /* Alineado con la columna de avatares de los mensajes. */
+        .typing-tappy {
+            width: 34px;
+            height: 34px;
+            flex: none;
+            margin-left: -2px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 3px rgba(6, 20, 48, .28));
+            animation: tappy-thinking 1.8s ease-in-out infinite;
+            transform-origin: 50% 90%;
+        }
+
+        @keyframes tappy-thinking {
+
+            0%,
+            100% {
+                transform: rotate(-4deg);
+            }
+
+            50% {
+                transform: rotate(4deg);
+            }
         }
 
         .typing-dots {
@@ -718,6 +756,200 @@
             display: none;
         }
 
+        /* ---------- Panel del asistente en la documentación ----------
+           Mismo lenguaje visual que la documentación: burbujas planas, las del
+           usuario en índigo y las de Tappy en lavanda. La página del chat
+           independiente (sin ?embed=1) conserva su estilo. */
+        html[data-embed="1"] {
+            --e-accent: #4338ca;
+            --e-accent-soft: #efeefc;
+            --e-chip: #e2dffb;
+            --e-accent-text: #3730a3;
+        }
+
+        html[data-embed="1"][data-theme="dark"] {
+            --e-accent: #5b52f0;
+            --e-accent-soft: #24223f;
+            --e-chip: #2e2b55;
+            --e-accent-text: #c9c6ff;
+        }
+
+        html[data-embed="1"] .chat-messages {
+            padding: 16px 14px 8px;
+            gap: 12px;
+            background: var(--surface);
+        }
+
+        html[data-embed="1"] .message {
+            max-width: 100%;
+            gap: 8px;
+        }
+
+        html[data-embed="1"] .message.user {
+            max-width: 88%;
+        }
+
+        /* Sin el círculo "Tú": la alineación a la derecha ya dice quién habla. */
+        html[data-embed="1"] .message.user .avatar {
+            display: none;
+        }
+
+        html[data-embed="1"] .message.ia .avatar.tappy {
+            width: 30px;
+            height: 30px;
+            margin: 0 -2px 0 -4px;
+        }
+
+        html[data-embed="1"] .bubble {
+            padding: 10px 13px;
+            border-radius: 10px;
+            box-shadow: none;
+            font-size: 13.5px;
+            line-height: 1.55;
+        }
+
+        html[data-embed="1"] .message.user .bubble {
+            background: var(--e-accent);
+            border-bottom-right-radius: 10px;
+        }
+
+        html[data-embed="1"] .message.ia .bubble {
+            border: 0;
+            border-bottom-left-radius: 10px;
+            background: var(--e-accent-soft);
+            color: var(--text);
+        }
+
+        html[data-embed="1"] .message.error .bubble {
+            border: 1px solid var(--danger-border);
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        html[data-embed="1"] .message.notice .bubble {
+            border: 1px solid var(--warn-border);
+            background: var(--warn-bg);
+            color: var(--warn);
+        }
+
+        html[data-embed="1"] .bubble .meta {
+            display: none;
+        }
+
+        html[data-embed="1"] .bubble .inline-code {
+            border: 0;
+            background: var(--e-chip);
+            color: var(--e-accent-text);
+        }
+
+        html[data-embed="1"] .message.user .bubble .inline-code {
+            background: rgba(255, 255, 255, .18);
+            color: #fff;
+        }
+
+        /* El código corregido va en una tarjeta clara, como una referencia citada. */
+        html[data-embed="1"] .code-block {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+        }
+
+        html[data-embed="1"] .code-head {
+            padding: 9px 9px 0 12px;
+            border-bottom: 0;
+            background: transparent;
+            color: var(--e-accent-text);
+            font-size: 10.5px;
+            letter-spacing: .06em;
+        }
+
+        html[data-embed="1"] .code-block pre {
+            padding: 6px 12px 12px;
+            color: var(--text);
+            font-size: 12px;
+        }
+
+        html[data-embed="1"] .copy-btn {
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        html[data-embed="1"] .note {
+            font-size: 12.5px;
+        }
+
+        html[data-embed="1"] .suggestions,
+        html[data-embed="1"] .context-chips {
+            padding: 2px 14px 10px;
+            background: var(--surface);
+        }
+
+        html[data-embed="1"] .chip {
+            padding: 5px 11px;
+            border-color: var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            font-size: 12.5px;
+        }
+
+        html[data-embed="1"] .chip:hover {
+            border-color: var(--e-accent);
+            color: var(--e-accent-text);
+        }
+
+        html[data-embed="1"] .typing-indicator {
+            padding: 0 14px 8px;
+            background: var(--surface);
+        }
+
+        html[data-embed="1"] .chat-input {
+            padding: 10px 14px 14px;
+        }
+
+        html[data-embed="1"] .composer {
+            padding: 4px 4px 4px 12px;
+            border-radius: 10px;
+            background: var(--surface);
+            box-shadow: none;
+        }
+
+        html[data-embed="1"] .composer:focus-within {
+            border-color: var(--e-accent);
+            box-shadow: 0 0 0 3px rgba(67, 56, 202, .15);
+        }
+
+        html[data-embed="1"] .composer textarea {
+            padding: 7px 0;
+            font-size: 13.5px;
+        }
+
+        html[data-embed="1"] .send-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--e-accent);
+            color: #fff;
+        }
+
+        html[data-embed="1"] .composer-hint {
+            margin-top: 6px;
+        }
+
+        html[data-embed="1"] .composer-hint .hint-keys {
+            display: none;
+        }
+
+        .context-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .context-chips[hidden] {
+            display: none;
+        }
+
         /* ---------- Responsive ---------- */
         @media (max-width: 720px) {
             body {
@@ -803,9 +1035,14 @@
         <div class="suggestions" id="suggestions"></div>
 
         <div class="typing-indicator" id="typingIndicator" data-visible="false">
+            <img class="typing-tappy" src="assets/tappy/pensativo.png" alt="" width="34" height="34"
+                aria-hidden="true">
             <span class="typing-dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span>Tappy está analizando tu consulta…</span>
         </div>
+
+        <!-- Acciones sobre la página que se está viendo (solo dentro de la documentación). -->
+        <div class="context-chips" id="contextChips" hidden></div>
 
         <div class="chat-input">
             <div class="composer">
@@ -847,9 +1084,24 @@
             var MAX_HISTORY_CHARS = 40000;
             var MAX_HISTORY_TURNS = 20;
 
+            // Expresiones de Tappy: su cara refleja en qué punto está la conversación.
+            var TAPPY_DIR = 'assets/tappy/';
+            var TAPPY_MOODS = ['feliz', 'confiado', 'pensativo', 'triste', 'ansioso', 'soporte', 'seguro', 'exito'];
+
+            function tappyImg(mood, size) {
+                var img = document.createElement('img');
+                img.src = TAPPY_DIR + mood + '.png';
+                img.alt = '';
+                img.width = size;
+                img.height = size;
+                img.dataset.mood = mood;
+                return img;
+            }
+
             var els = {
                 messages: document.getElementById('chatMessages'),
                 suggestions: document.getElementById('suggestions'),
+                contextChips: document.getElementById('contextChips'),
                 typing: document.getElementById('typingIndicator'),
                 input: document.getElementById('msgInput'),
                 send: document.getElementById('sendBtn'),
@@ -971,6 +1223,17 @@
             function makeNote(text, variant) {
                 var note = document.createElement('div');
                 note.className = 'note' + (variant ? ' ' + variant : '');
+                if (variant === 'security') {
+                    // El aviso de credenciales lo da Tappy con su escudo.
+                    var icon = tappyImg('seguro', 30);
+                    icon.className = 'note-tappy';
+                    icon.setAttribute('aria-hidden', 'true');
+                    note.appendChild(icon);
+                    var span = document.createElement('span');
+                    span.innerHTML = formatText(text);
+                    note.appendChild(span);
+                    return note;
+                }
                 note.innerHTML = '<span aria-hidden="true">' + (variant === 'ticket' ? '🎫' : '⚠️') + '</span>' +
                     '<span>' + formatText(text) + '</span>';
                 return note;
@@ -987,18 +1250,14 @@
                 var avatar = document.createElement('div');
                 avatar.className = 'avatar';
                 avatar.setAttribute('aria-hidden', 'true');
-                if (role !== 'user' && !opts.error) {
-                    // Los mensajes del agente los firma Tappy.
-                    avatar.className = 'avatar tappy';
-                    var tappy = document.createElement('img');
-                    tappy.src = 'assets/tappy.png';
-                    tappy.alt = '';
-                    tappy.width = 38;
-                    tappy.height = 38;
-                    avatar.appendChild(tappy);
+                if (role === 'user') {
+                    avatar.textContent = 'Tú';
                 } else {
-                    avatar.textContent = role === 'user' ? 'Tú' : '!';
+                    avatar.className = 'avatar tappy';
                 }
+
+                // Expresión por defecto; una respuesta estructurada la ajusta abajo.
+                var mood = opts.mood || (opts.error ? 'triste' : 'feliz');
 
                 var bubble = document.createElement('div');
                 bubble.className = 'bubble';
@@ -1026,12 +1285,22 @@
                     var code = normalizeCode(content.codigo_corregido);
                     if (code) {
                         bubble.appendChild(makeCodeBlock(code));
-                        bubble.appendChild(makeNote('Al pasar a producción recuerda colocar tu **public_key** en el campo `x_login`.'));
+                        bubble.appendChild(makeNote('Al pasar a producción recuerda colocar tu **public_key** en el campo `x_login`.', 'security'));
                     }
 
                     if (ticketNote) {
                         bubble.appendChild(makeNote(ticketNote, okMarker !== -1 ? 'ticket' : ''));
                     }
+
+                    // De lo más a lo menos específico: un ticket creado pesa más que el código.
+                    if (okMarker !== -1) mood = 'exito';
+                    else if (errMarker !== -1) mood = 'triste';
+                    else if (content.solicita_contacto === true) mood = 'soporte';
+                    else if (code) mood = 'confiado';
+                }
+
+                if (role !== 'user') {
+                    avatar.appendChild(tappyImg(mood, 38));
                 }
 
                 var meta = document.createElement('span');
@@ -1083,7 +1352,8 @@
             function syncSendState() {
                 var len = els.input.value.trim().length;
                 var wait = cooldownLeft();
-                var tooLong = len > MAX_MESSAGE_CHARS;
+                var limit = messageLimit();
+                var tooLong = len > limit;
                 els.send.disabled = busy || len === 0 || wait > 0 || tooLong;
 
                 // La cuenta regresiva va en el pie del compositor y no en la cabecera:
@@ -1096,14 +1366,64 @@
                 } else if (tooLong) {
                     els.charCount.dataset.over = 'true';
                     els.charCount.textContent = len.toLocaleString('es') + ' / ' +
-                        MAX_MESSAGE_CHARS.toLocaleString('es') + ' caracteres · recorta el mensaje';
-                } else if (len > MAX_MESSAGE_CHARS * 0.8) {
+                        limit.toLocaleString('es') + ' caracteres · recorta el mensaje';
+                } else if (len > limit * 0.8) {
                     // Cerca del tope se muestra el máximo para que no sorprenda.
                     els.charCount.textContent = len.toLocaleString('es') + ' / ' +
-                        MAX_MESSAGE_CHARS.toLocaleString('es') + ' caracteres';
+                        limit.toLocaleString('es') + ' caracteres';
                 } else {
                     els.charCount.textContent = len > 0 ? len.toLocaleString('es') + ' caracteres' : '';
                 }
+            }
+
+            /* ---------------- contexto de la documentación ---------------- */
+
+            // Qué endpoint o sección está viendo el usuario. Lo manda la documentación que
+            // contiene al chat; en la página independiente queda en null.
+            var pageContext = null;
+            var DEFAULT_PLACEHOLDER = els.input.placeholder;
+            var CONTEXT_ACTIONS = ['try', 'errors'];
+
+            function applyContext(ctx) {
+                pageContext = ctx && typeof ctx === 'object' ? ctx : null;
+                els.input.placeholder = (pageContext && typeof pageContext.placeholder === 'string')
+                    ? pageContext.placeholder
+                    : DEFAULT_PLACEHOLDER;
+                renderContextChips();
+                syncSendState();
+            }
+
+            function renderContextChips() {
+                els.contextChips.innerHTML = '';
+                var chips = pageContext && Array.isArray(pageContext.chips) ? pageContext.chips : [];
+                chips.forEach(function (c) {
+                    if (!c || CONTEXT_ACTIONS.indexOf(c.action) === -1) return;
+                    var chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.className = 'chip';
+                    chip.textContent = String(c.label || '');
+                    chip.addEventListener('click', function () {
+                        window.parent.postMessage({ type: 'qpay-action', action: c.action }, '*');
+                    });
+                    els.contextChips.appendChild(chip);
+                });
+                els.contextChips.hidden = !els.contextChips.children.length;
+            }
+
+            // Se antepone a la pregunta que viaja a Gemini (no a la burbuja que ve el usuario),
+            // para que "¿qué pasa si reenvío esto?" se entienda sobre el endpoint abierto.
+            function withContext(text) {
+                if (!pageContext || !pageContext.label) return text;
+                var where = pageContext.kind === 'endpoint'
+                    ? 'el endpoint «' + pageContext.label + '»' + (pageContext.url ? ' (' + pageContext.url + ')' : '')
+                    : 'la sección «' + pageContext.label + '»';
+                return '[Contexto: el usuario está viendo en la documentación ' + where + '.]\n\n' + text;
+            }
+
+            // El servidor mide el mensaje ya con el contexto: se descuenta aquí para no
+            // dejar enviar algo que va a rebotar por unos pocos caracteres.
+            function messageLimit() {
+                return MAX_MESSAGE_CHARS - withContext('').length;
             }
 
             /* ---------------- tamaño del historial ---------------- */
@@ -1193,7 +1513,7 @@
                 els.input.value = '';
                 autoGrow();
 
-                chatHistory.push({ role: 'user', parts: [{ text: text }] });
+                chatHistory.push({ role: 'user', parts: [{ text: withContext(text) }] });
                 renderSuggestions();
                 setBusy(true);
 
@@ -1217,7 +1537,7 @@
                         chatHistory.pop();
                         userRow.remove();
                         els.input.value = text;
-                        addMessage('ia', data.error, { notice: true });
+                        addMessage('ia', data.error, { notice: true, mood: 'pensativo' });
                         autoGrow();
                     } else if (data.rate_limited) {
                         // La consulta no se procesó: se retira del chat y el texto vuelve
@@ -1225,7 +1545,7 @@
                         chatHistory.pop();
                         userRow.remove();
                         els.input.value = text;
-                        addMessage('ia', data.error, { notice: true });
+                        addMessage('ia', data.error, { notice: true, mood: 'ansioso' });
                         autoGrow();
                         startCooldown(parseInt(data.retry_after, 10) || 60);
                     } else if (data.error) {
@@ -1274,6 +1594,8 @@
                         applyTheme(data.theme);
                     } else if (data.type === 'qpay-reset') {
                         resetChat();
+                    } else if (data.type === 'qpay-context') {
+                        applyContext(data.context);
                     }
                 });
             }
@@ -1297,6 +1619,14 @@
             });
 
             resetChat();
+
+            // Precarga de las expresiones (≈200 KB en total) una vez cargada la página: sin esto
+            // la primera vez que Tappy piensa o responde, su cara aparece con un parpadeo.
+            window.addEventListener('load', function () {
+                TAPPY_MOODS.forEach(function (mood) {
+                    new Image().src = TAPPY_DIR + mood + '.png';
+                });
+            });
         })();
     </script>
 </body>

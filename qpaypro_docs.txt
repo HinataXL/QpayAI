@@ -360,6 +360,16 @@ electrónica se emite durante el cobro recurrente. Requiere INFILE habilitado po
 - HTTP 422 responseCode 1003: la pasarela BAC exige 3D-Secure; seguir el flujo de pagos 3DS BAC.
 - HTTP 303: el banco pide doble autenticación; redirigir a responseObject.responseObjectBac.redirect.
 
+Comportamiento observado en el sandbox (comprobado con peticiones reales; no figura en la
+documentación oficial de QPayPro):
+- HTTP 400 con {"result": 0, "responseText": "x_login inactive or does not exists"}: alguna credencial
+  no es válida. La API de pagos devuelve el mismo mensaje sin importar si falla x_login, x_private_key o
+  x_api_secret, así que hay que revisar las tres. Sin credenciales responde "x_login is required".
+- HTTP 502 Bad Gateway: el sandbox lo devuelve de forma INTERMITENTE, incluso con peticiones válidas (la
+  misma llamada puede dar 200 y segundos después 502). NO significa que la petición o las credenciales
+  estén mal; hay que reintentar tras unos segundos. La respuesta es una página HTML de nginx, no JSON:
+  la integración debe revisar el código HTTP antes de parsear el cuerpo, o fallará con un error de JSON.
+
 ## 11. SOPORTE
 Correo de soporte técnico: soporte@qpaypro.com
 Whatsapp 4785-6011
