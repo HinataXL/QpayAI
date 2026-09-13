@@ -664,6 +664,11 @@
             font-variant-numeric: tabular-nums;
         }
 
+        #charCount[data-over="true"] {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
         kbd {
             font-family: var(--font);
             font-size: 10.5px;
@@ -830,11 +835,17 @@
 
             var SUGGESTIONS = [
                 'Mi transacción devuelve error de autenticación',
-                '¿Cómo genero el x_signature?',
+                '¿Cómo genero el token para pagina alojada?',
                 '¿Qué campos son obligatorios en la petición?'
             ];
 
             var STATUS_IDLE = 'Agente en línea · responde en segundos';
+
+            // Mismos topes que resolver.php (TAPPY_MAX_*). El servidor es quien manda;
+            // aquí solo se aplican antes para no gastar una petición que va a rebotar.
+            var MAX_MESSAGE_CHARS = 10000;
+            var MAX_HISTORY_CHARS = 40000;
+            var MAX_HISTORY_TURNS = 20;
 
             var els = {
                 messages: document.getElementById('chatMessages'),
@@ -1072,17 +1083,46 @@
             function syncSendState() {
                 var len = els.input.value.trim().length;
                 var wait = cooldownLeft();
-                els.send.disabled = busy || len === 0 || wait > 0;
+                var tooLong = len > MAX_MESSAGE_CHARS;
+                els.send.disabled = busy || len === 0 || wait > 0 || tooLong;
 
                 // La cuenta regresiva va en el pie del compositor y no en la cabecera:
                 // dentro del panel de la documentación la cabecera está oculta.
+                delete els.charCount.dataset.cooldown;
+                delete els.charCount.dataset.over;
                 if (wait > 0) {
                     els.charCount.dataset.cooldown = 'true';
                     els.charCount.textContent = 'Podrás enviar en ' + formatWait(wait);
+                } else if (tooLong) {
+                    els.charCount.dataset.over = 'true';
+                    els.charCount.textContent = len.toLocaleString('es') + ' / ' +
+                        MAX_MESSAGE_CHARS.toLocaleString('es') + ' caracteres · recorta el mensaje';
+                } else if (len > MAX_MESSAGE_CHARS * 0.8) {
+                    // Cerca del tope se muestra el máximo para que no sorprenda.
+                    els.charCount.textContent = len.toLocaleString('es') + ' / ' +
+                        MAX_MESSAGE_CHARS.toLocaleString('es') + ' caracteres';
                 } else {
-                    delete els.charCount.dataset.cooldown;
                     els.charCount.textContent = len > 0 ? len.toLocaleString('es') + ' caracteres' : '';
                 }
+            }
+
+            /* ---------------- tamaño del historial ---------------- */
+
+            // Solo el tramo más reciente de la conversación viaja al servidor. Sin esto, una
+            // charla larga (con bloques de código en cada respuesta) acabaría superando el
+            // tope de tamaño y el chat dejaría de responder a mitad de la sesión.
+            function historyForRequest() {
+                var kept = [];
+                var chars = 0;
+                for (var i = chatHistory.length - 1; i >= 0; i--) {
+                    var len = chatHistory[i].parts[0].text.length;
+                    if (kept.length >= MAX_HISTORY_TURNS || chars + len > MAX_HISTORY_CHARS) break;
+                    chars += len;
+                    kept.unshift(chatHistory[i]);
+                }
+                // Gemini espera que la conversación empiece por el usuario.
+                while (kept.length && kept[0].role !== 'user') kept.shift();
+                return kept;
             }
 
             /* ---------------- límite de consultas ---------------- */
@@ -1160,7 +1200,7 @@
                 fetch('resolver.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ history: chatHistory })
+                    body: JSON.stringify({ history: historyForRequest() })
                 }).then(function (response) {
                     return response.text();
                 }).then(function (rawText) {
@@ -1171,7 +1211,15 @@
                         throw new Error('Respuesta no válida del servidor: ' + rawText);
                     }
 
-                    if (data.rate_limited) {
+                    if (data.too_large) {
+                        // Igual que con el límite de consultas: no se procesó, así que el
+                        // texto vuelve al compositor para recortarlo en vez de perderse.
+                        chatHistory.pop();
+                        userRow.remove();
+                        els.input.value = text;
+                        addMessage('ia', data.error, { notice: true });
+                        autoGrow();
+                    } else if (data.rate_limited) {
                         // La consulta no se procesó: se retira del chat y el texto vuelve
                         // al compositor para reenviarlo sin reescribirlo cuando termine la espera.
                         chatHistory.pop();

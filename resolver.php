@@ -1,6 +1,10 @@
 <?php
-ini_set('display_errors', '1');
 error_reporting(E_ALL);
+// Los errores van al log, nunca a la respuesta: es un endpoint JSON, y un aviso de
+// PHP en el cuerpo rompe el chat y expone rutas internas del servidor al visitante.
+// En local siguen visibles en la terminal de `php -S`.
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
 set_time_limit(120);
 
 // 1. Configuración Inicial
@@ -64,14 +68,50 @@ if (!$gemini_api_key) {
     exit;
 }
 
-$input_json = file_get_contents('php://input');
-$input_data = json_decode($input_json, true);
+// 1.2 Tamaño de la consulta
+// El límite por IP acota cuántas consultas llegan; esto acota cuánto cuesta cada
+// una. Ver LIMITES.md.
+require_once __DIR__ . '/lib/tappy_history.php';
+require_once __DIR__ . '/lib/tls.php';
 
-if (!$input_data || !isset($input_data['history'])) {
-    echo json_encode(["error" => "El historial (history) es requerido."]);
+$max_body_bytes = (int) rl_env('TAPPY_MAX_BODY_BYTES', '262144');
+
+// Si el Content-Length ya declara más del máximo no se lee nada. Si no, se lee
+// como mucho un byte de más: basta para detectar un cuerpo que mintió en la
+// cabecera sin cargar en memoria algo arbitrariamente grande.
+$input_json = '';
+$demasiado_grande = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > $max_body_bytes;
+if (!$demasiado_grande) {
+    $input_json = (string) file_get_contents('php://input', false, null, 0, $max_body_bytes + 1);
+    $demasiado_grande = strlen($input_json) > $max_body_bytes;
+}
+
+if ($demasiado_grande) {
+    http_response_code(413);
+    echo json_encode([
+        "error"     => "La consulta es demasiado grande. Inicia una conversación nueva o envía un mensaje más corto.",
+        "too_large" => true,
+    ], JSON_UNESCAPED_UNICODE);
     exit;
 }
-$history = $input_data['history'];
+
+$input_data = json_decode($input_json, true);
+
+$saneado = tappy_sanitize_history(is_array($input_data) ? ($input_data['history'] ?? null) : null, [
+    'message_chars' => (int) rl_env('TAPPY_MAX_MESSAGE_CHARS', '10000'),
+    'history_chars' => (int) rl_env('TAPPY_MAX_HISTORY_CHARS', '40000'),
+    'history_turns' => (int) rl_env('TAPPY_MAX_HISTORY_TURNS', '20'),
+]);
+
+if (!$saneado['ok']) {
+    http_response_code($saneado['code']);
+    echo json_encode([
+        "error"     => $saneado['error'],
+        "too_large" => $saneado['code'] === 413,
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+$history = $saneado['history'];
 
 // Extraer el último mensaje del usuario para el análisis RAG
 $ultimo_mensaje_usuario = '';
@@ -173,26 +213,34 @@ $data = [
         // 0.1 producía respuestas casi calcadas de la documentación; algo más de
         // temperatura le da margen para explicar y proponer sin perder precisión.
         "temperature" => 0.35,
-        "responseMimeType" => "application/json"
+        "responseMimeType" => "application/json",
+        // Los tokens de salida se facturan más caros que los de entrada. Una
+        // respuesta normal (diagnóstico + código) usa una fracción de esto.
+        "maxOutputTokens" => (int) rl_env('GEMINI_MAX_OUTPUT_TOKENS', '4096')
     ]
 ];
 
 $ch = curl_init($gemini_url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    "x-goog-api-key: " . $gemini_api_key,
-    "Content-Type: application/json"
-]);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST           => true,
+    CURLOPT_POSTFIELDS     => json_encode($data),
+    CURLOPT_HTTPHEADER     => [
+        "x-goog-api-key: " . $gemini_api_key,
+        "Content-Type: application/json"
+    ],
+    CURLOPT_TIMEOUT        => 120,
+] + tls_curl_options());
 
 $response = curl_exec($ch);
+$curl_errno = curl_errno($ch);
 $curl_error = curl_error($ch);
 
-if ($curl_error) {
-    echo json_encode(["error" => "Error de conexión: " . $curl_error]);
+if ($curl_errno !== 0) {
+    error_log("[resolver] Gemini cURL $curl_errno: $curl_error");
+    echo json_encode([
+        "error" => tls_is_cert_error($curl_errno) ? tls_cert_error_message() : "Error de conexión: " . $curl_error
+    ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -200,6 +248,15 @@ $gemini_result = json_decode($response, true);
 
 if (isset($gemini_result['error'])) {
     echo json_encode(["error" => "Error API: " . $gemini_result['error']['message']]);
+    exit;
+}
+
+// Si la respuesta se cortó por el tope de salida, el JSON viene truncado y no
+// se puede interpretar: mejor decirlo claro que fallar con un error de formato.
+if (($gemini_result['candidates'][0]['finishReason'] ?? '') === 'MAX_TOKENS') {
+    echo json_encode([
+        "error" => "La respuesta de Tappy salió demasiado larga y se cortó. Intenta con una pregunta más acotada."
+    ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -233,11 +290,15 @@ try {
         curl_setopt($ch_auth, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch_auth, CURLOPT_POST, true);
         curl_setopt($ch_auth, CURLOPT_POSTFIELDS, http_build_query($auth_data));
-        curl_setopt($ch_auth, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch_auth, CURLOPT_TIMEOUT, 30);
-        
+        curl_setopt_array($ch_auth, tls_curl_options());
+
         $auth_response = curl_exec($ch_auth);
-        curl_close($ch_auth);
+        // Sin esto, un fallo de red o de certificado se vería solo como
+        // "error de autenticación con Zoho" y no habría forma de distinguirlo.
+        if (curl_errno($ch_auth) !== 0) {
+            error_log('[resolver] Zoho OAuth cURL ' . curl_errno($ch_auth) . ': ' . curl_error($ch_auth));
+        }
         
         $auth_result = json_decode($auth_response, true);
         $access_token = $auth_result['access_token'] ?? null;
@@ -279,11 +340,15 @@ try {
                 "orgId: " . $zoho_org_id,
                 "Content-Type: application/json"
             ]);
-            curl_setopt($zc, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($zc, CURLOPT_TIMEOUT, 30);
-            
+            curl_setopt_array($zc, tls_curl_options());
+
             $zoho_response = curl_exec($zc);
-            curl_close($zc);
+            if (curl_errno($zc) !== 0) {
+                error_log('[resolver] Zoho Desk cURL ' . curl_errno($zc) . ': ' . curl_error($zc));
+            }
+            // Sin curl_close(): no hace nada desde PHP 8.0 y en 8.5 emite un aviso de
+            // obsolescencia en cada llamada.
             
             $zoho_result = json_decode($zoho_response, true);
             $ticket_id = $zoho_result['ticketNumber'] ?? 'N/A';
