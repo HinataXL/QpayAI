@@ -68,7 +68,6 @@
 
             --topbar-h: 54px;
             --sidebar-w: 236px;
-            --panel-w: 360px;
         }
 
         html[data-theme="dark"] {
@@ -342,19 +341,12 @@
             height: 17px;
         }
 
-        .menu-btn,
-        .assistant-toggle {
+        .menu-btn {
             display: none;
         }
 
-        .assistant-toggle img {
-            width: 26px;
-            height: 26px;
-            object-fit: contain;
-        }
-
         /* =====================================================================
-           Estructura de tres columnas
+           Estructura: barra lateral y contenido
            ===================================================================== */
         .shell {
             position: fixed;
@@ -363,7 +355,10 @@
             bottom: 0;
             left: 0;
             display: grid;
-            grid-template-columns: var(--sidebar-w) minmax(0, 1fr) var(--panel-w);
+            /* Por encima de la barra superior (z 30): así el panel del asistente, que vive
+               aquí dentro, puede cubrir la página entera. */
+            z-index: 31;
+            grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
         }
 
         .sidebar {
@@ -1484,14 +1479,26 @@
         }
 
         /* =====================================================================
-           Asistente (columna derecha)
+           Asistente: panel deslizable que abre Tappy flotante
            ===================================================================== */
         .assistant {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 61;
+            width: min(460px, 100vw);
             display: flex;
             flex-direction: column;
-            min-height: 0;
             border-left: 1px solid var(--border);
             background: var(--surface);
+            box-shadow: -20px 0 60px rgba(0, 0, 0, .3);
+            transform: translateX(102%);
+            transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .assistant[data-open="true"] {
+            transform: translateX(0);
         }
 
         .assistant-head {
@@ -1528,10 +1535,6 @@
             line-height: 1.35;
         }
 
-        .assistant-head .close-btn {
-            display: none;
-        }
-
         .assistant iframe {
             flex: 1;
             width: 100%;
@@ -1547,24 +1550,92 @@
             background: rgba(15, 15, 22, .32);
         }
 
+        /* Con el asistente abierto el fondo cubre toda la página, barra superior incluida. */
+        .overlay.for-assistant {
+            inset: 0;
+            z-index: 60;
+            background: rgba(6, 16, 34, .45);
+            backdrop-filter: blur(2px);
+        }
+
         .tappy-fab {
             position: fixed;
-            right: 16px;
-            bottom: 14px;
-            z-index: 34;
-            display: none;
+            right: 22px;
+            bottom: 18px;
+            z-index: 45;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
             padding: 0;
             border: 0;
             background: none;
+            font: inherit;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tappy-fab[hidden] {
+            display: none;
         }
 
         .tappy-fab img {
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
             object-fit: contain;
-            filter: drop-shadow(0 10px 14px rgba(20, 20, 40, .3));
+            filter: drop-shadow(0 12px 16px rgba(20, 20, 40, .32));
             animation: tappy-float 3.6s ease-in-out infinite;
+            transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .tappy-fab:hover img,
+        .tappy-fab:focus-visible img {
+            animation-play-state: paused;
+            transform: translateY(-7px) scale(1.06);
+        }
+
+        .tappy-fab:focus-visible {
+            box-shadow: none;
+        }
+
+        .tappy-bubble {
+            position: relative;
+            max-width: 210px;
+            margin-bottom: 34px;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--surface);
+            color: var(--text);
+            font-size: 13.5px;
+            font-weight: 600;
+            line-height: 1.4;
+            text-align: left;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(6px) scale(.94);
+            transform-origin: bottom right;
+            transition: opacity .25s, transform .25s;
+            pointer-events: none;
+        }
+
+        /* La cola del globo apunta hacia Tappy. */
+        .tappy-bubble::after {
+            content: "";
+            position: absolute;
+            right: -6px;
+            bottom: 15px;
+            width: 11px;
+            height: 11px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            transform: rotate(-45deg);
+        }
+
+        .tappy-bubble[data-show="true"],
+        .tappy-fab:hover .tappy-bubble {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
 
         @keyframes tappy-float {
@@ -1696,6 +1767,7 @@
         @media (prefers-reduced-motion: reduce) {
 
             .tappy-fab img,
+            .tappy-bubble,
             .resp-tappy,
             .assistant,
             .sidebar {
@@ -1707,42 +1779,6 @@
         /* =====================================================================
            Responsive
            ===================================================================== */
-
-        /* Sin espacio para tres columnas: el asistente pasa a panel deslizable. */
-        @media (max-width: 1279px) {
-            .shell {
-                grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
-            }
-
-            .assistant {
-                position: fixed;
-                top: var(--topbar-h);
-                right: 0;
-                bottom: 0;
-                z-index: 40;
-                width: min(400px, 100vw);
-                box-shadow: var(--shadow-lg);
-                transform: translateX(102%);
-                transition: transform .25s cubic-bezier(.4, 0, .2, 1);
-            }
-
-            .assistant[data-open="true"] {
-                transform: translateX(0);
-            }
-
-            .assistant-head .close-btn,
-            .assistant-toggle {
-                display: inline-grid;
-            }
-
-            .tappy-fab {
-                display: block;
-            }
-
-            .assistant[data-open="true"]~.tappy-fab {
-                display: none;
-            }
-        }
 
         @media (max-width: 1060px) {
             .tabs {
@@ -1831,9 +1867,24 @@
                 grid-column: 1;
             }
 
+            .tappy-fab {
+                right: 12px;
+                bottom: 12px;
+            }
+
             .tappy-fab img {
-                width: 66px;
-                height: 66px;
+                width: 92px;
+                height: 92px;
+            }
+
+            .tappy-bubble {
+                max-width: 170px;
+                margin-bottom: 26px;
+                font-size: 12.5px;
+            }
+
+            .assistant-head .s {
+                display: none;
             }
         }
     </style>
@@ -1897,10 +1948,6 @@
                 <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                     stroke-linecap="round" stroke-linejoin="round"></svg>
             </button>
-            <button class="icon-btn assistant-toggle" id="assistantBtn" type="button"
-                aria-label="Abrir a Tappy, el asistente de la API" aria-controls="assistant">
-                <img src="assets/tappy/feliz.png" alt="" width="26" height="26">
-            </button>
         </div>
     </header>
 
@@ -1918,12 +1965,12 @@
             <article class="page" id="doc"></article>
         </main>
 
-        <aside class="assistant" id="assistant" data-open="false" aria-label="Tappy, asistente de la API">
+        <aside class="assistant" id="assistant" data-open="false" role="dialog" aria-modal="true"
+            aria-label="Tappy, asistente de integración">
             <div class="assistant-head">
-                <span class="dot" aria-hidden="true"></span>
                 <div class="grow">
-                    <div class="t">Tappy · Asistente de la API</div>
-                    <div class="s">Responde con base en esta documentación</div>
+                    <div class="t">Tappy</div>
+                    <div class="s">Pega el JSON que falló y te digo qué corregir</div>
                 </div>
                 <button class="icon-btn" id="assistantReset" type="button" title="Nueva conversación"
                     aria-label="Nueva conversación">
@@ -1955,7 +2002,8 @@
 
         <button class="tappy-fab" id="aiFab" type="button" aria-label="Abrir a Tappy, el asistente de la API"
             aria-controls="assistant">
-            <img src="assets/tappy-256.png" alt="" width="80" height="80">
+            <span class="tappy-bubble" id="tappyBubble" aria-hidden="true">¿Necesitas ayuda con tu integración?</span>
+            <img src="assets/tappy-256.png" alt="" width="120" height="120">
         </button>
     </div>
 
@@ -4680,7 +4728,9 @@ window.addEventListener("message", function (event) {
             var overlay = document.getElementById('overlay');
             var sidebar = document.getElementById('sidebar');
             var menuBtn = document.getElementById('menuBtn');
-            var wideMq = window.matchMedia('(min-width: 1280px)');
+            var fab = document.getElementById('aiFab');
+            var bubble = document.getElementById('tappyBubble');
+            var lastFocusBeforeAssistant = null;
             var narrowMq = window.matchMedia('(max-width: 900px)');
 
             // Qué está mirando el usuario, para que Tappy responda sobre eso.
@@ -4721,24 +4771,51 @@ window.addEventListener("message", function (event) {
             }
 
             function syncOverlay() {
-                var open = assistant.dataset.open === 'true' || sidebar.dataset.open === 'true';
-                overlay.hidden = !open;
+                var assistantOpen = assistant.dataset.open === 'true';
+                overlay.hidden = !assistantOpen && sidebar.dataset.open !== 'true';
+                overlay.classList.toggle('for-assistant', assistantOpen);
+                fab.hidden = assistantOpen;
             }
 
             function openAssistant() {
+                // El chat se carga la primera vez que se abre, no con la página.
                 ensureFrame();
-                if (!wideMq.matches) {
-                    closeSidebar();
-                    assistant.dataset.open = 'true';
-                    syncOverlay();
-                }
-                setTimeout(function () { aiFrame.focus(); }, 260);
+                lastFocusBeforeAssistant = document.activeElement;
+                closeSidebar();
+                hideBubble();
+                assistant.dataset.open = 'true';
+                syncOverlay();
+                setTimeout(function () { aiFrame.focus(); }, 280);
             }
 
             function closeAssistant() {
+                if (assistant.dataset.open !== 'true') return;
                 assistant.dataset.open = 'false';
                 syncOverlay();
+                if (lastFocusBeforeAssistant && lastFocusBeforeAssistant.focus) lastFocusBeforeAssistant.focus();
             }
+
+            /* Globo de Tappy: aparece cada 10 s, se muestra unos segundos y se oculta.
+               No aparece mientras el asistente, el menú o la búsqueda están abiertos,
+               ni con la pestaña en segundo plano. */
+            var BUBBLE_EVERY_MS = 10000;
+            var BUBBLE_VISIBLE_MS = 4000;
+            var bubbleHideTimer = null;
+
+            function hideBubble() {
+                clearTimeout(bubbleHideTimer);
+                delete bubble.dataset.show;
+            }
+
+            function showBubble() {
+                if (document.hidden || assistant.dataset.open === 'true' ||
+                    sidebar.dataset.open === 'true' || !palette.hidden) return;
+                bubble.dataset.show = 'true';
+                clearTimeout(bubbleHideTimer);
+                bubbleHideTimer = setTimeout(hideBubble, BUBBLE_VISIBLE_MS);
+            }
+
+            setInterval(showBubble, BUBBLE_EVERY_MS);
 
             function closeSidebar() {
                 if (sidebar.dataset.open !== 'true') return;
@@ -4747,17 +4824,7 @@ window.addEventListener("message", function (event) {
                 syncOverlay();
             }
 
-            // En pantallas anchas el asistente está siempre a la vista: se carga de entrada.
-            if (wideMq.matches) ensureFrame();
-            wideMq.addEventListener('change', function (e) {
-                if (e.matches) {
-                    ensureFrame();
-                    closeAssistant();
-                }
-            });
-
-            document.getElementById('aiFab').addEventListener('click', openAssistant);
-            document.getElementById('assistantBtn').addEventListener('click', openAssistant);
+            fab.addEventListener('click', openAssistant);
             document.getElementById('assistantClose').addEventListener('click', closeAssistant);
             document.getElementById('assistantReset').addEventListener('click', function () {
                 postToFrame({ type: 'qpay-reset' });

@@ -756,194 +756,13 @@
             display: none;
         }
 
-        /* ---------- Panel del asistente en la documentación ----------
-           Mismo lenguaje visual que la documentación: burbujas planas, las del
-           usuario en índigo y las de Tappy en lavanda. La página del chat
-           independiente (sin ?embed=1) conserva su estilo. */
-        html[data-embed="1"] {
-            --e-accent: #4338ca;
-            --e-accent-soft: #efeefc;
-            --e-chip: #e2dffb;
-            --e-accent-text: #3730a3;
-        }
-
-        html[data-embed="1"][data-theme="dark"] {
-            --e-accent: #5b52f0;
-            --e-accent-soft: #24223f;
-            --e-chip: #2e2b55;
-            --e-accent-text: #c9c6ff;
-        }
-
-        html[data-embed="1"] .chat-messages {
-            padding: 16px 14px 8px;
-            gap: 12px;
-            background: var(--surface);
-        }
-
-        html[data-embed="1"] .message {
-            max-width: 100%;
-            gap: 8px;
-        }
-
-        html[data-embed="1"] .message.user {
-            max-width: 88%;
-        }
-
-        /* Sin el círculo "Tú": la alineación a la derecha ya dice quién habla. */
-        html[data-embed="1"] .message.user .avatar {
-            display: none;
-        }
-
-        html[data-embed="1"] .message.ia .avatar.tappy {
-            width: 30px;
-            height: 30px;
-            margin: 0 -2px 0 -4px;
-        }
-
-        html[data-embed="1"] .bubble {
-            padding: 10px 13px;
-            border-radius: 10px;
-            box-shadow: none;
-            font-size: 13.5px;
-            line-height: 1.55;
-        }
-
-        html[data-embed="1"] .message.user .bubble {
-            background: var(--e-accent);
-            border-bottom-right-radius: 10px;
-        }
-
-        html[data-embed="1"] .message.ia .bubble {
-            border: 0;
-            border-bottom-left-radius: 10px;
-            background: var(--e-accent-soft);
-            color: var(--text);
-        }
-
-        html[data-embed="1"] .message.error .bubble {
-            border: 1px solid var(--danger-border);
-            background: var(--danger-bg);
-            color: var(--danger);
-        }
-
-        html[data-embed="1"] .message.notice .bubble {
-            border: 1px solid var(--warn-border);
-            background: var(--warn-bg);
-            color: var(--warn);
-        }
-
-        html[data-embed="1"] .bubble .meta {
-            display: none;
-        }
-
-        html[data-embed="1"] .bubble .inline-code {
-            border: 0;
-            background: var(--e-chip);
-            color: var(--e-accent-text);
-        }
-
-        html[data-embed="1"] .message.user .bubble .inline-code {
-            background: rgba(255, 255, 255, .18);
-            color: #fff;
-        }
-
-        /* El código corregido va en una tarjeta clara, como una referencia citada. */
-        html[data-embed="1"] .code-block {
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            background: var(--surface);
-        }
-
-        html[data-embed="1"] .code-head {
-            padding: 9px 9px 0 12px;
-            border-bottom: 0;
-            background: transparent;
-            color: var(--e-accent-text);
-            font-size: 10.5px;
-            letter-spacing: .06em;
-        }
-
-        html[data-embed="1"] .code-block pre {
-            padding: 6px 12px 12px;
-            color: var(--text);
-            font-size: 12px;
-        }
-
-        html[data-embed="1"] .copy-btn {
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text-muted);
-        }
-
-        html[data-embed="1"] .note {
-            font-size: 12.5px;
-        }
-
-        html[data-embed="1"] .suggestions,
-        html[data-embed="1"] .context-chips {
-            padding: 2px 14px 10px;
-            background: var(--surface);
-        }
-
-        html[data-embed="1"] .chip {
-            padding: 5px 11px;
-            border-color: var(--border);
-            background: var(--surface);
-            color: var(--text-muted);
-            font-size: 12.5px;
-        }
-
-        html[data-embed="1"] .chip:hover {
-            border-color: var(--e-accent);
-            color: var(--e-accent-text);
-        }
-
-        html[data-embed="1"] .typing-indicator {
-            padding: 0 14px 8px;
-            background: var(--surface);
-        }
-
-        html[data-embed="1"] .chat-input {
-            padding: 10px 14px 14px;
-        }
-
-        html[data-embed="1"] .composer {
-            padding: 4px 4px 4px 12px;
-            border-radius: 10px;
-            background: var(--surface);
-            box-shadow: none;
-        }
-
-        html[data-embed="1"] .composer:focus-within {
-            border-color: var(--e-accent);
-            box-shadow: 0 0 0 3px rgba(67, 56, 202, .15);
-        }
-
-        html[data-embed="1"] .composer textarea {
-            padding: 7px 0;
-            font-size: 13.5px;
-        }
-
-        html[data-embed="1"] .send-btn {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            background: var(--e-accent);
-            color: #fff;
-        }
-
-        html[data-embed="1"] .composer-hint {
-            margin-top: 6px;
-        }
-
-        html[data-embed="1"] .composer-hint .hint-keys {
-            display: none;
-        }
-
+        /* Mismo aspecto que las sugerencias iniciales. */
         .context-chips {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
+            padding: 4px 20px 12px;
+            background: var(--surface-2);
         }
 
         .context-chips[hidden] {
@@ -1086,7 +905,7 @@
 
             // Expresiones de Tappy: su cara refleja en qué punto está la conversación.
             var TAPPY_DIR = 'assets/tappy/';
-            var TAPPY_MOODS = ['feliz', 'confiado', 'pensativo', 'triste', 'ansioso', 'soporte', 'seguro', 'exito'];
+            var TAPPY_MOODS = ['feliz', 'confiado', 'pensativo', 'triste', 'ansioso', 'soporte', 'seguro', 'exito', 'enojado'];
 
             function tappyImg(mood, size) {
                 var img = document.createElement('img');
@@ -1295,6 +1114,7 @@
                     // De lo más a lo menos específico: un ticket creado pesa más que el código.
                     if (okMarker !== -1) mood = 'exito';
                     else if (errMarker !== -1) mood = 'triste';
+                    else if (content.requiere_contexto === true) mood = 'ansioso';   // pidió ticket sin contar el problema
                     else if (content.solicita_contacto === true) mood = 'soporte';
                     else if (code) mood = 'confiado';
                 }
@@ -1503,11 +1323,117 @@
                 els.input.focus();
             }
 
+            /* ---------------- datos sensibles ---------------- */
+
+            /* sensitive:start
+               Espejo de lib/sensitive_data.php: si cambias una regla aquí, cámbiala allá.
+               Revisar antes de enviar evita que la llave o la tarjeta salgan del navegador;
+               el servidor repite la revisión por si alguien se salta esta. */
+            var SENSITIVE_KEY_FIELDS = ['x_login', 'x_private_key', 'x_api_secret', 'x_api_key', 'public_key'];
+            var SENSITIVE_DOC_KEY_VALUES = [
+                'visanetgt_qpay', 'visanetgt_qpay_testings', 'pk_test_123456789',
+                '88888888888', '99999999999',
+                '5gnwbpoqmft16860', 'o1gn8sgilkv16860', 'dccymkkspqg16860'
+            ];
+            var SENSITIVE_DOC_CARDS = ['4111111111111111', '4000000000001091'];
+
+            function sensitiveIsPlaceholder(value, field) {
+                var v = value.trim();
+                var l = v.toLowerCase();
+                if (v === '' || l === field) return true;
+                if (/^[*x.•_#\-0]+$/i.test(v)) return true;
+                if (/^(<.*>|\{\{.*\}\}|\$\{.*\}|\[.*\]|%.*%)$/.test(v)) return true;
+                if (/\*{3,}|x{4,}|•{3,}/i.test(v)) return true;
+                if (/^(tu|tus|your)[_\- ]/.test(l)) return true;
+                // Solo como palabra separada: "realKey123" puede ser una llave real.
+                return /(^|[_\-\s.])(ejemplo|example|placeholder|redacted|oculto|hidden|aqui|aquí|here|llave|clave|key|secret|login)([_\-\s.]|$)/.test(l);
+            }
+
+            function sensitiveIsReference(value) {
+                return /^[$@]|\(|^(process|env|os|config|settings)\./i.test(value.trim());
+            }
+
+            function sensitiveLuhn(digits) {
+                var sum = 0;
+                var alt = false;
+                for (var i = digits.length - 1; i >= 0; i--) {
+                    var n = +digits[i];
+                    if (alt) {
+                        n *= 2;
+                        if (n > 9) n -= 9;
+                    }
+                    sum += n;
+                    alt = !alt;
+                }
+                return sum % 10 === 0;
+            }
+
+            function sensitiveScan(text) {
+                var t = String(text).replace(/\\(["'])/g, '$1');
+                var found = {};
+                var keyRe = new RegExp('["\'`]?\\b(' + SENSITIVE_KEY_FIELDS.join('|') + ')\\b["\'`]?\\s*(:|=>|=)\\s*' +
+                    '(?:"([^"\\n]*)"|\'([^\'\\n]*)\'|`([^`\\n]*)`|([^\\s,;&}\\])"\'`]+))', 'gi');
+                var m;
+                while ((m = keyRe.exec(t)) !== null) {
+                    var field = m[1].toLowerCase();
+                    var quoted = !!(m[3] || m[4] || m[5]);
+                    var value = quoted ? (m[3] || m[4] || m[5]) : (m[6] || '');
+                    if (!quoted) {
+                        if (sensitiveIsReference(value)) continue;
+                        if (m[2] !== '=' && !/^\d+$/.test(value)) continue;
+                    }
+                    if (sensitiveIsPlaceholder(value, field)) continue;
+                    if (SENSITIVE_DOC_KEY_VALUES.indexOf(value.trim().toLowerCase()) !== -1) continue;
+                    found['key:' + field] = { type: 'key', field: field };
+                }
+
+                var cardRe = /(?<!\d)(?:\d[ \-]?){13,18}\d(?!\d)/g;
+                while ((m = cardRe.exec(t)) !== null) {
+                    var digits = m[0].replace(/\D/g, '');
+                    if (digits.length < 14 || digits.length > 19 || !/^[2-6]/.test(digits) || !sensitiveLuhn(digits)) continue;
+                    if (SENSITIVE_DOC_CARDS.indexOf(digits) !== -1) continue;
+                    found['card:' + digits] = { type: 'card', last4: digits.slice(-4) };
+                }
+
+                return Object.keys(found).map(function (k) { return found[k]; });
+            }
+
+            function sensitiveMessage(findings) {
+                var keys = findings.filter(function (f) { return f.type === 'key'; }).map(function (f) { return '`' + f.field + '`'; });
+                var cards = findings.filter(function (f) { return f.type === 'card'; }).map(function (f) { return f.last4; });
+                var parts = [];
+                if (keys.length) {
+                    parts.push((keys.length === 1 ? 'una llave de integración real (' : 'llaves de integración reales (') + keys.join(', ') + ')');
+                }
+                if (cards.length) {
+                    parts.push((cards.length === 1 ? 'un número de tarjeta terminado en ' : 'números de tarjeta terminados en ') + cards.join(', '));
+                }
+                var msg = '¡Alto ahí! Por tu seguridad no compartas datos sensibles en el chat.\n\n' +
+                    'Detecté ' + parts.join(' y ') + ', así que **no envié tu mensaje**. ' +
+                    'Usa en su lugar los datos de prueba de la documentación' +
+                    (cards.length ? ' (por ejemplo, la tarjeta `4111 1111 1111 1111`)' : ' (las credenciales de sandbox)') +
+                    ' y vuelve a enviarlo.';
+                if (keys.length) {
+                    msg += '\n\nSi compartiste llaves de producción en algún otro lugar, lo más seguro es rotarlas desde tu panel de QPayPro.';
+                }
+                return msg;
+            }
+            /* sensitive:end */
+
             /* ---------------- envío ---------------- */
 
             function sendMessage() {
                 var text = els.input.value.trim();
                 if (!text || busy || cooldownLeft() > 0) return;
+
+                // Antes de mostrar o enviar nada: si hay llaves o tarjetas reales, el mensaje
+                // no sale y el texto se queda en el compositor para que el usuario lo corrija.
+                var sensitive = sensitiveScan(text);
+                if (sensitive.length) {
+                    addMessage('ia', sensitiveMessage(sensitive), { notice: true, mood: 'enojado' });
+                    els.input.focus();
+                    return;
+                }
 
                 var userRow = addMessage('user', text);
                 els.input.value = '';
@@ -1531,7 +1457,14 @@
                         throw new Error('Respuesta no válida del servidor: ' + rawText);
                     }
 
-                    if (data.too_large) {
+                    if (data.sensitive_data) {
+                        // El servidor encontró datos sensibles que el navegador no detectó.
+                        chatHistory.pop();
+                        userRow.remove();
+                        els.input.value = text;
+                        addMessage('ia', data.error, { notice: true, mood: 'enojado' });
+                        autoGrow();
+                    } else if (data.too_large) {
                         // Igual que con el límite de consultas: no se procesó, así que el
                         // texto vuelve al compositor para recortarlo en vez de perderse.
                         chatHistory.pop();

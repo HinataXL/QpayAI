@@ -113,6 +113,29 @@ if (!$saneado['ok']) {
 }
 $history = $saneado['history'];
 
+// 1.3 Datos sensibles
+// Llaves reales o tarjetas no deben llegar a Gemini ni quedar en un ticket de Zoho.
+// Se revisan todos los mensajes del usuario, no solo el último: el historial lo arma
+// el navegador. chat.html hace la misma revisión antes de enviar; esta es la barrera
+// que no depende del cliente.
+require_once __DIR__ . '/lib/sensitive_data.php';
+require_once __DIR__ . '/lib/zoho_ticket.php';
+
+$sensibles = [];
+foreach ($history as $turno) {
+    if ($turno['role'] === 'user') {
+        $sensibles = array_merge($sensibles, sensitive_scan($turno['parts'][0]['text']));
+    }
+}
+if ($sensibles) {
+    http_response_code(422);
+    echo json_encode([
+        "error"          => sensitive_message($sensibles),
+        "sensitive_data" => true,
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // Extraer el último mensaje del usuario para el análisis RAG
 $ultimo_mensaje_usuario = '';
 for ($i = count($history) - 1; $i >= 0; $i--) {
@@ -174,30 +197,40 @@ CÓMO USAR TU CONOCIMIENTO
 
 CUÁNDO PASAR A UN HUMANO
 
-6. Ofrece escalar a soporte humano cuando: el usuario lo pida, el asunto sea de
-   su cuenta o comercio (activación, credenciales propias, cobros, liquidaciones,
-   configuración de su pasarela), haya que revisar una transacción concreta, o
-   falte información que solo QPayPro puede dar. En esos casos pide su correo
-   electrónico y el nombre de su comercio, y pon "solicita_contacto": true.
-   En cualquier otra respuesta "solicita_contacto" es false.
+6. Nunca abras ni ofrezcas un ticket sin contexto. Si el usuario pide un ticket,
+   soporte o hablar con una persona y todavía NO explicó su problema (qué
+   endpoint o servicio usa, qué envió, qué error o respuesta recibe), pon
+   "pide_ticket_sin_contexto": true y NO pidas su correo todavía. En cualquier
+   otro caso "pide_ticket_sin_contexto" es false.
+
+7. Con el problema ya explicado, ofrece escalar a soporte humano cuando: el
+   usuario lo pida, el asunto sea de su cuenta o comercio (activación,
+   credenciales propias, cobros, liquidaciones, configuración de su pasarela),
+   haya que revisar una transacción concreta, o falte información que solo
+   QPayPro puede dar. En esos casos pide su correo electrónico (obligatorio) y
+   el nombre de su comercio, y pon "solicita_contacto": true. En cualquier otra
+   respuesta "solicita_contacto" es false.
    No escales por costumbre: si puedes resolverlo tú, resuélvelo.
 
-7. Solo cuando el usuario YA te dio correo y nombre de comercio, pon
-   "escalar_a_humano": true, colócalos en "correo_cliente" y "nombre_comercio",
-   y confirma en 'diagnostico' que estás creando el ticket. Mientras falte
-   alguno de los dos, "escalar_a_humano" es false.
+8. El correo electrónico es OBLIGATORIO para abrir un ticket. Solo cuando el
+   usuario ya explicó el problema Y ya escribió un correo válido Y el nombre de
+   su comercio, pon "escalar_a_humano": true, colócalos en "correo_cliente" y
+   "nombre_comercio", y confirma en 'diagnostico' que estás creando el ticket.
+   Nunca inventes ni supongas un correo. Mientras falte algo, "escalar_a_humano"
+   es false.
 
 FORMATO
 
-8. Responde en español, directo y sin rodeos. Usa las credenciales de sandbox de
+9. Responde en español, directo y sin rodeos. Usa las credenciales de sandbox de
    la documentación en los ejemplos, nunca inventes llaves reales.
 
-9. Devuelve ESTRICTAMENTE un JSON válido con esta estructura exacta, sin texto
+10. Devuelve ESTRICTAMENTE un JSON válido con esta estructura exacta, sin texto
    adicional fuera del JSON:
 {
   "diagnostico": "Tu respuesta para el usuario.",
   "codigo_corregido": "El bloque completo de código corregido o de ejemplo. Vacío si no aplica.",
   "escalar_a_humano": true o false,
+  "pide_ticket_sin_contexto": true si pide un ticket o soporte sin haber explicado su problema, si no false,
   "solicita_contacto": true si en esta respuesta pides correo y comercio para escalar, si no false,
   "correo_cliente": "El correo que dio el usuario, o vacío.",
   "nombre_comercio": "El nombre del comercio que dio el usuario, o vacío."
@@ -281,6 +314,30 @@ try {
     
     $escalar = isset($parsed_json['escalar_a_humano']) && $parsed_json['escalar_a_humano'] === true;
 
+    // 5.1 Requisitos del ticket, aplicados aquí y no solo en el prompt: la IA puede
+    // equivocarse o dejarse convencer, estas reglas no. Primero el contexto, luego
+    // el correo; hasta que se cumplan ambos no se abre nada.
+    $comercio_ia = (string) ($parsed_json['nombre_comercio'] ?? '');
+    $con_contexto = tappy_ticket_has_context($history, $comercio_ia);
+    $correo_valido = tappy_ticket_email($history, (string) ($parsed_json['correo_cliente'] ?? ''));
+
+    $pide_sin_contexto = ($parsed_json['pide_ticket_sin_contexto'] ?? false) === true;
+    $quiere_ticket = $escalar || (($parsed_json['solicita_contacto'] ?? false) === true);
+
+    if ($pide_sin_contexto || ($quiere_ticket && !$con_contexto)) {
+        $escalar = false;
+        $parsed_json['diagnostico'] = TAPPY_MSG_NEED_CONTEXT;
+        $parsed_json['codigo_corregido'] = '';
+        $parsed_json['requiere_contexto'] = true;      // el chat muestra a Tappy ansioso
+        $parsed_json['solicita_contacto'] = false;
+    } elseif ($escalar && $correo_valido === null) {
+        $escalar = false;
+        $parsed_json['diagnostico'] = TAPPY_MSG_NEED_EMAIL;
+        $parsed_json['solicita_contacto'] = true;
+    }
+    $parsed_json['escalar_a_humano'] = $escalar;
+    unset($parsed_json['pide_ticket_sin_contexto']);
+
     if ($escalar && $zoho_refresh_token && $zoho_client_id && $zoho_client_secret && $zoho_org_id && $zoho_department_id) {
         // 1. Obtener Access Token mediante Refresh Token
         $auth_url = "https://accounts.zoho.com/oauth/v2/token";
@@ -312,28 +369,18 @@ try {
             // 2. Crear ticket en Zoho Desk
             $zoho_url = "https://desk.zoho.com/api/v1/tickets";
             
-            // Convertimos el historial en HTML para la descripción del ticket
-            $historial_texto = "<h3>Historial del chat:</h3><hr/>";
-            foreach ($history as $msg) {
-                $role = $msg['role'] === 'user' ? 'Usuario' : 'Agente IA';
-                $texto = htmlspecialchars($msg['parts'][0]['text'] ?? '');
-                $texto = nl2br($texto); // Convertir saltos de línea a <br>
-                
-                $color = $msg['role'] === 'user' ? '#0056b3' : '#17a2b8';
-                $historial_texto .= "<p><strong style='color:$color;'>[$role]:</strong><br/> $texto</p>";
-            }
-            
-            $correo_cliente = !empty($parsed_json['correo_cliente']) ? $parsed_json['correo_cliente'] : "chat-ia@qpaypro.com";
+            // Ya validado arriba: sin un correo real de la persona no se llega aquí.
+            $correo_cliente = $correo_valido;
             $nombre_comercio = !empty($parsed_json['nombre_comercio']) ? $parsed_json['nombre_comercio'] : "No especificado";
 
             $ticket_data = [
-                "subject" => "Escalamiento desde chatIA Comercio " . $nombre_comercio,
+                "subject" => tappy_ticket_subject($nombre_comercio),
                 "departmentId" => $zoho_department_id,
                 "contact" => [
                     "lastName" => $nombre_comercio,
                     "email" => $correo_cliente
                 ],
-                "description" => $historial_texto
+                "description" => tappy_ticket_description($history)
             ];
 
             $zc = curl_init($zoho_url);
