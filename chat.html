@@ -506,12 +506,15 @@
         }
 
         /* ---------- Suggestions ---------- */
+        /* Van dentro de la conversación, bajo el saludo, y se desplazan con ella:
+           fijas sobre el compositor le quitaban espacio a los mensajes. */
         .suggestions {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            padding: 4px 20px 12px;
-            background: var(--surface-2);
+            margin-top: -6px;
+            padding-left: 40px;     /* alineadas con la burbuja, no con el avatar */
+            max-width: 86%;
         }
 
         .suggestions:empty {
@@ -756,19 +759,6 @@
             display: none;
         }
 
-        /* Mismo aspecto que las sugerencias iniciales. */
-        .context-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 4px 20px 12px;
-            background: var(--surface-2);
-        }
-
-        .context-chips[hidden] {
-            display: none;
-        }
-
         /* ---------- Responsive ---------- */
         @media (max-width: 720px) {
             body {
@@ -791,10 +781,13 @@
                 padding: 16px 12px 6px;
             }
 
-            .suggestions,
             .typing-indicator {
                 padding-left: 12px;
                 padding-right: 12px;
+            }
+
+            .suggestions {
+                max-width: 94%;
             }
 
             .chat-input {
@@ -860,9 +853,6 @@
             <span>Tappy está analizando tu consulta…</span>
         </div>
 
-        <!-- Acciones sobre la página que se está viendo (solo dentro de la documentación). -->
-        <div class="context-chips" id="contextChips" hidden></div>
-
         <div class="chat-input">
             <div class="composer">
                 <label class="sr-only" for="msgInput">Mensaje</label>
@@ -920,7 +910,6 @@
             var els = {
                 messages: document.getElementById('chatMessages'),
                 suggestions: document.getElementById('suggestions'),
-                contextChips: document.getElementById('contextChips'),
                 typing: document.getElementById('typingIndicator'),
                 input: document.getElementById('msgInput'),
                 send: document.getElementById('sendBtn'),
@@ -1114,6 +1103,7 @@
                     // De lo más a lo menos específico: un ticket creado pesa más que el código.
                     if (okMarker !== -1) mood = 'exito';
                     else if (errMarker !== -1) mood = 'triste';
+                    else if (content.fuera_de_tema === true) mood = 'pensativo';     // consulta ajena a integración y pagos
                     else if (content.requiere_contexto === true) mood = 'ansioso';   // pidió ticket sin contar el problema
                     else if (content.solicita_contacto === true) mood = 'soporte';
                     else if (code) mood = 'confiado';
@@ -1138,9 +1128,18 @@
 
             /* ---------------- sugerencias ---------------- */
 
+            // Se ocultan en cuanto el usuario intenta enviar algo, aunque el mensaje no llegue a
+            // salir (p. ej. bloqueado por llevar llaves reales): antes seguían ahí para siempre.
+            var interacted = false;
+
             function renderSuggestions() {
                 els.suggestions.innerHTML = '';
-                if (chatHistory.length > 0) return;
+                if (chatHistory.length > 0 || interacted) {
+                    if (els.suggestions.parentNode) els.suggestions.parentNode.removeChild(els.suggestions);
+                    return;
+                }
+                // Justo debajo del saludo, dentro del área que se desplaza.
+                els.messages.appendChild(els.suggestions);
                 SUGGESTIONS.forEach(function (text) {
                     var chip = document.createElement('button');
                     chip.type = 'button';
@@ -1202,32 +1201,13 @@
             // contiene al chat; en la página independiente queda en null.
             var pageContext = null;
             var DEFAULT_PLACEHOLDER = els.input.placeholder;
-            var CONTEXT_ACTIONS = ['try', 'errors'];
 
             function applyContext(ctx) {
                 pageContext = ctx && typeof ctx === 'object' ? ctx : null;
                 els.input.placeholder = (pageContext && typeof pageContext.placeholder === 'string')
                     ? pageContext.placeholder
                     : DEFAULT_PLACEHOLDER;
-                renderContextChips();
                 syncSendState();
-            }
-
-            function renderContextChips() {
-                els.contextChips.innerHTML = '';
-                var chips = pageContext && Array.isArray(pageContext.chips) ? pageContext.chips : [];
-                chips.forEach(function (c) {
-                    if (!c || CONTEXT_ACTIONS.indexOf(c.action) === -1) return;
-                    var chip = document.createElement('button');
-                    chip.type = 'button';
-                    chip.className = 'chip';
-                    chip.textContent = String(c.label || '');
-                    chip.addEventListener('click', function () {
-                        window.parent.postMessage({ type: 'qpay-action', action: c.action }, '*');
-                    });
-                    els.contextChips.appendChild(chip);
-                });
-                els.contextChips.hidden = !els.contextChips.children.length;
             }
 
             // Se antepone a la pregunta que viaja a Gemini (no a la burbuja que ve el usuario),
@@ -1314,6 +1294,7 @@
 
             function resetChat() {
                 chatHistory = [];
+                interacted = false;
                 els.messages.innerHTML = '';
                 addMessage('ia', WELCOME);
                 renderSuggestions();
@@ -1425,6 +1406,9 @@
             function sendMessage() {
                 var text = els.input.value.trim();
                 if (!text || busy || cooldownLeft() > 0) return;
+
+                interacted = true;
+                renderSuggestions();
 
                 // Antes de mostrar o enviar nada: si hay llaves o tarjetas reales, el mensaje
                 // no sale y el texto se queda en el compositor para que el usuario lo corrija.

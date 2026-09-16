@@ -4735,25 +4735,19 @@ window.addEventListener("message", function (event) {
 
             // Qué está mirando el usuario, para que Tappy responda sobre eso.
             function contextFor(id) {
-                var chips = [];
                 var entry = endpointsById[id];
                 if (entry) {
-                    chips.push({ action: 'try', label: currentEnv === 'produccion' ? 'Probar en producción' : 'Probar en sandbox' });
-                    chips.push({ action: 'errors', label: 'Ver códigos de error' });
                     return {
                         kind: 'endpoint',
                         label: entry.ep.method + ' ' + entry.ep.name,
                         url: envUrl(entry.ep.url),
-                        placeholder: 'Pregunta sobre este endpoint…',
-                        chips: chips
+                        placeholder: 'Pregunta sobre este endpoint…'
                     };
                 }
-                if (id !== 'errores') chips.push({ action: 'errors', label: 'Ver códigos de error' });
                 return {
                     kind: 'section',
                     label: sectionsById[id] ? sectionsById[id].title : '',
-                    placeholder: 'Pregunta sobre esta sección…',
-                    chips: chips
+                    placeholder: 'Pregunta sobre esta sección…'
                 };
             }
 
@@ -4828,20 +4822,6 @@ window.addEventListener("message", function (event) {
             document.getElementById('assistantClose').addEventListener('click', closeAssistant);
             document.getElementById('assistantReset').addEventListener('click', function () {
                 postToFrame({ type: 'qpay-reset' });
-            });
-
-            // Acciones que el chat pide a la documentación (los botones de contexto).
-            window.addEventListener('message', function (event) {
-                if (event.source !== aiFrame.contentWindow) return;
-                var data = event.data;
-                if (!data || data.type !== 'qpay-action') return;
-                if (data.action === 'errors') {
-                    closeAssistant();
-                    location.hash = '#errores';
-                } else if (data.action === 'try' && openConsole) {
-                    closeAssistant();
-                    openConsole(true);
-                }
             });
 
             /* ---------------- Menú lateral en pantallas angostas ---------------- */

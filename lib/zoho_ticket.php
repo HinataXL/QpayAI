@@ -30,6 +30,14 @@ const TAPPY_MSG_NEED_CONTEXT = "¡Espera! Antes de abrir un ticket necesito ente
 const TAPPY_MSG_NEED_EMAIL = "Para abrir el ticket necesito un **correo electrónico válido** donde soporte " .
     "pueda contactarte (por ejemplo, `nombre@tucomercio.com`). ¿Me lo compartes junto con el nombre de tu comercio?";
 
+/** Tappy solo atiende integración y pagos; esto responde a todo lo demás. */
+const TAPPY_MSG_OFF_TOPIC = "Eso se sale de lo mío 😅 Soy Tappy y solo te puedo ayudar con la " .
+    "**integración de QPayPro y temas de pagos**.\n\nPor ejemplo:\n" .
+    "• Integrar el API en tu lenguaje o framework (PHP, JavaScript, Flutter, Java…)\n" .
+    "• Entender un error o una respuesta del API\n" .
+    "• Checkout alojado, tokenización, 3D-Secure o webhooks\n\n" .
+    "¿Qué necesitas de tu integración?";
+
 /** Palabras que no describen el problema: saludos, pedir ayuda o un ticket, relleno. */
 const TAPPY_CONTEXT_STOPWORDS = [
     'hola', 'buenas', 'buenos', 'dias', 'días', 'tardes', 'noches', 'gracias', 'favor', 'porfa', 'please', 'ok', 'vale',
